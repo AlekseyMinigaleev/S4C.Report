@@ -7,7 +7,6 @@ namespace S4C.DB
     {
         public ReportDbContext(DbContextOptions<ReportDbContext> options):base(options)
         {
-            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
