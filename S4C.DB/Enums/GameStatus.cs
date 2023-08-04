@@ -4,5 +4,6 @@
     {
         New,
         Promouted,
+        Common,
     }
 }

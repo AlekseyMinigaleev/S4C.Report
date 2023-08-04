@@ -17,14 +17,12 @@ namespace S4C.DB.Models
         private GameModel()
         { }
 
-        public GameModel(string name,
-            DateTime publicationDate,
-            GameStatus status)
+        public GameModel(string name, DateTime publicationDate)
         {
             Id = Guid.NewGuid();
             Name = name;
             PublicationDate = publicationDate;
-            Status = status;
+            Status = GameStatus.New;
         }
 
         public void UpdateStatus(GameStatus status) => Status = status;
