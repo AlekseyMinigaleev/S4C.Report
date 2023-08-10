@@ -4,7 +4,7 @@ using S4C.DB.Models;
 
 namespace S4C.DB.ModelConfigurations
 {
-    public class GameStatisticsConfiguration : IEntityTypeConfiguration<GamesStatisticModel>
+    public class GameStatisticsModelConfiguration : IEntityTypeConfiguration<GamesStatisticModel>
     {
         public void Configure(EntityTypeBuilder<GamesStatisticModel> builder)
         {
