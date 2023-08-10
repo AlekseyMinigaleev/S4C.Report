@@ -1,6 +1,8 @@
 using Hangfire;
+using MediatR;
 using S4C.API.Extensions;
 using S4C.DB;
+using S4C.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddStorage(builder.Configuration);
+builder.Services.AddMediatR(typeof(Program));
 #endregion
 
 var app = builder.Build();
@@ -27,8 +30,8 @@ app.MapControllers();
 
 app.Run(async context =>
 {
-    var dbContext = context.RequestServices.GetService(typeof(ReportDbContext)) as ReportDbContext ?? throw new Exception();
-    await context.Response.WriteAsJsonAsync(dbContext.GameModels);
+    var backgroundJobService = context.RequestServices.GetService(typeof(IBackGroundJobService)) as IBackGroundJobService ?? throw new Exception();
+    await backgroundJobService.InitJobsAsync();
 });
 
 app.Run();

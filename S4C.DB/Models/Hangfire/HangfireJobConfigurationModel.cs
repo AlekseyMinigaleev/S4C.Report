@@ -2,10 +2,23 @@
 {
     public class HangfireJobConfigurationModel
     {
-        public HangfireJobTypeEnum JopType { get; set; }
+        public HangfireJobTypeEnum JopType { get; private set; }
 
-        public string? CronExpression { get; set; }
+        public string? CronExpression { get; private set; }
 
-        public bool IsEnabled { get; set; }
+        public bool IsEnable { get; private set; }
+
+        private HangfireJobConfigurationModel()
+        { }
+
+        public HangfireJobConfigurationModel(
+            HangfireJobTypeEnum jobType,
+            string? cronExpression,
+            bool isEnable)
+        {
+            JopType = jobType;
+            CronExpression = cronExpression;
+            IsEnable = isEnable;
+        }
     }
 }
