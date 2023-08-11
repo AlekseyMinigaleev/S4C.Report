@@ -10,7 +10,7 @@ namespace S4C.Services.Implements
     {
         private readonly ReportDbContext _dbContext;
         private const string? defaultCronExpression = null; /*TODO: уточнить*/
-        private const bool defaultIsEnable = true; /*TODO: уточнить*/
+        private const bool defaultIsEnable = false; /*TODO: уточнить*/
 
         public BackGroundJobService(ReportDbContext dbContext)
         {
@@ -29,23 +29,23 @@ namespace S4C.Services.Implements
             {
                 HangfireJobConfigurationModel jobConfig;
 
-                if (!jobConfigurations.Any(x => x.JopType == jobType))
-                {
-                    jobConfig = new HangfireJobConfigurationModel(
-                        jobType: jobType,
-                        cronExpression: defaultCronExpression,
-                        isEnable:defaultIsEnable);
-                }
-                else
+                if (jobConfigurations.Any(x => x.JopType == jobType))
                 {
                     jobConfig = jobConfigurations
                         .Single(x => x.JopType == jobType);
                 }
+                else
+                {
+                    jobConfig = new HangfireJobConfigurationModel(
+                        jobType: jobType,
+                        cronExpression: defaultCronExpression,
+                        isEnable: defaultIsEnable);
 
-                _dbContext.HangfireConfigurationModels.Add(jobConfig);
+                    _dbContext.HangfireConfigurationModels.Add(jobConfig);
+                }
 
                 /*TODO: пока коментим, тк нет интерфесов джоб*/
-                //AddOrUpdateRecurringJob(jobConfig);
+                AddOrUpdateRecurringJob(jobConfig);
             }
 
             await _dbContext.SaveChangesAsync();
@@ -56,14 +56,9 @@ namespace S4C.Services.Implements
             switch (jobConfig.JopType)
             {
                 case HangfireJobTypeEnum.ParseGameStatisticFromDeveloperPage:
-                    AddOrUpdateRecurringJob<IParser>(
+                    AddOrUpdateRecurringJob<DeveloperPageParser>(
                         jobConfig,
-                        (service) => service.Parse());
-                    break;
-                case HangfireJobTypeEnum.ParseGameStatisticFromDENGI:
-                    AddOrUpdateRecurringJob<IParser>(
-                        jobConfig,
-                        (service) => service.Parse());
+                        (service) => service.ParseAsync());
                     break;
                 default:
                     break;
@@ -76,7 +71,7 @@ namespace S4C.Services.Implements
                 RecurringJob.AddOrUpdate(
                     jobConfig.JopType.ToString(),
                     methodCall,
-                    jobConfig.CronExpression,
+                    jobConfig.CronExpression?? "* * * * *",  /*TODO: сделать проверку на валидность*/
                     new RecurringJobOptions
                     {
                         TimeZone = TimeZoneInfo.Local

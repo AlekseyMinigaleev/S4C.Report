@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\S4C.DB\S4C.DB.csproj" />
+    <ProjectReference Include="..\S4C.Services\S4C.Services.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://json.schemastore.org/appsscript.json" /></VisualStudio></ProjectExtensions>

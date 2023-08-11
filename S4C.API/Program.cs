@@ -1,7 +1,7 @@
 using Hangfire;
 using MediatR;
 using S4C.API.Extensions;
-using S4C.DB;
+using S4C.Services.Implements;
 using S4C.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddStorage(builder.Configuration);
 builder.Services.AddMediatR(typeof(Program));
+builder.Services.AddServices();
 #endregion
 
 var app = builder.Build();
@@ -28,10 +29,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+
 app.Run(async context =>
 {
-    var backgroundJobService = context.RequestServices.GetService(typeof(IBackGroundJobService)) as IBackGroundJobService ?? throw new Exception();
-    await backgroundJobService.InitJobsAsync();
+    var devPageParser = new DeveloperPageParser();
+    await devPageParser.ParseAsync();
 });
 
 app.Run();

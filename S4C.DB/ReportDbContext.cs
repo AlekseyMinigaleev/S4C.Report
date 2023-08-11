@@ -7,7 +7,7 @@ namespace S4C.DB
     public class ReportDbContext : DbContext
     {
         public ReportDbContext(DbContextOptions<ReportDbContext> options):base(options)
-        {}
+        { }
 
         public DbSet<GameModel> GameModels { get; set; }
 
