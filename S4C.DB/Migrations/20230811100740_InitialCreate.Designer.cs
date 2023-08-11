@@ -12,8 +12,8 @@ using S4C.DB;
 namespace S4C.DB.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
-    [Migration("20230804165512_inialCreate")]
-    partial class inialCreate
+    [Migration("20230811100740_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
