@@ -26,7 +26,7 @@ namespace C4S.API.Features.Jobs.Actions
         {
             public HangfireJobTypeEnum JobType { get; set; }
 
-            public Exception Error { get; set; }
+            public string Error { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, List<ResponseViewModel>>
@@ -55,7 +55,7 @@ namespace C4S.API.Features.Jobs.Actions
 
                     if (updatedJob.CronExpression is null || validationResult == null)
                     {
-                        responseViewModel.Error = new CrontabException("Invalid cron expression");
+                        responseViewModel.Error = "Invalid cron expression";
                         await _backgroundJobService.AddOrUpdateRecurringJobAsync(updatedJob);
                     }
 
