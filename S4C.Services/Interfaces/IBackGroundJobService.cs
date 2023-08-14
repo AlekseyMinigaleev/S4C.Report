@@ -1,7 +1,9 @@
-﻿namespace S4C.Services.Interfaces
+﻿using C4S.DB.Models.Hangfire;
+
+namespace C4S.Services.Interfaces
 {
     public interface IBackGroundJobService
     {
-        public Task InitJobsAsync();
+        public Task AddOrUpdateRecurringJobAsync(HangfireJobConfigurationModel? jobConfig);
     }
 }

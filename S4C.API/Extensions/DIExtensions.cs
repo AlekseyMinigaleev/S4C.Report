@@ -1,12 +1,12 @@
 ﻿using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using S4C.DB;
-using S4C.Services.Implements;
-using S4C.Services.Interfaces;
+using C4S.DB;
+using C4S.Services.Implements;
+using C4S.Services.Interfaces;
 
-namespace S4C.API.Extensions
+namespace C4S.API.Extensions
 {
-    public static class DependencyInjectionExtensions
+    public static class DIExtensions
     {
         public static void AddStorage(this IServiceCollection services, ConfigurationManager configuration)
         {
@@ -22,11 +22,6 @@ namespace S4C.API.Extensions
                    .UseSqlServerStorage(connectionString));
 
             services.AddHangfireServer();
-        }
-
-        public static void AddServices (this IServiceCollection services)
-        {
-            services.AddTransient<IBackGroundJobService, BackGroundJobService>();
         }
     }
 }

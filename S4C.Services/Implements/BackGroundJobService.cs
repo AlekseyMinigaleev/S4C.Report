@@ -1,57 +1,52 @@
 ﻿using Hangfire;
-using S4C.DB;
-using S4C.DB.Models.Hangfire;
-using S4C.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using C4S.DB;
+using C4S.DB.Models.Hangfire;
+using C4S.Services.Interfaces;
 using System.Linq.Expressions;
 
-namespace S4C.Services.Implements
+namespace C4S.Services.Implements
 {
     public class BackGroundJobService : IBackGroundJobService
     {
         private readonly ReportDbContext _dbContext;
-        private const string? defaultCronExpression = null; /*TODO: уточнить*/
-        private const bool defaultIsEnable = false; /*TODO: уточнить*/
 
         public BackGroundJobService(ReportDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task InitJobsAsync()
+        public async Task AddOrUpdateRecurringJobAsync(HangfireJobConfigurationModel? jobConfig)
         {
-            var jobConfigurations = _dbContext.HangfireConfigurationModels;
+            var existencesJobConfigurations = _dbContext.HangfireConfigurationModels;
 
             var jobTypes = Enum.GetValues(typeof(HangfireJobTypeEnum)).Cast<HangfireJobTypeEnum>();
 
-            var missingJobs = new List<HangfireJobConfigurationModel>();
-
             foreach (var jobType in jobTypes)
             {
-                HangfireJobConfigurationModel jobConfig;
+                var existence = await existencesJobConfigurations
+                    .SingleOrDefaultAsync(x => x.JopType == jobType);
 
-                if (jobConfigurations.Any(x => x.JopType == jobType))
+                if (existence is null)
                 {
-                    jobConfig = jobConfigurations
-                        .Single(x => x.JopType == jobType);
-                }
-                else
-                {
-                    jobConfig = new HangfireJobConfigurationModel(
-                        jobType: jobType,
-                        cronExpression: defaultCronExpression,
-                        isEnable: defaultIsEnable);
+                    existence = new HangfireJobConfigurationModel(
+                       jobType: jobType,
+                       cronExpression: HangfireJobConfigurationConstants.DefaultCronExpression,
+                       isEnable: HangfireJobConfigurationConstants.DefaultIsEnable);
 
-                    _dbContext.HangfireConfigurationModels.Add(jobConfig);
+                    _dbContext.HangfireConfigurationModels.Add(existence);
                 }
 
-                /*TODO: пока коментим, тк нет интерфесов джоб*/
-                AddOrUpdateRecurringJob(jobConfig);
+                if (jobConfig != null)
+                    existence.Update(jobConfig!);
+
+                AddOrUpdateRecurringJob(existence);
             }
 
             await _dbContext.SaveChangesAsync();
         }
 
-        private void AddOrUpdateRecurringJob(HangfireJobConfigurationModel jobConfig)
+        private static void AddOrUpdateRecurringJob(HangfireJobConfigurationModel jobConfig)
         {
             switch (jobConfig.JopType)
             {
@@ -65,13 +60,13 @@ namespace S4C.Services.Implements
             }
         }
 
-        private void AddOrUpdateRecurringJob<T>(
+        private static void AddOrUpdateRecurringJob<T>(
             HangfireJobConfigurationModel jobConfig,
             Expression<Func<T, Task>> methodCall) =>
                 RecurringJob.AddOrUpdate(
                     jobConfig.JopType.ToString(),
                     methodCall,
-                    jobConfig.CronExpression?? "* * * * *",  /*TODO: сделать проверку на валидность*/
+                    jobConfig.CronExpression ?? "* * * * *",  /*TODO: сделать проверку на валидность*/
                     new RecurringJobOptions
                     {
                         TimeZone = TimeZoneInfo.Local

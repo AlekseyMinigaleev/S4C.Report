@@ -1,8 +1,8 @@
 using Hangfire;
 using MediatR;
-using S4C.API.Extensions;
-using S4C.Services.Implements;
-using S4C.Services.Interfaces;
+using C4S.API.Extensions;
+using C4S.Services.Extensions;
+using C4S.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddStorage(builder.Configuration);
 builder.Services.AddMediatR(typeof(Program));
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddServices();
 #endregion
 
@@ -32,8 +33,8 @@ app.MapControllers();
 
 app.Run(async context =>
 {
-    var devPageParser = new DeveloperPageParser();
-    await devPageParser.ParseAsync();
+    var service = context.RequestServices.GetService<IBackGroundJobService>() ?? throw new Exception();
+    await service.AddOrUpdateRecurringJobAsync(null);
 });
 
 app.Run();

@@ -1,6 +1,6 @@
-﻿using S4C.DB.Enums;
+﻿using C4S.DB.Enums;
 
-namespace S4C.DB.Models
+namespace C4S.DB.Models
 {
     public class GameModel
     {

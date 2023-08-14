@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace S4C.DB.Models.Hangfire
+namespace C4S.DB.Models.Hangfire
 {
 	public enum HangfireJobTypeEnum
 	{

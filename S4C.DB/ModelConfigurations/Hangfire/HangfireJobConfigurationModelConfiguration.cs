@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using S4C.DB.Models.Hangfire;
+using C4S.DB.Models.Hangfire;
 
-namespace S4C.DB.ModelConfigurations.Hangfire
+namespace C4S.DB.ModelConfigurations.Hangfire
 {
     public class HangfireJobConfigurationModelConfiguration : IEntityTypeConfiguration<HangfireJobConfigurationModel>
     {

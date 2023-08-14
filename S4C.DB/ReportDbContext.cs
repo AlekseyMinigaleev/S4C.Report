@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using S4C.DB.Models;
-using S4C.DB.Models.Hangfire;
+using C4S.DB.Models;
+using C4S.DB.Models.Hangfire;
 
-namespace S4C.DB
+namespace C4S.DB
 {
     public class ReportDbContext : DbContext
     {

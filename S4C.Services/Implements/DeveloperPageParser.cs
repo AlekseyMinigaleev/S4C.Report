@@ -1,10 +1,10 @@
 ﻿using AngleSharp;
 using AngleSharp.Dom;
-using S4C.Services.Interfaces;
+using C4S.Services.Interfaces;
 using System;
 using System.Runtime.Intrinsics.Arm;
 
-namespace S4C.Services.Implements
+namespace C4S.Services.Implements
 {
     public class DeveloperPageParser : IParser
     {

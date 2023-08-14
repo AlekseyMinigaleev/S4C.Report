@@ -1,4 +1,4 @@
-﻿namespace S4C.Services.Interfaces
+﻿namespace C4S.Services.Interfaces
 {
 
     /// <summary>

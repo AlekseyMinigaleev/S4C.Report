@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace S4C.DB.Migrations
+namespace C4S.DB.Migrations
 {
     /// <inheritdoc />
     public partial class AddHangfireJobConfigurationTable : Migration

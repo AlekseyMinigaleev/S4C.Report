@@ -1,4 +1,4 @@
-﻿namespace S4C.DB.Models
+﻿namespace C4S.DB.Models
 {
     public class GamesStatisticModel
     {
