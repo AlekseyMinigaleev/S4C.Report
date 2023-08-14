@@ -3,6 +3,7 @@ using MediatR;
 using C4S.API.Extensions;
 using C4S.Services.Extensions;
 using C4S.ApiHelpers.Helpers.Swagger;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddStorage(builder.Configuration);
 builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddServices();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 #endregion
 
 var app = builder.Build();

@@ -10,7 +10,7 @@ namespace C4S.DB.ModelConfigurations.Hangfire
         {
             builder
                 .ToTable("HangfireJobConfiguration")
-                .HasKey(x => x.JopType);
+                .HasKey(x => x.JobType);
         }
     }
 }

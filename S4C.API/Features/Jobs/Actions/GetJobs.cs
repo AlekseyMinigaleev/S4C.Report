@@ -31,7 +31,7 @@ namespace C4S.API.Features.Jobs.Actions
             public ResponseViewModelProfiler()
             {
                 CreateMap<HangfireJobConfigurationModel, ResponseViewModel>()
-                    .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.JopType.GetDisplayName()));
+                    .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.JobType.GetDisplayName()));
             }
         }
 

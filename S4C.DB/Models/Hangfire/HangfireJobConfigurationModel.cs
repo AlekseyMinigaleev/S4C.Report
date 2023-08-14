@@ -4,7 +4,7 @@ namespace C4S.DB.Models.Hangfire
 {
     public class HangfireJobConfigurationModel
     {
-        public HangfireJobTypeEnum JopType { get; private set; }
+        public HangfireJobTypeEnum JobType { get; private set; }
 
         public string? CronExpression { get; private set; }
 
@@ -18,27 +18,21 @@ namespace C4S.DB.Models.Hangfire
             string? cronExpression,
             bool isEnable)
         {
-            AddOrUpdate(new HangfireJobConfigurationModel
-            {
-                JopType = jobType,
-                CronExpression = cronExpression,
-                IsEnable = isEnable
-            });
+            JobType = jobType;
+            CronExpression = cronExpression;
+            SetIsEnable(isEnable);
         }
 
-        public void Update(HangfireJobConfigurationModel hangfireJobConfiguration)
+        public void Update(string? cronExpression, bool isEnable)
         {
-            AddOrUpdate(hangfireJobConfiguration);
+            CronExpression = cronExpression;
+            SetIsEnable(isEnable);
         }
 
-        private void AddOrUpdate(HangfireJobConfigurationModel hangfireJobConfiguration)
-        {
-            JopType = hangfireJobConfiguration.JopType;
-            CronExpression = hangfireJobConfiguration.CronExpression;
+        public void SetIsEnable(bool isEnable) =>
             IsEnable = CronExpression is null
                 ? false
-                : hangfireJobConfiguration.IsEnable;
-        }
+                : isEnable;
     }
 
     public static class HangfireJobConfigurationConstants

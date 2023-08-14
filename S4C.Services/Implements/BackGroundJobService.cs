@@ -16,16 +16,28 @@ namespace C4S.Services.Implements
             _dbContext = dbContext;
         }
 
-        public async Task AddOrUpdateRecurringJobAsync(HangfireJobConfigurationModel? jobConfig)
+        public async Task AddOrUpdateRecurringJobAsync(HangfireJobConfigurationModel jobConfig)
         {
-            var existencesJobConfigurations = _dbContext.HangfireConfigurationModels;
+            var existence = await _dbContext.HangfireConfigurationModels
+                .SingleAsync(x => x.JobType == jobConfig.JobType);
+
+            existence.Update(jobConfig.CronExpression, jobConfig.IsEnable);
+
+            AddOrUpdateRecurringJob(existence);
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task AddOrUpdateAllRecurringJobAsync(HangfireJobConfigurationModel? jobConfig = null)
+        {
+            var existenceJobConfigurations = _dbContext.HangfireConfigurationModels;
 
             var jobTypes = Enum.GetValues(typeof(HangfireJobTypeEnum)).Cast<HangfireJobTypeEnum>();
 
             foreach (var jobType in jobTypes)
             {
-                var existence = await existencesJobConfigurations
-                    .SingleOrDefaultAsync(x => x.JopType == jobType);
+                var existence = await existenceJobConfigurations
+                    .SingleOrDefaultAsync(x => x.JobType == jobType);
 
                 if (existence is null)
                 {
@@ -38,7 +50,7 @@ namespace C4S.Services.Implements
                 }
 
                 if (jobConfig != null)
-                    existence.Update(jobConfig!);
+                    existence.Update(jobConfig.CronExpression, jobConfig.IsEnable!);
 
                 AddOrUpdateRecurringJob(existence);
             }
@@ -48,7 +60,7 @@ namespace C4S.Services.Implements
 
         private static void AddOrUpdateRecurringJob(HangfireJobConfigurationModel jobConfig)
         {
-            switch (jobConfig.JopType)
+            switch (jobConfig.JobType)
             {
                 case HangfireJobTypeEnum.ParseGameStatisticFromDeveloperPage:
                     AddOrUpdateRecurringJob<DeveloperPageParser>(
@@ -64,9 +76,9 @@ namespace C4S.Services.Implements
             HangfireJobConfigurationModel jobConfig,
             Expression<Func<T, Task>> methodCall) =>
                 RecurringJob.AddOrUpdate(
-                    jobConfig.JopType.ToString(),
+                    jobConfig.JobType.ToString(),
                     methodCall,
-                    jobConfig.CronExpression ?? "* * * * *",  /*TODO: сделать проверку на валидность*/
+                    jobConfig.CronExpression ?? HangfireJobConfigurationConstants.DefaultCronExpression,  /*TODO: сделать проверку на валидность*/
                     new RecurringJobOptions
                     {
                         TimeZone = TimeZoneInfo.Local

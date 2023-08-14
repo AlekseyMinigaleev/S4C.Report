@@ -1,6 +1,7 @@
 ﻿using C4S.ApiHelpers.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using C4S.API.Features.Jobs.Actions;
+using FluentValidation;
 
 namespace C4S.API.Features.Jobs
 {
@@ -19,8 +20,14 @@ namespace C4S.API.Features.Jobs
         }
 
         [HttpPost("UpdateAllJobs")]
-        public async Task<ActionResult<UpdateJobs.ResponseViewModel>> UpdateJobs(UpdateJobs.Command request)
+        public async Task<ActionResult<UpdateJobs.ResponseViewModel>> UpdateJobs(UpdateJobs.Command request,
+            IValidator<UpdateJobs.Command> validator)
         {
+            await ValidateAndChangeModelState(validator, request);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await Mediator.Send(request);
 
             return Ok(result);

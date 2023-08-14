@@ -3,6 +3,7 @@ using NCrontab;
 using C4S.DB;
 using C4S.DB.Models.Hangfire;
 using C4S.Services.Interfaces;
+using FluentValidation;
 
 namespace C4S.API.Features.Jobs.Actions
 {
@@ -10,7 +11,7 @@ namespace C4S.API.Features.Jobs.Actions
     {
         public class Command : IRequest<List<ResponseViewModel>>
         {
-            public HangfireJobConfigurationModel[] UpdatedJobs { get; set; }
+            public RequestViewModel[] UpdatedJobs { get; set; }
         }
 
         public class RequestViewModel
@@ -27,6 +28,18 @@ namespace C4S.API.Features.Jobs.Actions
             public HangfireJobTypeEnum JobType { get; set; }
 
             public string Error { get; set; }
+        }
+
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator()
+            {
+                RuleFor(x => x)
+                    .Must(x=>x.UpdatedJobs
+                        .GroupBy(x => x.JobType)
+                        .All(group => group.Count() == 1))
+                    .WithMessage("Duplicate JobType detected");
+            }
         }
 
         public class Handler : IRequestHandler<Command, List<ResponseViewModel>>
@@ -48,7 +61,7 @@ namespace C4S.API.Features.Jobs.Actions
                 {
                     var responseViewModel = new ResponseViewModel
                     {
-                        JobType = updatedJob.JopType
+                        JobType = updatedJob.JobType
                     };
 
                     var validationResult = CrontabSchedule.TryParse(updatedJob.CronExpression);
@@ -56,7 +69,11 @@ namespace C4S.API.Features.Jobs.Actions
                     if (updatedJob.CronExpression is null || validationResult == null)
                     {
                         responseViewModel.Error = "Invalid cron expression";
-                        await _backgroundJobService.AddOrUpdateRecurringJobAsync(updatedJob);
+                    }
+                    else
+                    {
+                        var hangfireJobConfiguration = new HangfireJobConfigurationModel(updatedJob.JobType, updatedJob.CronExpression, updatedJob.IsEnable);
+                        await _backgroundJobService.AddOrUpdateRecurringJobAsync(hangfireJobConfiguration);
                     }
 
                     responseViewModelList.Add(responseViewModel);
