@@ -1,8 +1,8 @@
-﻿using Hangfire;
-using Microsoft.EntityFrameworkCore;
-using C4S.DB;
+﻿using C4S.DB;
 using C4S.DB.Models.Hangfire;
 using C4S.Services.Interfaces;
+using Hangfire;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace C4S.Services.Implements
@@ -65,6 +65,7 @@ namespace C4S.Services.Implements
                         jobConfig,
                         (service) => service.ParseAsync());
                     break;
+
                 default:
                     break;
             }

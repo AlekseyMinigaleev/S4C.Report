@@ -1,7 +1,7 @@
-﻿using C4S.ApiHelpers.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using C4S.API.Features.Jobs.Actions;
+﻿using C4S.API.Features.Jobs.Actions;
+using C4S.ApiHelpers.Controllers;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace C4S.API.Features.Jobs
 {

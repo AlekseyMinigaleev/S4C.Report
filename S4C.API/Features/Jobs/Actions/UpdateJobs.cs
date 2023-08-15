@@ -1,8 +1,8 @@
 ﻿using C4S.DB.Models.Hangfire;
-using C4S.Services.Extensions;
 using C4S.Services.Interfaces;
 using FluentValidation;
 using MediatR;
+using NCrontab;
 
 namespace C4S.API.Features.Jobs.Actions
 {
@@ -11,7 +11,7 @@ namespace C4S.API.Features.Jobs.Actions
         public class Command : IRequest<List<ResponseViewModel>>
         {
             /*TODO: почему я не могу передать HangfireJobModel*/
-            public RequestViewModel[] UpdatedJobs { get; set; }
+            public HangfireJobConfigurationModel[] UpdatedJobs { get; set; }
         }
 
         public class RequestViewModel
@@ -64,12 +64,16 @@ namespace C4S.API.Features.Jobs.Actions
                 return responseViewModelList;
             }
 
-            private async Task<ResponseViewModel> CreateResponseAndUpdateRecurringJobAsync(RequestViewModel updatedJob)
+            private async Task<ResponseViewModel> CreateResponseAndUpdateRecurringJobAsync(HangfireJobConfigurationModel updatedJob)
             {
+                //меняем, потому что мы поддерживаем CronExpression = string.Empty, а hangfire нет
+                if (string.IsNullOrWhiteSpace(updatedJob.CronExpression))
+                    updatedJob.Update(null, updatedJob.IsEnable);
+
                 var (errorMessage, isValidCron) = IsValidCronExpression(updatedJob.CronExpression);
 
                 if (isValidCron)
-                    await UpdateRecurringJobAsync(updatedJob);
+                    await _backgroundJobService.UpdateRecurringJobAsync(updatedJob);
 
                 var responseViewModel = new ResponseViewModel
                 {
@@ -84,7 +88,8 @@ namespace C4S.API.Features.Jobs.Actions
             //т.е.пользователь не должен иметь возможности седлать IsEnable = false и CronExpression = string.Empty
             private static (string?, bool) IsValidCronExpression(string? cronExpression)
             {
-                var result = NCrontabExtenstions.TryParseWithNullOrEmpty(cronExpression, out var _);
+                var crontabSchedule = CrontabSchedule.TryParse(cronExpression);
+                var result = crontabSchedule is null;
 
                 return result
                       ? (null, result) // TODO: уточнить нужно ли сообщение, о том что c пустым CronExpression джоба всегда будет выключена
@@ -97,8 +102,6 @@ namespace C4S.API.Features.Jobs.Actions
                             updatedJob.JobType,
                             updatedJob.CronExpression,
                             updatedJob.IsEnable);
-
-                await _backgroundJobService.UpdateRecurringJobAsync(hangfireJobConfiguration);
             }
         }
     }

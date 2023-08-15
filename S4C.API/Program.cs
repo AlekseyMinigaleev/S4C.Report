@@ -11,10 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 #region services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.CustomSchemaIds(RenameSchemaClassesId.Selector);
-});
+builder.Services.AddSwaggerGen(options => options.CustomSchemaIds(RenameSchemaClassesId.Selector));
 builder.Services.AddStorage(builder.Configuration);
 builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddAutoMapper(typeof(Program));

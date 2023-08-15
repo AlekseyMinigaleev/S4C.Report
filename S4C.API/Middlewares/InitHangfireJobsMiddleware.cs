@@ -15,6 +15,6 @@ namespace С4S.API.Middlewares
         {
             await jobService.AddMissingHangfirejobs();
             await _next(context);
-        }   
+        }
     }
 }

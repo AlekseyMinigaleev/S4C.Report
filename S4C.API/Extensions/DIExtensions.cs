@@ -1,8 +1,6 @@
-﻿using Hangfire;
+﻿using C4S.DB;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using C4S.DB;
-using C4S.Services.Implements;
-using C4S.Services.Interfaces;
 
 namespace C4S.API.Extensions
 {

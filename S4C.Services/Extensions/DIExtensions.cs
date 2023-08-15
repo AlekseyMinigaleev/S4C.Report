@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using C4S.Services.Implements;
+﻿using C4S.Services.Implements;
 using C4S.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace C4S.Services.Extensions
 {

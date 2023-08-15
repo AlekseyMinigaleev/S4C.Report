@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
 using C4S.DB;
 using C4S.DB.Models.Hangfire;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Extensions;
 
 namespace C4S.API.Features.Jobs.Actions
@@ -54,5 +54,4 @@ namespace C4S.API.Features.Jobs.Actions
             }
         }
     }
-
 }
