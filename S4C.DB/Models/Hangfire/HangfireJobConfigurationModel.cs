@@ -30,9 +30,7 @@ namespace C4S.DB.Models.Hangfire
         }
 
         public void SetIsEnable(bool isEnable) =>
-            IsEnable = CronExpression is null
-                ? false
-                : isEnable;
+            IsEnable = !string.IsNullOrWhiteSpace(CronExpression) && isEnable;
     }
 
     public static class HangfireJobConfigurationConstants

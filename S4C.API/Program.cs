@@ -4,6 +4,7 @@ using C4S.API.Extensions;
 using C4S.Services.Extensions;
 using C4S.ApiHelpers.Helpers.Swagger;
 using FluentValidation;
+using C4S.ApiHelpers.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,12 +36,14 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//TODO: сделать так, чтобы это выполнялось при запуске приложения
-//app.Run(async context =>
-//{
-//    var service = context.RequestServices.GetService<IBackGroundJobService>() ?? throw new Exception();
-//    await service.AddOrUpdateRecurringJobAsync(null);
-//});
+//TODO: похоже на очень жесткий костыль, но я пока не понимаю как сделать по другому.
+var jobServiceInitialized = false;
+if(!jobServiceInitialized)
+{
+    app.Run(RequestDelegates.InitMissingHangfireJobs);
+    jobServiceInitialized = true;
+}
+
 
 app.Run();
 #endregion

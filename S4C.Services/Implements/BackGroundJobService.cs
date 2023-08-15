@@ -16,7 +16,7 @@ namespace C4S.Services.Implements
             _dbContext = dbContext;
         }
 
-        public async Task AddOrUpdateRecurringJobAsync(HangfireJobConfigurationModel jobConfig)
+        public async Task UpdateRecurringJobAsync(HangfireJobConfigurationModel jobConfig)
         {
             var existence = await _dbContext.HangfireConfigurationModels
                 .SingleAsync(x => x.JobType == jobConfig.JobType);
@@ -28,11 +28,13 @@ namespace C4S.Services.Implements
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task AddOrUpdateAllRecurringJobAsync(HangfireJobConfigurationModel? jobConfig = null)
+        public async Task AddMissingHangfirejobs()
         {
             var existenceJobConfigurations = _dbContext.HangfireConfigurationModels;
 
-            var jobTypes = Enum.GetValues(typeof(HangfireJobTypeEnum)).Cast<HangfireJobTypeEnum>();
+            var jobTypes = Enum
+                .GetValues(typeof(HangfireJobTypeEnum))
+                .Cast<HangfireJobTypeEnum>();
 
             foreach (var jobType in jobTypes)
             {
@@ -47,12 +49,8 @@ namespace C4S.Services.Implements
                        isEnable: HangfireJobConfigurationConstants.DefaultIsEnable);
 
                     _dbContext.HangfireConfigurationModels.Add(existence);
+                    AddOrUpdateRecurringJob(existence);
                 }
-
-                if (jobConfig != null)
-                    existence.Update(jobConfig.CronExpression, jobConfig.IsEnable!);
-
-                AddOrUpdateRecurringJob(existence);
             }
 
             await _dbContext.SaveChangesAsync();

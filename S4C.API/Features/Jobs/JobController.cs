@@ -12,11 +12,7 @@ namespace C4S.API.Features.Jobs
         {
             var result = await Mediator.Send(new GetJobs.Query());
 
-            var response = result.Length == 0
-                ? (ActionResult<GetJobs.ResponseViewModel[]>)NoContent()
-                : (ActionResult<GetJobs.ResponseViewModel[]>)Ok(result);
-
-            return response;
+            return Ok(result);
         }
 
         [HttpPost("UpdateAllJobs")]

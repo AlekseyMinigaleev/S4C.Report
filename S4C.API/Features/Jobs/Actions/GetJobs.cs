@@ -19,9 +19,7 @@ namespace C4S.API.Features.Jobs.Actions
 
             public HangfireJobTypeEnum JobType { get; set; }
 
-            public string CronExpression { get; set; }
-
-            public string Frequency { get; set; }
+            public string? CronExpression { get; set; }
 
             public bool IsEnable { get; set; }
         }

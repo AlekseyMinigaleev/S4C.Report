@@ -4,8 +4,8 @@ namespace C4S.Services.Interfaces
 {
     public interface IBackGroundJobService
     {
-        public Task AddOrUpdateAllRecurringJobAsync(HangfireJobConfigurationModel? jobConfig = null);
+        public Task AddMissingHangfirejobs();
 
-        public Task AddOrUpdateRecurringJobAsync(HangfireJobConfigurationModel jobConfig);
+        public Task UpdateRecurringJobAsync(HangfireJobConfigurationModel jobConfig);
     }
 }
