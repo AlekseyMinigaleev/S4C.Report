@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using S4C.DB;
+using C4S.DB;
 
 #nullable disable
 
-namespace S4C.DB.Migrations
+namespace C4S.DB.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
     [Migration("20230811100740_InitialCreate")]

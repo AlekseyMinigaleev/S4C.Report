@@ -1,4 +1,4 @@
-﻿namespace S4C.DB.Enums
+﻿namespace C4S.DB.Enums
 {
     public enum GameStatus
     {

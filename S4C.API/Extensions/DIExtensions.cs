@@ -1,10 +1,10 @@
-﻿using Hangfire;
+﻿using C4S.DB;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using S4C.DB;
 
-namespace S4C.API.Extensions
+namespace C4S.API.Extensions
 {
-    public static class DependencyInjectionExtensions
+    public static class DIExtensions
     {
         public static void AddStorage(this IServiceCollection services, ConfigurationManager configuration)
         {

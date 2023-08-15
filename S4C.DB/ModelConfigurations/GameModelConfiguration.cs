@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using S4C.DB.Models;
+using C4S.DB.Models;
 
-namespace S4C.DB.ModelConfigurations
+namespace C4S.DB.ModelConfigurations
 {
-    public class GameConfiguration : IEntityTypeConfiguration<GameModel>
+    public class GameModelConfiguration : IEntityTypeConfiguration<GameModel>
     {
         public void Configure(EntityTypeBuilder<GameModel> builder)
         {
