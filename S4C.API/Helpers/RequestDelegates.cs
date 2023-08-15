@@ -1,16 +1,13 @@
-﻿
-using C4S.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
+﻿using C4S.Services.Interfaces;
 
-namespace C4S.ApiHelpers.Helpers
+namespace С4S.API.Helpers
 {
-    public static class RequestDelegates
+    public class RequestDelegates
     {
         public static RequestDelegate InitMissingHangfireJobs =>
             async context =>
             {
-                var service = context.RequestServices.GetService<IBackGroundJobService>() 
+                var service = context.RequestServices.GetService<IBackGroundJobService>()
                     ?? throw new ArgumentNullException(nameof(IBackGroundJobService));
                 await service.AddMissingHangfirejobs();
             };

@@ -4,7 +4,7 @@ using C4S.API.Extensions;
 using C4S.Services.Extensions;
 using C4S.ApiHelpers.Helpers.Swagger;
 using FluentValidation;
-using C4S.ApiHelpers.Helpers;
+using С4S.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,25 +25,21 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 var app = builder.Build();
 
 #region middleware
-app.UseSwagger();
-app.UseSwaggerUI();
 
-app.UseHangfireDashboard();
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-//TODO: похоже на очень жесткий костыль, но я пока не понимаю как сделать по другому.
-var jobServiceInitialized = false;
-if(!jobServiceInitialized)
+/*TODO: похоже на очень жестки костыль, пока не знаю как исправить*/
+var isJobServiceInitialize = false;
+if (!isJobServiceInitialize)
 {
-    app.Run(RequestDelegates.InitMissingHangfireJobs);
-    jobServiceInitialized = true;
+    isJobServiceInitialize = true;
+    app.UseStartExecutedMiddlewares();
 }
 
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseHangfireDashboard();
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();
 #endregion
