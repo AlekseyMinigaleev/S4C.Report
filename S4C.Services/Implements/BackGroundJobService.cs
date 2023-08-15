@@ -1,5 +1,6 @@
 ﻿using C4S.DB;
 using C4S.DB.Models.Hangfire;
+using C4S.Services.Implements.Parsers;
 using C4S.Services.Interfaces;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
@@ -61,7 +62,7 @@ namespace C4S.Services.Implements
             switch (jobConfig.JobType)
             {
                 case HangfireJobTypeEnum.ParseGameStatisticFromDeveloperPage:
-                    AddOrUpdateRecurringJob<DeveloperPageParser>(
+                    AddOrUpdateRecurringJob<GameStatisticParser>(
                         jobConfig,
                         (service) => service.ParseAsync());
                     break;

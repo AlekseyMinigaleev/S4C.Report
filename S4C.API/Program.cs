@@ -5,6 +5,7 @@ using C4S.Services.Extensions;
 using C4S.ApiHelpers.Helpers.Swagger;
 using FluentValidation;
 using Ñ4S.API.Extensions;
+using C4S.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,5 @@ app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-
 app.Run();
 #endregion
