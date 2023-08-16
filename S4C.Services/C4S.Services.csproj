@@ -18,4 +18,8 @@
     <ProjectReference Include="..\S4C.DB\C4S.DB.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
+
 </Project>

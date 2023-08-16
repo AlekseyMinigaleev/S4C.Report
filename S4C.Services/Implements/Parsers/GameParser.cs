@@ -1,116 +1,151 @@
-﻿using AngleSharp.Dom;
+﻿using AngleSharp;
+using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using C4S.Services.Interfaces;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
-using OpenQA.Selenium;
-using AngleSharp;
 using C4S.DB;
-using C4S.Services.Implements.Parsers.ViewModels;
-using С4S.API.Extensions;
-using C4S.DB.Enums;
 using C4S.DB.Models;
+using C4S.Services.Helpers;
+using C4S.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace C4S.Services.Implements.Parsers
 {
     public class GameParser : IParser
     {
         private readonly IBrowsingContext _browsingContext;
+        private readonly ILogger<GameParser> _logger;
         private readonly ReportDbContext _dbcontext;
+        private readonly IDetailedGameInfoParser _detailedGameInfoParser;
+
         private const string GameDeveloperPageUrl = "https://yandex.ru/games/developer?name=C4S.SHA";
-        private const string GameBaseUrl = "https://yandex.ru/games/developer?name=C4S.SHA#app=";
-
-
         /*TODO: возможно это как то можно сделать через DI*/
-        /*TODO: добавить логер*/
 
-        public GameParser(ReportDbContext dbContext)
+        public GameParser(
+            ReportDbContext dbContext,
+            ILogger<GameParser> logger,
+            IDetailedGameInfoParser detailedGameInfoParser)
         {
+            _dbcontext = dbContext;
+            _logger = logger;
+            _detailedGameInfoParser = detailedGameInfoParser;
+
             var config = Configuration.Default.WithDefaultLoader();
             _browsingContext = BrowsingContext.New(config);
-            _dbcontext = dbContext;
         }
 
         public async Task ParseAsync()
         {
-            var gameList = await GetGameListAsync();
+            // подразумевается 2 вида ошибок:
+            // ArgumentNullException - все нормально это особенность конкретной страницы разработчика
+            // Exception - баг, нужно вмешательство разработчика.
+            var finalLogMessage = "Процесс успешно завершен";
+            var logLevel = LogLevel.Information;
+            try
+            {
+                _logger.LogInformation($"Запущен процесс парсинга игр");
+                await Run();
+            }
+            catch (ArgumentNullException e)
+            {
+                finalLogMessage = $"процесс завершен:{e.Message}";
+                logLevel = LogLevel.Warning;
+            }
+            catch (Exception e)
+            {
+                finalLogMessage = $"Процесс завершен с ошибкой: {e.Message}";
+                logLevel = LogLevel.Error;
+            }
+            finally
+            {
+                _logger.Log(logLevel, finalLogMessage);
+            }
         }
 
-        private async Task<IHtmlCollection<IElement>> GetGameListAsync()
+        private async Task Run()
         {
-            var document = await _browsingContext.OpenAsync(GameDeveloperPageUrl);
+            _logger.LogInformation($"Начало получения игр как html элементов");
+            var gameElements = await ParseGames(GameDeveloperPageUrl);
+            _logger.LogInformation($"Получено элементов: {gameElements.Count()}");
 
-            var gridList = document.QuerySelector(".grid-list");
+            _logger.LogInformation($"Начало обработки всех элементов");
+            await ElementsProcessing(gameElements);
+            _logger.LogInformation($"все элементы обработаны");
+        }
+
+        private async Task ElementsProcessing(IHtmlCollection<IElement> gameElements)
+        {
+            var processedElementIndex = 1;
+            foreach (var gameElement in gameElements)
+            {
+                _logger.LogInformation($"[{processedElementIndex}]: получение Id игры");
+                var stringGameId = GetGameIdAsString(gameElement);
+                _logger.LogInformation($"[{processedElementIndex}]: Id игры получено");
+
+                _logger.LogInformation($"[{processedElementIndex}]: получение детальной информации об игре");
+                _detailedGameInfoParser.SetUrl(stringGameId);
+                var gameModel = _detailedGameInfoParser.GetDetailedGameInfo();
+                _logger.LogInformation($"[{processedElementIndex}]: детальная информация об игре получена");
+
+                await AddOrUpdateAsync(gameModel, processedElementIndex);
+
+                _logger.LogInformation($"[{processedElementIndex}]: обработан");
+            }
+
+            /*TODO: проверить, обновится так или нет*/
+            _logger.LogInformation($"[{processedElementIndex}]: начало обновления бд");
+            await _dbcontext.SaveChangesAsync();
+            _logger.LogInformation($"[{processedElementIndex}]: бд обновлена ");
+        }
+
+        private async Task<IHtmlCollection<IElement>> ParseGames(string gameDeveloperPageUrl)
+        {
+            var document = await _browsingContext.OpenAsync(gameDeveloperPageUrl);
+
+            var gridList = document
+                .QuerySelector(".grid-list")
+                ?? throw new ArgumentNullException($"На странице {gameDeveloperPageUrl} нет игр");
 
             var children = gridList.Children;
-
             return children;
         }
 
-        private async Task<List<string>> GetGameUrlsAsync(IHtmlCollection<IElement> elements)
+        private string GetGameIdAsString(IElement element)
         {
-            var gameUrls = new List<string>();
+            var gameUrlElement = element
+                .QuerySelector(".game-url") as IHtmlAnchorElement;
 
-            foreach (var item in elements)
-            {
-                var gameUrlElement = item.QuerySelector(".game-url") as IHtmlAnchorElement;
-                var path = gameUrlElement.PathName;
-                int lastIndex = path.LastIndexOf("\\");
-                string gameId = path.Substring(lastIndex + 1);
-                await GetGame(gameId);
-            }
+            ParsersHelpers.ThrowIfNull(gameUrlElement, "У элемента отсутствует ссылка на игру");
 
-            return gameUrls;
+            var path = gameUrlElement!.PathName;
+
+            var gameId = GetId(path);
+
+            return gameId;
         }
 
-        private async Task GetGame(string gameId)
+        private string GetId(string path)
         {
-            var gameUrl = $"{GameBaseUrl}{gameId}";
-
-            using IWebDriver driver = new ChromeDriver();
-            driver.Navigate().GoToUrl(gameUrl);
-            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
-
-            var gameTitleElement = wait.Until(drv => drv.FindElement(By.CssSelector(".game-page__title")));
-            var gameFeaturesItems = wait.Until(drv => drv.FindElements(By.CssSelector(".game-features__item")));
-
-            var publicationDateElement = gameFeaturesItems
-                .Where(x => x.FindElement(By.CssSelector(".game-features__name")).Text == "Дата выхода")
-                .Single();
-
-            var gameInfoAsString = new GameInfoAsStrng
-            {
-                Id = gameId,
-                Name = gameTitleElement.Text,
-                Status = "1",
-                PublicationDate = publicationDateElement.Text,
-            };
-
-            await UpdateDB(gameInfoAsString);
+            var lastIndex = path.LastIndexOf("/");
+            var gameId = path[(lastIndex + 1)..];
+            return gameId;
         }
 
-        private async Task UpdateDB(GameInfoAsStrng gameInfoAsStrng)
+        private async Task AddOrUpdateAsync(GameModel game, int processingElementIndex)
         {
-            var gameId = int.Parse(gameInfoAsStrng.Id);
-            DateTimeExtenstions.TryParseYandexDate(gameInfoAsStrng.PublicationDate, out var result);
-            var publicationDate = result;
-            var gamestatus = int.Parse(gameInfoAsStrng.Status);
+            var existingGame = await _dbcontext.GameModels.SingleOrDefaultAsync(x => x.Id == game.Id);
 
-            var a = await _dbcontext.GameModels.SingleOrDefaultAsync(x => x.Id == gameId);
-
-            if(a is null)
+            if (existingGame is null)
             {
-                var gameModel = new GameModel(gameId, gameInfoAsStrng.Name, (DateTime)result);
-
-                _dbcontext.GameModels.Add(gameModel);
+                _dbcontext.GameModels.Add(game);
+                _logger.LogInformation($"[{processingElementIndex}] Игра помечена как добавляемая в бд");
             }
             else
             {
-                a.Update(gameInfoAsStrng.Name, (DateTime)result);
+                existingGame.Update(game.Name, game.PublicationDate);
+                _logger.LogInformation($"[{processingElementIndex}] Игра помечена как обновляемая в бд");
             }
-
-            await _dbcontext.SaveChangesAsync();
         }
     }
 }
