@@ -4,6 +4,9 @@ using C4S.API.Extensions;
 using C4S.Services.Extensions;
 using C4S.ApiHelpers.Helpers.Swagger;
 using FluentValidation;
+using C4S.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using C4S.DB;
 using С4S.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,19 +27,14 @@ var app = builder.Build();
 #region middleware
 
 /*TODO: похоже на очень жестки костыль, пока не знаю как исправить*/
-var isJobServiceInitialize = false;
-if (!isJobServiceInitialize)
-{
-    isJobServiceInitialize = true;
-    app.UseStartExecutedMiddlewares();
-}
-
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+await app.InitApplicationAsync();
 
 app.Run();
 #endregion
