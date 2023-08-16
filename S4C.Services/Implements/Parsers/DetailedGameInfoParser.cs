@@ -1,9 +1,11 @@
-﻿using C4S.DB.Models;
+﻿using AngleSharp.Html.Dom.Events;
+using C4S.DB.Models;
 using C4S.Services.Helpers;
 using C4S.Services.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using System.Net.WebSockets;
 using С4S.API.Extensions;
 
 namespace C4S.Services.Implements.Parsers
@@ -30,6 +32,7 @@ namespace C4S.Services.Implements.Parsers
 
         public GameModel GetDetailedGameInfo()
         {
+           // тут почему то объкты диспосятся, если делать все в 1 методе то ве работает мб надо синхронизовать потоки
             var (gameTitleElement, gameFeaturesElements) = ParseDetailedGameInfo(DetailedGameUrl);
 
             ParsersHelpers.ThrowIfNull(gameTitleElement, "Не удалось получить название игры");
@@ -46,13 +49,21 @@ namespace C4S.Services.Implements.Parsers
             throw new NotImplementedException();
         }
 
+        private static void WaitForPageLoad(IWebDriver driver)
+        {
+            var wait = new WebDriverWait( driver, TimeSpan.FromMinutes(10));
+            wait.Until(webDriver => ((IJavaScriptExecutor)webDriver).ExecuteScript("return document.readyState").Equals("complete"));
+        }
+
         private (IWebElement?, IReadOnlyCollection<IWebElement?>) ParseDetailedGameInfo(string gameUrl)
         {
             using IWebDriver driver = new ChromeDriver();
             driver.Navigate().GoToUrl(gameUrl);
-            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
-            var gameTitleElement = wait.Until(drv => drv.FindElement(By.CssSelector(".game-page__title")));
-            var gameFeaturesElements = wait.Until(drv => drv.FindElements(By.CssSelector(".game-features__item")));
+            // проверить
+            WaitForPageLoad(driver);
+            //var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
+            var gameTitleElement = driver.FindElement(By.CssSelector(".game-page__title"));
+            var gameFeaturesElements = driver.FindElements(By.CssSelector(".game-features__item"));
 
             return (gameTitleElement, gameFeaturesElements);
         }
