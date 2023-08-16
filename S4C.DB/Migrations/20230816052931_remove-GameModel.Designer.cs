@@ -4,6 +4,7 @@ using C4S.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace C4S.DB.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
-    partial class ReportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230816052931_remove-GameModel")]
+    partial class removeGameModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,26 +24,6 @@ namespace C4S.DB.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("C4S.DB.Models.GameModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("PublicationDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Game", (string)null);
-                });
 
             modelBuilder.Entity("C4S.DB.Models.GamesStatisticModel", b =>
                 {
@@ -51,21 +34,13 @@ namespace C4S.DB.Migrations
                     b.Property<double?>("Evaluation")
                         .HasColumnType("float");
 
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("LastSynchroDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("PlayersCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("GameId");
 
                     b.ToTable("GameStatistic", (string)null);
                 });
@@ -84,22 +59,6 @@ namespace C4S.DB.Migrations
                     b.HasKey("JobType");
 
                     b.ToTable("HangfireJobConfiguration", (string)null);
-                });
-
-            modelBuilder.Entity("C4S.DB.Models.GamesStatisticModel", b =>
-                {
-                    b.HasOne("C4S.DB.Models.GameModel", "Game")
-                        .WithMany("GameStatistics")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Game");
-                });
-
-            modelBuilder.Entity("C4S.DB.Models.GameModel", b =>
-                {
-                    b.Navigation("GameStatistics");
                 });
 #pragma warning restore 612, 618
         }

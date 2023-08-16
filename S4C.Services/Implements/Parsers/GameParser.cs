@@ -107,7 +107,7 @@ namespace C4S.Services.Implements.Parsers
             }
             else
             {
-                a.Update(gameInfoAsStrng.Name, (DateTime)result, (GameStatus) gamestatus);
+                a.Update(gameInfoAsStrng.Name, (DateTime)result);
             }
 
             await _dbcontext.SaveChangesAsync();
