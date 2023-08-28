@@ -4,19 +4,18 @@
     {
         public int Id { get; private set; }
 
-        public string Name { get; private set; }
+        public string? Name { get; private set; }
 
-        public DateTime PublicationDate { get; private set; }
+        public DateTime? PublicationDate { get; private set; }
 
         public ISet<GamesStatisticModel> GameStatistics { get; private set; }
 
         private GameModel()
         { }
 
-        public GameModel(int id, string name, DateTime publicationDate)
+        public GameModel(int id)
         {
             Id = id;
-            Update(name, publicationDate);
         }
 
         public void Update(string name, DateTime publicationDate)

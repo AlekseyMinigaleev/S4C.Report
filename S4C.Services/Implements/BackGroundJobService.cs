@@ -60,7 +60,7 @@ namespace C4S.Services.Implements
         {
             switch (jobConfig.JobType)
             {
-                case HangfireJobTypeEnum.ParseGameStatisticFromDeveloperPage:
+                case HangfireJobTypeEnum.ParseGameIdsFromDeveloperPage:
                     AddOrUpdateRecurringJob<IParser>(
                         jobConfig,
                         (service) => service.ParseAsync());

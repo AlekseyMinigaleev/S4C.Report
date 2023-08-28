@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace C4S.DB.Migrations
 {
     /// <inheritdoc />
-    public partial class addGameModelwithinttypeforidandreplacestatusfromgameModeltoGameStatisticModel : Migration
+    public partial class updateIDENTITY_INSERTtoONandupdatenullablefildsinGameModel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,10 +29,9 @@ namespace C4S.DB.Migrations
                 name: "Game",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PublicationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PublicationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {

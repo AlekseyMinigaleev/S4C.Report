@@ -25,16 +25,12 @@ namespace C4S.DB.Migrations
             modelBuilder.Entity("C4S.DB.Models.GameModel", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PublicationDate")
+                    b.Property<DateTime?>("PublicationDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");

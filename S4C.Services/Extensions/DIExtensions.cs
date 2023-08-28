@@ -10,8 +10,8 @@ namespace C4S.Services.Extensions
         public static void AddServices(this IServiceCollection services)
         {
             services.AddTransient<IBackGroundJobService, BackGroundJobService>();
-            services.AddTransient<IParser, GameParser>();
-            services.AddTransient<IDetailedGameInfoParser, DetailedGameInfoParser>();
+            services.AddTransient<IParser, GameIdParser>();
+            //services.AddTransient<IDetailedGameInfoParser, DetailedGameInfoParser>();
         }
     }
 }

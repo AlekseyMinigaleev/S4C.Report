@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace C4S.DB.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
-    [Migration("20230816053514_add-GameModel-with-int-type-for-id-and-replace-status-from-gameModel-to-GameStatisticModel")]
-    partial class addGameModelwithinttypeforidandreplacestatusfromgameModeltoGameStatisticModel
+    [Migration("20230828064959_update-IDENTITY_INSERT-to-ON-and-update-nullable-filds-in-GameModel")]
+    partial class updateIDENTITY_INSERTtoONandupdatenullablefildsinGameModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,16 +28,12 @@ namespace C4S.DB.Migrations
             modelBuilder.Entity("C4S.DB.Models.GameModel", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PublicationDate")
+                    b.Property<DateTime?>("PublicationDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
