@@ -5,7 +5,7 @@ using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace C4S.Services.Implements
+namespace C4S.Services.Implements.Parsers
 {
     public class BackGroundJobService : IBackGroundJobService
     {
@@ -65,7 +65,11 @@ namespace C4S.Services.Implements
                         jobConfig,
                         (service) => service.ParseAsync());
                     break;
-
+                case HangfireJobTypeEnum.SyncGameInfoAndGameCreateGameStatistic:
+                    AddOrUpdateRecurringJob<IGetGameDataService>(
+                        jobConfig,
+                        (service) => service.GetAllGameDataAsync());
+                    break;
                 default:
                     break;
             }

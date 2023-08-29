@@ -9,7 +9,9 @@
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="1.0.4" />
     <PackageReference Include="Hangfire.Core" Version="1.8.4" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="ncrontab" Version="3.3.1" />
+    <PackageReference Include="Polly" Version="7.2.4" />
     <PackageReference Include="Selenium.Support" Version="4.11.0" />
     <PackageReference Include="Selenium.WebDriver" Version="4.11.0" />
   </ItemGroup>

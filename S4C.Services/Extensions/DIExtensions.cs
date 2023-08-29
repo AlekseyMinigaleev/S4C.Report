@@ -1,5 +1,4 @@
-﻿using C4S.Services.Implements;
-using C4S.Services.Implements.Parsers;
+﻿using C4S.Services.Implements.Parsers;
 using C4S.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +10,7 @@ namespace C4S.Services.Extensions
         {
             services.AddTransient<IBackGroundJobService, BackGroundJobService>();
             services.AddTransient<IParser, GameIdParser>();
-            //services.AddTransient<IDetailedGameInfoParser, DetailedGameInfoParser>();
+            services.AddTransient<IGetGameDataService,GetGameDataService>();
         }
     }
 }

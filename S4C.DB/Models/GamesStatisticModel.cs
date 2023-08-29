@@ -1,6 +1,4 @@
-﻿using C4S.DB.Enums;
-
-namespace C4S.DB.Models
+﻿namespace C4S.DB.Models
 {
     public class GamesStatisticModel
     {
@@ -8,9 +6,13 @@ namespace C4S.DB.Models
         
         public int GameId { get; private set; }
         public GameModel Game { get; private set; }
-        
-        public GameStatus Status { get; private set; }
-        
+
+        /*TODO: сделать отдельную таблицу*/
+        #region game statuses
+        public bool IsNew { get; private set; }
+        public bool IsPromoted { get; private set; }
+        #endregion 
+
         public double? Evaluation { get; private set; }
         
         public int PlayersCount { get; private set; }
@@ -22,13 +24,24 @@ namespace C4S.DB.Models
 
         public GamesStatisticModel(GameModel game,
             int playersCount,
-            GameStatus status,
+            bool isNew,
+            bool isPromoted,
             DateTime lastSynchroDate,
             double? evaluation = default)
         {
             GameId = game.Id;
             Game = game;
-            Status = status;
+            Update(playersCount, isNew, isPromoted, lastSynchroDate, evaluation);
+        }
+
+        public void Update(int playersCount,
+            bool isNew,
+            bool isPromoted,
+            DateTime lastSynchroDate,
+            double? evaluation = default)
+        {
+            IsNew = isNew;
+            IsPromoted = isPromoted;
             PlayersCount = playersCount;
             LastSynchroDate = lastSynchroDate;
             Evaluation = evaluation;

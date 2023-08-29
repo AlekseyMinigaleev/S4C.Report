@@ -16,4 +16,8 @@
     <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="7.22.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Enums\" />
+  </ItemGroup>
+
 </Project>

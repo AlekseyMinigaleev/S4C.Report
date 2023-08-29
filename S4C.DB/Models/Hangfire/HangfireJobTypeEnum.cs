@@ -7,8 +7,8 @@ namespace C4S.DB.Models.Hangfire
 		[Display(Name = "Парсинг id игр со страницы разработчика")]
 		ParseGameIdsFromDeveloperPage,
 
-		[Display(Name = "Парсинг игровой статистики со страницы разработчика")]
-		ParseGameStatisticFromDeveloperPage,
+		[Display(Name = "получение всех данных по играм")]
+		SyncGameInfoAndGameCreateGameStatistic,
 
 		/*TODO: изменить нейминг после уточнения*/
 		[Display(Name = "Парсинг денег")]
