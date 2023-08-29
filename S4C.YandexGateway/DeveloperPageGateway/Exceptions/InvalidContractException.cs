@@ -1,6 +1,6 @@
-﻿namespace C4S.Services.Implements.Parsers.Exceptions
+﻿namespace S4C.YandexGateway.DeveloperPageGateway.Exceptions
 {
-    public class InvalidContractException:Exception
+    public class InvalidContractException : Exception
     {
         public string JsonString { get; private set; }
         public string? Key { get; private set; }

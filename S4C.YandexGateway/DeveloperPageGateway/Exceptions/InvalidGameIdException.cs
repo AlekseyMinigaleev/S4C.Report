@@ -1,4 +1,4 @@
-﻿namespace C4S.Services.Implements.Parsers.Exceptions
+﻿namespace S4C.YandexGateway.DeveloperPageGateway.Exceptions
 {
     public class InvalidGameIdException : Exception
     {
