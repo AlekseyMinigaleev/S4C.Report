@@ -1,30 +1,27 @@
-﻿using C4S.DB.Enums;
-
-namespace C4S.DB.Models
+﻿namespace C4S.DB.Models
 {
     public class GameModel
     {
-        public Guid Id { get; private set; }
+        public int Id { get; private set; }
 
-        public string Name { get; private set; }
+        public string? Name { get; private set; }
 
-        public GameStatus Status { get; private set; }
+        public DateTime? PublicationDate { get; private set; }
 
-        public DateTime PublicationDate { get; private set; }
-
-        public ISet<GamesStatisticModel> GameStatistics { get; private set; }
+        public ISet<GameStatisticModel> GameStatistics { get; private set; }
 
         private GameModel()
         { }
 
-        public GameModel(string name, DateTime publicationDate)
+        public GameModel(int id)
         {
-            Id = Guid.NewGuid();
-            Name = name;
-            PublicationDate = publicationDate;
-            Status = GameStatus.New;
+            Id = id;
         }
 
-        public void UpdateStatus(GameStatus status) => Status = status;
+        public void Update(string name, DateTime publicationDate)
+        {
+            Name = name;
+            PublicationDate = publicationDate;
+        }
     }
 }

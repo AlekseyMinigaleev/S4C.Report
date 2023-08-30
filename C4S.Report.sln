@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C4S.DB", "S4C.DB\C4S.DB.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C4S.Services", "S4C.Services\C4S.Services.csproj", "{74CCFCE8-EA0A-446A-A572-35FEC08FBC3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C4S.ApiHelpers", "C4S.ApiHelpers\C4S.ApiHelpers.csproj", "{292BBEFD-EBF8-4033-A266-BE8C8ECA8748}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C4S.ApiHelpers", "C4S.ApiHelpers\C4S.ApiHelpers.csproj", "{292BBEFD-EBF8-4033-A266-BE8C8ECA8748}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S4C.YandexGateway", "S4C.YandexGateway\S4C.YandexGateway.csproj", "{57D3931B-D94A-431E-8E95-E04C0EBC7868}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{292BBEFD-EBF8-4033-A266-BE8C8ECA8748}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{292BBEFD-EBF8-4033-A266-BE8C8ECA8748}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{292BBEFD-EBF8-4033-A266-BE8C8ECA8748}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57D3931B-D94A-431E-8E95-E04C0EBC7868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57D3931B-D94A-431E-8E95-E04C0EBC7868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57D3931B-D94A-431E-8E95-E04C0EBC7868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57D3931B-D94A-431E-8E95-E04C0EBC7868}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

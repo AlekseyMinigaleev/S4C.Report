@@ -4,20 +4,21 @@ using C4S.API.Extensions;
 using C4S.Services.Extensions;
 using C4S.ApiHelpers.Helpers.Swagger;
 using FluentValidation;
-using C4S.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using C4S.DB;
 using Ñ4S.API.Extensions;
+using S4C.YandexGateway.DeveloperPageGateway;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #region services
+builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => options.CustomSchemaIds(RenameSchemaClassesId.Selector));
 builder.Services.AddStorage(builder.Configuration);
 builder.Services.AddMediatR(typeof(Program));
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(
+    typeof(Program),
+    typeof(IDeveloperPageGetaway)); 
 builder.Services.AddServices();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 #endregion

@@ -4,8 +4,8 @@
     /// <summary>
     /// TODO: пока не используется т.к. сложно оценить какой вид будет у этого интерфейсв
     /// </summary>
-    public interface IParser
+    public interface IGameIdService
     {
-        public Task ParseAsync();
+        public Task GetAllGameIdAsync();
     }
 }

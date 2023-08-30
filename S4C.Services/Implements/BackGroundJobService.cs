@@ -60,12 +60,16 @@ namespace C4S.Services.Implements
         {
             switch (jobConfig.JobType)
             {
-                case HangfireJobTypeEnum.ParseGameStatisticFromDeveloperPage:
-                    AddOrUpdateRecurringJob<DeveloperPageParser>(
+                case HangfireJobTypeEnum.ParseGameIdsFromDeveloperPage:
+                    AddOrUpdateRecurringJob<IGameIdService>(
                         jobConfig,
-                        (service) => service.ParseAsync());
+                        (service) => service.GetAllGameIdAsync());
                     break;
-
+                case HangfireJobTypeEnum.SyncGameInfoAndGameCreateGameStatistic:
+                    AddOrUpdateRecurringJob<IGameDataService>(
+                        jobConfig,
+                        (service) => service.GetAllGameDataAsync());
+                    break;
                 default:
                     break;
             }
