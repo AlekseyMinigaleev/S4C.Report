@@ -4,9 +4,9 @@ using C4S.DB.Models;
 
 namespace C4S.DB.ModelConfigurations
 {
-    public class GameStatisticModelConfiguration : IEntityTypeConfiguration<GamesStatisticModel>
+    public class GameStatisticModelConfiguration : IEntityTypeConfiguration<GameStatisticModel>
     {
-        public void Configure(EntityTypeBuilder<GamesStatisticModel> builder)
+        public void Configure(EntityTypeBuilder<GameStatisticModel> builder)
         {
             builder.ToTable("GameStatistic")
                 .HasKey(x => x.Id);

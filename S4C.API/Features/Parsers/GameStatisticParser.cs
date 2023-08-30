@@ -11,15 +11,15 @@ namespace С4S.API.Features.Parsers
         public class Handler : IRequestHandler<Query, int>
         {
 
-            private readonly IParser _parser;
-            public Handler(IParser parser )
+            private readonly IGameIdService _parser;
+            public Handler(IGameIdService parser )
             {
                 _parser = parser;
             }
 
             public async Task<int> Handle(Query request, CancellationToken cancellationToken)
             {
-                await _parser.ParseAsync();
+                await _parser.GetAllGameIdAsync();
 
                 return 2;
             }

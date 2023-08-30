@@ -1,6 +1,6 @@
 ﻿using S4C.YandexGateway.DeveloperPageGateway.Models;
 
-namespace S4C.YandexGateway.DeveloperPageGateway.Interfaces
+namespace S4C.YandexGateway.DeveloperPageGateway
 {
     public interface IDeveloperPageGetaway
     {

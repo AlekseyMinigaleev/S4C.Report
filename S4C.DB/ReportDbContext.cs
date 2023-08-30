@@ -11,7 +11,7 @@ namespace C4S.DB
 
         public DbSet<GameModel> GameModels { get; set; }
 
-        public DbSet<GamesStatisticModel> GamesStatisticModels { get; set; }
+        public DbSet<GameStatisticModel> GamesStatisticModels { get; set; }
 
         public DbSet<HangfireJobConfigurationModel> HangfireConfigurationModels { get; set; }
 

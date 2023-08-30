@@ -8,7 +8,7 @@
 
         public DateTime? PublicationDate { get; private set; }
 
-        public ISet<GamesStatisticModel> GameStatistics { get; private set; }
+        public ISet<GameStatisticModel> GameStatistics { get; private set; }
 
         private GameModel()
         { }

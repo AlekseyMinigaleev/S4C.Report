@@ -1,6 +1,6 @@
 ﻿namespace C4S.DB.Models
 {
-    public class GamesStatisticModel
+    public class GameStatisticModel
     {
         public Guid Id { get; private set; }
         
@@ -19,10 +19,10 @@
         
         public DateTime LastSynchroDate { get; private set; }
 
-        private GamesStatisticModel()
+        private GameStatisticModel()
         { }
 
-        public GamesStatisticModel(GameModel game,
+        public GameStatisticModel(GameModel game,
             int playersCount,
             bool isNew,
             bool isPromoted,
@@ -31,15 +31,6 @@
         {
             GameId = game.Id;
             Game = game;
-            Update(playersCount, isNew, isPromoted, lastSynchroDate, evaluation);
-        }
-
-        public void Update(int playersCount,
-            bool isNew,
-            bool isPromoted,
-            DateTime lastSynchroDate,
-            double? evaluation = default)
-        {
             IsNew = isNew;
             IsPromoted = isPromoted;
             PlayersCount = playersCount;

@@ -4,23 +4,22 @@ using C4S.Services.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
+using S4C.YandexGateway.DeveloperPageGateway;
 using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
-using S4C.YandexGateway.DeveloperPageGateway.Interfaces;
 
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
-namespace C4S.Services.Implements.Parsers
+namespace C4S.Services.Implements
 {
-    public class GameIdParser : IParser
+    public class GameIdService : IGameIdService
     {
-        private readonly ILogger<GameIdParser> _logger;
+        private readonly ILogger<GameIdService> _logger;
         private readonly IDeveloperPageGetaway _developerPageGetaway;
         private readonly ReportDbContext _dbcontext;
 
-        public GameIdParser(
+        public GameIdService(
             ReportDbContext dbContext,
-            ILogger<GameIdParser> logger,
+            ILogger<GameIdService> logger,
             IDeveloperPageGetaway developerPageGetaway)
         {
             _dbcontext = dbContext;
@@ -28,7 +27,7 @@ namespace C4S.Services.Implements.Parsers
             _developerPageGetaway = developerPageGetaway;
         }
 
-        public async Task ParseAsync()
+        public async Task GetAllGameIdAsync()
         {
             var finalLogMessage = "процесс успешно завершен";
             var errorLogMessage = "процесс завершен c ошибкой: ";
@@ -65,7 +64,7 @@ namespace C4S.Services.Implements.Parsers
             /*TODO: поправить логи*/
             _logger.LogInformation($"получение id игр");
             var gameIds = await _developerPageGetaway.GetGameIdsAsync();
-            _logger.LogInformation($"получено {gameIds.Length} id игр");
+            _logger.LogInformation($"успешно получено id: {gameIds.Length}");
 
             /*TODO: поправить логи*/
             _logger.LogInformation($"начало обработки всех id");
@@ -74,14 +73,12 @@ namespace C4S.Services.Implements.Parsers
         }
 
         private async Task ProcessingIncomingGameIds(int[] gameIds)
-        {            
+        {
             var countOfMissingGames = 0;
             foreach (var gameId in gameIds)
             {
-                _logger.LogInformation($"[{gameId}] начало обработки");
-                var increment = await ProcessingIncomingId(gameId);
+                var increment = await ProcessingIncomingIdAsync(gameId);
                 countOfMissingGames += increment;
-
             }
             _logger.LogInformation($"начло добавления {countOfMissingGames}, записей в базу данных");
             await _dbcontext.SaveChangesAsync();
@@ -89,16 +86,20 @@ namespace C4S.Services.Implements.Parsers
         }
 
         // этот метод возвращает инкремент для переменной countOfMissingGame
-        private async Task<int> ProcessingIncomingId(int gameId)
+        private async Task<int> ProcessingIncomingIdAsync(int gameId)
         {
-            var existingGameIds = _dbcontext.GameModels.Select(x => x.Id);
-            var isExistingGame = await existingGameIds.ContainsAsync(gameId);
+            var existingGameIds = _dbcontext.GameModels
+                .Select(x => x.Id);
 
-            if(!isExistingGame)
+            var isExistingGame = await existingGameIds
+                .ContainsAsync(gameId);
+
+            if (!isExistingGame)
             {
                 _logger.LogInformation($"[{gameId}] id игры не содержится в базе данных");
                 var gameModel = new GameModel(gameId);
-                await _dbcontext.GameModels.AddAsync(gameModel);
+                await _dbcontext.GameModels
+                    .AddAsync(gameModel);
                 _logger.LogInformation($"[{gameId}] id игры помечено на добавление в базу данных");
 
                 // если игра не содержится в бд, увеличиваем countOfMissingGame

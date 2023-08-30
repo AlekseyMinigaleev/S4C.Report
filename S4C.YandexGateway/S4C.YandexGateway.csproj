@@ -8,8 +8,17 @@
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="1.0.4" />
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\S4C.DB\C4S.DB.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DeveloperPage\Implements\" />
   </ItemGroup>
 
 </Project>

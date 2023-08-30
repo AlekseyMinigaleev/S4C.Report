@@ -2,7 +2,7 @@
 
 namespace C4S.Services.Interfaces
 {
-    public interface IGetGameDataService
+    public interface IGameDataService
     {
         public Task GetAllGameDataAsync();
     }

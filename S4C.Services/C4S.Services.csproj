@@ -20,8 +20,4 @@
     <ProjectReference Include="..\S4C.YandexGateway\S4C.YandexGateway.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Exceptions\" />
-  </ItemGroup>
-
 </Project>
