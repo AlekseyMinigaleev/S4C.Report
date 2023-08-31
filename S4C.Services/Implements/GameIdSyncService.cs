@@ -11,15 +11,16 @@ using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace C4S.Services.Implements
 {
-    public class GameIdService : IGameIdService
+    /// <inheritdoc cref="IGameIdSyncService"/>
+    public class GameIdSyncService : IGameIdSyncService
     {
-        private readonly ILogger<GameIdService> _logger;
+        private readonly ILogger<GameIdSyncService> _logger;
         private readonly IDeveloperPageGetaway _developerPageGetaway;
         private readonly ReportDbContext _dbcontext;
 
-        public GameIdService(
+        public GameIdSyncService(
             ReportDbContext dbContext,
-            ILogger<GameIdService> logger,
+            ILogger<GameIdSyncService> logger,
             IDeveloperPageGetaway developerPageGetaway)
         {
             _dbcontext = dbContext;
@@ -27,7 +28,8 @@ namespace C4S.Services.Implements
             _developerPageGetaway = developerPageGetaway;
         }
 
-        public async Task GetAllGameIdAsync(
+        /// <inheritdoc/>
+        public async Task SyncAllGameIdAsync(
             CancellationToken cancellationToken = default)
         {
             var finalLogMessage = "процесс успешно завершен";
