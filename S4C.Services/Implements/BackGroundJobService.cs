@@ -1,8 +1,10 @@
 ﻿using C4S.DB;
 using C4S.DB.Models.Hangfire;
+using C4S.Services.Extensions;
 using C4S.Services.Interfaces;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using NCrontab;
 using System.Linq.Expressions;
 
 namespace C4S.Services.Implements
@@ -16,19 +18,47 @@ namespace C4S.Services.Implements
             _dbContext = dbContext;
         }
 
-        public async Task UpdateRecurringJobAsync(HangfireJobConfigurationModel jobConfig)
+        public async Task UpdateRecurringJobAsync(
+            HangfireJobConfigurationModel updatedJobConfig,
+            CancellationToken cancellationToken = default)
         {
-            var existence = await _dbContext.HangfireConfigurationModels
-                .SingleAsync(x => x.JobType == jobConfig.JobType);
+            var existenceJobConfig = await _dbContext.HangfireConfigurationModels
+                .SingleAsync(x => x.JobType == updatedJobConfig.JobType, cancellationToken);
 
-            existence.Update(jobConfig.CronExpression, jobConfig.IsEnable);
+            var (errorMessage, isValidCron) = IsValidCronExpression(updatedJobConfig.CronExpression);
 
-            AddOrUpdateRecurringJob(existence);
+            //TODO: вынести в спеку?
+            //меняем, потому что мы поддерживаем CronExpression = string.Empty, а hangfire нет
+            if (string.IsNullOrWhiteSpace(updatedJobConfig.CronExpression))
+                updatedJobConfig.Update(null, updatedJobConfig.IsEnable);
 
-            await _dbContext.SaveChangesAsync();
+            if (isValidCron)
+                await UpdateRecurringJobAsync(updatedJobConfig, cancellationToken);
+            else
+                throw new InvalidCronExpression(updatedJobConfig.CronExpression);
+
+            existenceJobConfig.Update(updatedJobConfig.CronExpression, updatedJobConfig.IsEnable);
+
+            AddOrUpdateRecurringJob(existenceJobConfig);
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task AddMissingHangfirejobs()
+        //TODO: уточнить, сейчас пользователь может оставить пустое значение для CronExpression и в таком случае IsEnable = false,
+        //т.е.пользователь не должен иметь возможности седлать IsEnable = false и CronExpression = string.Empty?
+        private static (string?, bool) IsValidCronExpression(string? cronExpression)
+        {
+            /*TODO: проверить случай с cronExpression = string.Empty*/
+            var crontabSchedule = CrontabSchedule.TryParse(cronExpression);
+            var result = crontabSchedule is null;
+
+            return result
+                  ? (null, result) // TODO: уточнить нужно ли сообщение, о том что c пустым CronExpression джоба всегда будет выключена
+                  : ("Invalid cron expression", result);
+        }
+
+        public async Task AddMissingHangfirejobsAsync(
+            CancellationToken cancellationToken = default)
         {
             var existenceJobConfigurations = _dbContext.HangfireConfigurationModels;
 
@@ -39,7 +69,7 @@ namespace C4S.Services.Implements
             foreach (var jobType in jobTypes)
             {
                 var existence = await existenceJobConfigurations
-                    .SingleOrDefaultAsync(x => x.JobType == jobType);
+                    .SingleOrDefaultAsync(x => x.JobType == jobType, cancellationToken);
 
                 if (existence is null)
                 {
@@ -53,7 +83,7 @@ namespace C4S.Services.Implements
                 }
             }
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
         private static void AddOrUpdateRecurringJob(HangfireJobConfigurationModel jobConfig)
@@ -63,13 +93,15 @@ namespace C4S.Services.Implements
                 case HangfireJobTypeEnum.ParseGameIdsFromDeveloperPage:
                     AddOrUpdateRecurringJob<IGameIdService>(
                         jobConfig,
-                        (service) => service.GetAllGameIdAsync());
+                        (service) => service.GetAllGameIdAsync(CancellationToken.None));
                     break;
+
                 case HangfireJobTypeEnum.SyncGameInfoAndGameCreateGameStatistic:
                     AddOrUpdateRecurringJob<IGameDataService>(
                         jobConfig,
-                        (service) => service.GetAllGameDataAsync());
+                        (service) => service.GetAllGameDataAsync(CancellationToken.None));
                     break;
+
                 default:
                     break;
             }

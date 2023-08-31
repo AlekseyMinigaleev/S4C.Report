@@ -2,6 +2,7 @@
 {
     public interface IGameDataService
     {
-        public Task GetAllGameDataAsync();
+        public Task GetAllGameDataAsync(
+            CancellationToken cancellationToken = default);
     }
 }

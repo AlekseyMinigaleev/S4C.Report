@@ -6,17 +6,17 @@ namespace С4S.API.Extensions
 {
     public static class ApplicationBuilderExtensions
     {
-        public static async Task InitApplicationAsync(this WebApplication app)
+        public static async Task InitApplicationAsync(
+            this WebApplication app,
+            CancellationToken cancellationToken = default)
         {
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                var context = services.GetRequiredService<ReportDbContext>();
-                await context.Database.MigrateAsync();
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            var context = services.GetRequiredService<ReportDbContext>();
+            await context.Database.MigrateAsync(cancellationToken);
 
-                var service = services.GetRequiredService<IBackGroundJobService>();
-                await service.AddMissingHangfirejobs();
-            }
+            var service = services.GetRequiredService<IBackGroundJobService>();
+            await service.AddMissingHangfirejobsAsync(cancellationToken);
         }
     }
 }

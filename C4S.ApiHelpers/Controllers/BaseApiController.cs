@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using ControllerBase = Microsoft.AspNetCore.Mvc.ControllerBase;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
@@ -11,15 +11,32 @@ namespace C4S.ApiHelpers.Controllers
     [Route("api/[controller]")]
     public abstract class BaseApiController : ControllerBase
     {
-        private IMediator _mediator;
-        protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
+        protected IMediator Mediator;
 
-        protected async Task ValidateAndChangeModelState<T>(IValidator<T> validator, T instance)
+        public BaseApiController(
+            IMediator mediator)
         {
-            var validationResult = await validator.ValidateAsync(instance);
+            Mediator = mediator;
+        }
+
+        protected async Task ValidateAndChangeModelStateAsync<T>(
+            IValidator<T> validator,
+            T instance,
+            CancellationToken cancellationToken = default)
+        {
+            var validationResult = await validator
+                .ValidateAsync(instance, cancellationToken);
+
             if (!validationResult.IsValid)
-                foreach (var item in validationResult.Errors)
-                    ModelState.AddModelError(item.ErrorCode, item.ErrorMessage);
+                ChangeModelState(validationResult.Errors);
+        }
+
+        private void ChangeModelState(IEnumerable<ValidationFailure> errors)
+        {
+            foreach (var item in errors)
+                ModelState.AddModelError(
+                    item.ErrorCode,
+                    item.ErrorMessage);
         }
     }
 }
