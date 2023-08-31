@@ -81,7 +81,7 @@ namespace C4S.Services.Implements
                 RecurringJob.AddOrUpdate(
                     jobConfig.JobType.ToString(),
                     methodCall,
-                    jobConfig.CronExpression ?? HangfireJobConfigurationConstants.DefaultCronExpression,  /*TODO: сделать проверку на валидность*/
+                    jobConfig.CronExpression ?? HangfireJobConfigurationConstants.DefaultCronExpression,
                     new RecurringJobOptions
                     {
                         TimeZone = TimeZoneInfo.Local
