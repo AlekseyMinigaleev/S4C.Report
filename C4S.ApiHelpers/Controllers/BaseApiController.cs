@@ -7,6 +7,9 @@ using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace C4S.ApiHelpers.Controllers
 {
+    /// <summary>
+    /// Базовый класс для всех контроллеров
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public abstract class BaseApiController : ControllerBase
@@ -19,6 +22,14 @@ namespace C4S.ApiHelpers.Controllers
             Mediator = mediator;
         }
 
+        /// <summary>
+        /// Выполняет валидацию <paramref name="instance"/>
+        /// </summary>
+        /// <remarks>
+        /// Если объект <paramref name="instance"/> не валидным, метод изменяет состояние модели
+        /// </remarks>
+        /// <param name="instance">объект, над которым будет происходит валидация</param>
+        /// <returns></returns>
         protected async Task ValidateAndChangeModelStateAsync<T>(
             IValidator<T> validator,
             T instance,

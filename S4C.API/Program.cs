@@ -15,7 +15,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => 
-    options.CustomSchemaIds(RenameSchemaClassesId.Selector));
+    options.CustomSchemaIds(ShemaClassesIdsRenamer.Selector));
 builder.Services.AddStorage(builder.Configuration);
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssemblies(typeof(Program).GetTypeInfo().Assembly));
