@@ -10,18 +10,22 @@ namespace C4S.API.Features.Jobs.Actions
     {
         public class Command : IRequest<List<ResponseViewModel>>
         {
-            /*TODO: почему я не могу передать HangfireJobModel*/
+            /// <summary>
+            /// <see cref="HangfireJobConfigurationModel"/>[] с обновленными полями
+            /// </summary>
             public HangfireJobConfigurationModel[] UpdatedJobs { get; set; }
         }
 
-        /*TODO: контрукторы для ВМ*/
-
+        /*TODO: конcтрукторы для ВМ*/
         public class ResponseViewModel
         {
+            /// <summary>
+            /// тип джобы
+            /// </summary>
             public HangfireJobTypeEnum JobType { get; set; }
 
             /// <summary>
-            /// Текст возможной ошибки при обновлении HangfireConfigurationModel.
+            /// Текст возможной ошибки при обновлении HangfireConfigurationModel
             /// </summary>
             public string? Error { get; set; }
         }

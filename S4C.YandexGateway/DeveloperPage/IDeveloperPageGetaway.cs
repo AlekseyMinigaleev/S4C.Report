@@ -1,4 +1,5 @@
-﻿using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
+﻿using C4S.DB.Models;
+using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
 using S4C.YandexGateway.DeveloperPageGateway.Models;
 
 namespace S4C.YandexGateway.DeveloperPageGateway
@@ -13,7 +14,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
         /// Возвращает id всех игр со страницы разработчика.
         /// </summary>
         /// <remarks>
-        /// Для получения id всех игр, используется статичный парсинг html документа страницы разработчика.
+        /// Для получения id всех игр, используется статичный парсинг html документа, страницы разработчика.
         /// </remarks>
         /// <returns>
         /// <see cref="int"/>[] представляющих id всех игр на странице разработчика.
@@ -24,11 +25,11 @@ namespace S4C.YandexGateway.DeveloperPageGateway
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Возвращает информацию <paramref name="gameIds"/> игр со страницы разработчика.
+        /// Возвращает <see cref="GameInfo"/>[] со страницы разработчика.
         /// </summary>
-        /// <param name="gameIds"><see cref="int"/>[] представляющих id игр, для которых необходимо получить <see cref="GameInfo"/>[]</param>
+        /// <param name="gameIds">массив id <see cref="GameModel"/>, для которых необходимо получить <see cref="GameInfo"/>[]</param>
         /// <returns>
-        /// <see cref="GameInfo"/>[] с детальной информацией об играх
+        /// <see cref="GameInfo"/>[]
         /// </returns>
         /// <exception cref="HttpRequestException"></exception>
         /// <exception cref="InvalidContractException"></exception>

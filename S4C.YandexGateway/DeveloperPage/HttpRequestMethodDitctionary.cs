@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using C4S.DB.Models;
+using Newtonsoft.Json;
+using S4C.YandexGateway.DeveloperPageGateway.Models;
 using System.Text;
 
 namespace S4C.YandexGateway.DeveloperPageGateway
@@ -13,10 +15,10 @@ namespace S4C.YandexGateway.DeveloperPageGateway
 
         /*TODO: создать словать форматов*/
         /// <summary>
-        /// Создает <see cref="HttpRequestMessage"/> для получения подробной информации об играх.
+        /// Создает <see cref="HttpRequestMessage"/> для получения <see cref="GameInfo"/>.
         /// </summary>
-        /// <param name="appIDs">Массив идентификаторов игр, по которым необходимо получить информацию</param>
-        /// <param name="format">Формат, в котором должен быть возвращен ответ</param>.
+        /// <param name="appIDs">массив, содержащий id <see cref="GameModel"/>, по которым необходимо получить информацию</param>
+        /// <param name="format">формат ответа</param>.
         /// <returns><see cref="HttpRequestMessage"/></returns>.
         public static HttpRequestMessage GetGameInfo(int[] appIDs, string format)
         {

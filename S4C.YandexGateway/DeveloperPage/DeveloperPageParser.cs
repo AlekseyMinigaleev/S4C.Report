@@ -22,7 +22,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
         /// </summary>
         /// <param name="developerPageUrl">ссылка на страницу разработчика</param>
         /// <returns>
-        ///<see cref="int"/>[] представляющих id всех игр на странице разработчика.
+        /// Массив id всех игр на странице разработчика.
         /// </returns>
         /// <exception cref="EmptyDeveloperPageException"></exception>
         /// <exception cref="InvalidGameIdException"></exception>

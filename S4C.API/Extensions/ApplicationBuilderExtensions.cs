@@ -6,7 +6,10 @@ namespace С4S.API.Extensions
 {
     public static class ApplicationBuilderExtensions
     {
-        public static async Task InitApplicationAsync(
+        /// <summary>
+        /// Инициализирует всю необходимую инфраструктуру приложения
+        /// </summary>
+        public static async Task InitApplicationInfrastructureAsync(
             this WebApplication app,
             CancellationToken cancellationToken = default)
         {

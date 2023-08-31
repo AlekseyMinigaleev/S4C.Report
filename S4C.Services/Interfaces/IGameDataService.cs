@@ -2,7 +2,7 @@
 
 namespace C4S.Services.Interfaces
 {
-    // по стуи Game и GameStatistic это одна сущность представленная 2 таблицами и этот метод выполняет обновление данных этой сущности.
+    // по сути Game и GameStatistic это одна сущность представленная 2 таблицами и этот метод выполняет обновление данных этой сущности.
     /// <summary>
     /// Джоба выполняющая обновление данных в таблице <see cref="GameModel"/> и создание записей в таблице <see cref="GameStatisticModel"/>
     /// </summary>
@@ -13,7 +13,7 @@ namespace C4S.Services.Interfaces
         /// </summary>
         /// <remarks>
         /// Если у <see cref="GameModel"/> нет никаких изменений, то обновление данных пропускается.
-        /// При успешном завершении процесса, создается по 1 записи в таблице <see cref="GameStatisticModel"/> для каждойфы <see cref="GameModel"/>
+        /// При успешном завершении процесса, создается по 1 записи в таблице <see cref="GameStatisticModel"/> для каждой <see cref="GameModel"/>
         /// </remarks>
         public Task UpdateGameAndCreateGameStatisticRecord(
             CancellationToken cancellationToken = default);
