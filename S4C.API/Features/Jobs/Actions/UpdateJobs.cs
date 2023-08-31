@@ -1,5 +1,5 @@
 ﻿using C4S.DB.Models.Hangfire;
-using C4S.Services.Extensions;
+using C4S.Services.Exceptions;
 using C4S.Services.Interfaces;
 using FluentValidation;
 using MediatR;
@@ -80,7 +80,7 @@ namespace C4S.API.Features.Jobs.Actions
                 {
                     await _backgroundJobService.UpdateRecurringJobAsync(updatedJob, cancellationToken);
                 }
-                catch (InvalidCronExpression e)
+                catch (InvalidCronExpressionException e)
                 {
                     errors = $"{e.Message}: {e.CronExpression}";
                 }

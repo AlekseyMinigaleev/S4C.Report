@@ -24,9 +24,9 @@ namespace S4C.YandexGateway.DeveloperPageGateway
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Возвращает информацию о заданных играх со страницы разработчика.
+        /// Возвращает информацию <paramref name="gameIds"/> игр со страницы разработчика.
         /// </summary>
-        /// <param name="gameIds">массив целых чисел представляющих id игр, для которых необходимо получить <see cref="GameInfo"/>[]</param>
+        /// <param name="gameIds"><see cref="int"/>[] представляющих id игр, для которых необходимо получить <see cref="GameInfo"/>[]</param>
         /// <returns>
         /// <see cref="GameInfo"/>[] с детальной информацией об играх
         /// </returns>

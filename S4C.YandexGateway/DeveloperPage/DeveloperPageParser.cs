@@ -20,6 +20,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
         /// <summary>
         /// Возвращает id всех игр со страницы разработчика.
         /// </summary>
+        /// <param name="developerPageUrl">ссылка на страницу разработчика</param>
         /// <returns>
         ///<see cref="int"/>[] представляющих id всех игр на странице разработчика.
         /// </returns>

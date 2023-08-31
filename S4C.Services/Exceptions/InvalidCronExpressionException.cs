@@ -1,9 +1,9 @@
-﻿namespace C4S.Services.Extensions
+﻿namespace C4S.Services.Exceptions
 {
     /// <summary>
     /// Ошибка, обозначающая некорректное cron выражение.
     /// </summary>
-    public class InvalidCronExpression : Exception
+    public class InvalidCronExpressionException : Exception
     {
         /// <summary>
         /// Cron выражение, которое вызвало ошибку.
@@ -11,7 +11,7 @@
         public readonly string? CronExpression;
 
         /// <param name="cronExpression"> Cron выражение, которое вызвало ошибку.</param>
-        public InvalidCronExpression(string? cronExpression) : base($"Указанное выражение cron не является валидным")
+        public InvalidCronExpressionException(string? cronExpression) : base($"Указанное выражение cron не является валидным")
         {
             CronExpression = cronExpression;
         }

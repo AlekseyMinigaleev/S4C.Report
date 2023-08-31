@@ -3,18 +3,42 @@ using C4S.DB.Models;
 
 namespace S4C.YandexGateway.DeveloperPageGateway.Models
 {
+    /// <summary>
+    /// Информация об игре
+    /// </summary>
+    /// <remarks>
+    /// Включает в себя все необходимые поля для <see cref="GameModel"/> и <see cref="GameStatisticModel"/>
+    /// </remarks>
     public class GameInfo
     {
+        /// <summary>
+        /// Название игры
+        /// </summary>
         public string Title { get; set; }
 
+        /// <summary>
+        /// id игры
+        /// </summary>
         public int AppId { get; set; }
 
+        /// <summary>
+        /// Дата публикации
+        /// </summary>
         public int FirstPublished { get; set; }
 
+        /// <summary>
+        /// Оценка
+        /// </summary>
         public double Rating { get; set; }
 
+        /// <summary>
+        /// Количество игроков
+        /// </summary>
         public int PlayersCount { get; set; }
 
+        /// <summary>
+        /// Имена всех категорий, к которым относится игра
+        /// </summary>
         public string[] CategoriesNames { get; set; }
 
         public GameInfo(
