@@ -96,16 +96,6 @@ namespace C4S.API.Features.Jobs.Actions
 
                 return errors;
             }
-
-            private async Task UpdateRecurringJobAsync(
-                RequestViewModel updatedJob,
-                CancellationToken cancellationToken = default)
-            {
-                var hangfireJobConfiguration = new HangfireJobConfigurationModel(
-                            updatedJob.JobType,
-                            updatedJob.CronExpression,
-                            updatedJob.IsEnable);
-            }
         }
     }
 }
