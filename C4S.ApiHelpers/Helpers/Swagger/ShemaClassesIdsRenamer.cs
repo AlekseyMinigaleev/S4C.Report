@@ -1,10 +1,18 @@
 ﻿namespace C4S.ApiHelpers.Helpers.Swagger
 {
     /*TODO: разобраться + рефакторинг*/
-    public static class RenameSchemaClassesId
+    /// <summary>
+    /// Переименовыватель id схемык класса
+    /// </summary>
+    public static class ShemaClassesIdsRenamer
     {
         private static readonly string[] _specialWords = new string[4] { "ViewModel", "Body", "Query", "Command" };
 
+        /// <summary>
+        /// хз че это
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
         public static string Selector(Type t)
         {
             if (_specialWords.Contains(t.Name) && (object)t.DeclaringType != null)

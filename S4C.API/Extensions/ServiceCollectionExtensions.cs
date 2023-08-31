@@ -4,9 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace C4S.API.Extensions
 {
-    public static class DIExtensions
+    public static class ServiceCollectionExtensions
     {
-        public static void AddStorage(this IServiceCollection services, ConfigurationManager configuration)
+        /// <summary>
+        /// Добавляет все необходимые сервисы для хранилищ
+        /// </summary>
+        public static void AddStorages(this IServiceCollection services, ConfigurationManager configuration)
         {
             var connectionString = configuration.GetConnectionString("ReportDbDev");
 

@@ -15,8 +15,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => 
-    options.CustomSchemaIds(RenameSchemaClassesId.Selector));
-builder.Services.AddStorage(builder.Configuration);
+    options.CustomSchemaIds(ShemaClassesIdsRenamer.Selector));
+builder.Services.AddStorages(builder.Configuration);
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssemblies(typeof(Program).GetTypeInfo().Assembly));
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
@@ -36,7 +36,7 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 /* TODO: чу тут с токеном делать*/
-await app.InitApplicationAsync();
+await app.InitApplicationInfrastructureAsync();
 
 app.Run();
 #endregion

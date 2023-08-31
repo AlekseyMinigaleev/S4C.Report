@@ -4,6 +4,7 @@ using S4C.YandexGateway.DeveloperPageGateway.Models;
 
 namespace S4C.YandexGateway.DeveloperPageGateway
 {
+    /// <inheritdoc cref="IDeveloperPageGetaway"/>
     public class DeveloperPageGateway : IDeveloperPageGetaway
     {
         /*TODO: хардкод*/
@@ -20,6 +21,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
             _developerPageParser = developerPageParser;
         }
 
+        /// <inheritdoc/>
         public async Task<int[]> GetGameIdsAsync(
             CancellationToken cancellationToken = default)
         {
@@ -29,12 +31,13 @@ namespace S4C.YandexGateway.DeveloperPageGateway
             return gameIds;
         }
 
+        /// <inheritdoc/>
         public async Task<GameInfo[]> GetGameInfoAsync(
             int[] gameIds,
             CancellationToken cancellationToken = default)
         {
             var httpResponseMessage = await SendRequestAsync(() =>
-                HttpRequestMethods.GetGameInfo(gameIds, "long"),
+                HttpRequestMethodDitctionary.GetGameInfo(gameIds, "long"),
                 cancellationToken);
 
             var gameViewModels = await DeserializeObjectsAsync(

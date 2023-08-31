@@ -1,5 +1,5 @@
 ﻿using C4S.DB.Models.Hangfire;
-using C4S.Services.Extensions;
+using C4S.Services.Exceptions;
 using C4S.Services.Interfaces;
 using FluentValidation;
 using MediatR;
@@ -10,24 +10,23 @@ namespace C4S.API.Features.Jobs.Actions
     {
         public class Command : IRequest<List<ResponseViewModel>>
         {
-            /*TODO: почему я не могу передать HangfireJobModel*/
+            /// <summary>
+            /// <see cref="HangfireJobConfigurationModel"/>[] с обновленными полями
+            /// </summary>
             public HangfireJobConfigurationModel[] UpdatedJobs { get; set; }
         }
 
-        /*TODO: контрукторы для ВМ*/
-        public class RequestViewModel
-        {
-            public HangfireJobTypeEnum JobType { get; set; }
-
-            public string? CronExpression { get; set; }
-
-            public bool IsEnable { get; set; }
-        }
-
+        /*TODO: конcтрукторы для ВМ*/
         public class ResponseViewModel
         {
+            /// <summary>
+            /// тип джобы
+            /// </summary>
             public HangfireJobTypeEnum JobType { get; set; }
 
+            /// <summary>
+            /// Текст возможной ошибки при обновлении HangfireConfigurationModel
+            /// </summary>
             public string? Error { get; set; }
         }
 
@@ -85,7 +84,7 @@ namespace C4S.API.Features.Jobs.Actions
                 {
                     await _backgroundJobService.UpdateRecurringJobAsync(updatedJob, cancellationToken);
                 }
-                catch (InvalidCronExpression e)
+                catch (InvalidCronExpressionException e)
                 {
                     errors = $"{e.Message}: {e.CronExpression}";
                 }
@@ -95,16 +94,6 @@ namespace C4S.API.Features.Jobs.Actions
                 }
 
                 return errors;
-            }
-
-            private async Task UpdateRecurringJobAsync(
-                RequestViewModel updatedJob,
-                CancellationToken cancellationToken = default)
-            {
-                var hangfireJobConfiguration = new HangfireJobConfigurationModel(
-                            updatedJob.JobType,
-                            updatedJob.CronExpression,
-                            updatedJob.IsEnable);
             }
         }
     }

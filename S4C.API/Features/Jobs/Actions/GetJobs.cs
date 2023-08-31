@@ -15,12 +15,24 @@ namespace C4S.API.Features.Jobs.Actions
 
         public class ResponseViewModel
         {
+            /// <summary>
+            /// Название джобы
+            /// </summary>
             public string Name { get; set; }
 
+            /// <summary>
+            /// Тип джобы
+            /// </summary>
             public HangfireJobTypeEnum JobType { get; set; }
 
+            /// <summary>
+            /// cron выражение
+            /// </summary>
             public string? CronExpression { get; set; }
 
+            /// <summary>
+            /// статус джобы
+            /// </summary>
             public bool IsEnable { get; set; }
         }
 

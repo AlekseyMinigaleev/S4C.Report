@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 
 namespace C4S.Services.Implements
 {
+    /// <inheritdoc cref="IBackGroundJobService"/>s
     public class BackGroundJobService : IBackGroundJobService
     {
         private readonly ReportDbContext _dbContext;
@@ -18,6 +19,8 @@ namespace C4S.Services.Implements
             _dbContext = dbContext;
         }
 
+        /// <inheritdoc/>
+        /// <param name="updatedJobConfig" ><inheritdoc/></param>
         public async Task UpdateRecurringJobAsync(
             HangfireJobConfigurationModel updatedJobConfig,
             CancellationToken cancellationToken = default)
@@ -44,19 +47,7 @@ namespace C4S.Services.Implements
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        //TODO: уточнить, сейчас пользователь может оставить пустое значение для CronExpression и в таком случае IsEnable = false,
-        //т.е.пользователь не должен иметь возможности седлать IsEnable = false и CronExpression = string.Empty?
-        private static (string?, bool) IsValidCronExpression(string? cronExpression)
-        {
-            /*TODO: проверить случай с cronExpression = string.Empty*/
-            var crontabSchedule = CrontabSchedule.TryParse(cronExpression);
-            var result = crontabSchedule is null;
-
-            return result
-                  ? (null, result) // TODO: уточнить нужно ли сообщение, о том что c пустым CronExpression джоба всегда будет выключена
-                  : ("Invalid cron expression", result);
-        }
-
+        /// <inheritdoc/>
         public async Task AddMissingHangfirejobsAsync(
             CancellationToken cancellationToken = default)
         {
@@ -86,20 +77,33 @@ namespace C4S.Services.Implements
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
+        //TODO: уточнить, сейчас пользователь может оставить пустое значение для CronExpression и в таком случае IsEnable = false,
+        //т.е.пользователь не должен иметь возможности седлать IsEnable = false и CronExpression = string.Empty?
+        private static (string?, bool) IsValidCronExpression(string? cronExpression)
+        {
+            /*TODO: проверить случай с cronExpression = string.Empty*/
+            var crontabSchedule = CrontabSchedule.TryParse(cronExpression);
+            var result = crontabSchedule is null;
+
+            return result
+                  ? (null, result) // TODO: уточнить нужно ли сообщение, о том что c пустым CronExpression джоба всегда будет выключена
+                  : ("Invalid cron expression", result);
+        }
+
         private static void AddOrUpdateRecurringJob(HangfireJobConfigurationModel jobConfig)
         {
             switch (jobConfig.JobType)
             {
                 case HangfireJobTypeEnum.ParseGameIdsFromDeveloperPage:
-                    AddOrUpdateRecurringJob<IGameIdService>(
+                    AddOrUpdateRecurringJob<IGameIdSyncService>(
                         jobConfig,
-                        (service) => service.GetAllGameIdAsync(CancellationToken.None));
+                        (service) => service.SyncAllGameIdAsync(CancellationToken.None));
                     break;
 
                 case HangfireJobTypeEnum.SyncGameInfoAndGameCreateGameStatistic:
                     AddOrUpdateRecurringJob<IGameDataService>(
                         jobConfig,
-                        (service) => service.GetAllGameDataAsync(CancellationToken.None));
+                        (service) => service.UpdateGameAndCreateGameStatisticRecord(CancellationToken.None));
                     break;
 
                 default:

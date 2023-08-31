@@ -9,10 +9,19 @@ namespace C4S.DB
         public ReportDbContext(DbContextOptions<ReportDbContext> options):base(options)
         { }
 
+        /// <summary>
+        /// Таблица игры
+        /// </summary>
         public DbSet<GameModel> GameModels { get; set; }
 
+        /// <summary>
+        /// Таблица игровой статистики
+        /// </summary>
         public DbSet<GameStatisticModel> GamesStatisticModels { get; set; }
 
+        /// <summary>
+        /// Таблица джобы.
+        /// </summary>
         public DbSet<HangfireJobConfigurationModel> HangfireConfigurationModels { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

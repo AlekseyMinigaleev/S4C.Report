@@ -12,6 +12,7 @@ using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace C4S.Services.Implements
 {
+    /// <inheritdoc cref="IGameDataService"/>
     public class GameDataService : IGameDataService
     {
         private readonly ReportDbContext _dbContext;
@@ -31,7 +32,8 @@ namespace C4S.Services.Implements
             _dbContext = dbContext;
         }
 
-        public async Task GetAllGameDataAsync(
+        /// <inheritdoc/>
+        public async Task UpdateGameAndCreateGameStatisticRecord(
             CancellationToken cancellationToken)
         {
             var finalLogMessage = "процесс успешно завершен";
