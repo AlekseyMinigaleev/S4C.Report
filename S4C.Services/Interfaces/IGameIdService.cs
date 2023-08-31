@@ -2,6 +2,7 @@
 {
     public interface IGameIdService
     {
-        public Task GetAllGameIdAsync();
+        public Task GetAllGameIdAsync(
+            CancellationToken cancellationToken = default);
     }
 }

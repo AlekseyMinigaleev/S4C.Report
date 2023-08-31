@@ -31,7 +31,8 @@ namespace C4S.Services.Implements
             _dbContext = dbContext;
         }
 
-        public async Task GetAllGameDataAsync()
+        public async Task GetAllGameDataAsync(
+            CancellationToken cancellationToken)
         {
             var finalLogMessage = "процесс успешно завершен";
             var logErrorMessage = "процесс завершен с ошибкой: ";
@@ -39,7 +40,7 @@ namespace C4S.Services.Implements
             try
             {
                 _logger.LogInformation("начат процесс синхронизации всех данных по играм");
-                await RunAsync();
+                await RunAsync(cancellationToken);
             }
             catch (HttpRequestException e)
             {
@@ -62,10 +63,11 @@ namespace C4S.Services.Implements
             }
         }
 
-        private async Task RunAsync()
+        private async Task RunAsync(
+            CancellationToken cancellationToken)
         {
             var games = await _dbContext.GameModels
-                .ToArrayAsync();
+                .ToArrayAsync(cancellationToken);
 
             var gameIds = games
                 .Select(x => x.Id)
@@ -73,19 +75,22 @@ namespace C4S.Services.Implements
 
             _logger.LogInformation($"получение данных, количество игр: {gameIds.Length}");
             var incomingGameData = await _developerPageGetaway
-                .GetGameInfoAsync(gameIds);
+                .GetGameInfoAsync(gameIds, cancellationToken);
             _logger.LogInformation($"все данные успешно получены");
 
             _logger.LogInformation($"начало обработки полученных данных");
-            await ProcessingIncomingDataAsync(incomingGameData, games);
+            await ProcessingIncomingDataAsync(incomingGameData, games, cancellationToken);
 
             _logger.LogInformation($"начало обновления базы данных");
             await _dbContext
-                .SaveChangesAsync();
+                .SaveChangesAsync(cancellationToken);
             _logger.LogInformation($"база данных успешно обновлена");
         }
 
-        private async Task ProcessingIncomingDataAsync(GameInfo[] incomingGamesInfo, GameModel[] sourceGameModels)
+        private async Task ProcessingIncomingDataAsync(
+            GameInfo[] incomingGamesInfo,
+            GameModel[] sourceGameModels,
+            CancellationToken cancellationToken)
         {
             foreach (var incomingGameInfo in incomingGamesInfo)
             {
@@ -106,7 +111,7 @@ namespace C4S.Services.Implements
 
                 _logger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики");
                 await _dbContext.GamesStatisticModels
-                    .AddAsync(incomingGameInfoViewModel.GameStatistic);
+                    .AddAsync(incomingGameInfoViewModel.GameStatistic, cancellationToken);
             }
         }
 

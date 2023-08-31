@@ -4,8 +4,11 @@ namespace C4S.Services.Interfaces
 {
     public interface IBackGroundJobService
     {
-        public Task AddMissingHangfirejobs();
+        public Task AddMissingHangfirejobsAsync(
+            CancellationToken cancellationToken = default);
 
-        public Task UpdateRecurringJobAsync(HangfireJobConfigurationModel jobConfig);
+        public Task UpdateRecurringJobAsync(
+            HangfireJobConfigurationModel jobConfig,
+            CancellationToken cancellationToken = default);
     }
 }

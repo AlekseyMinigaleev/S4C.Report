@@ -20,36 +20,49 @@ namespace S4C.YandexGateway.DeveloperPageGateway
             _developerPageParser = developerPageParser;
         }
 
-        public async Task<int[]> GetGameIdsAsync()
+        public async Task<int[]> GetGameIdsAsync(
+            CancellationToken cancellationToken = default)
         {
-            var gameIds = await _developerPageParser.GetAllGameidAsync(DeveloperPageUrl);
+            var gameIds = await _developerPageParser
+                .GetAllGameidAsync(DeveloperPageUrl, cancellationToken);
 
             return gameIds;
         }
 
-        public async Task<GameInfo[]> GetGameInfoAsync(int[] gameIds)
+        public async Task<GameInfo[]> GetGameInfoAsync(
+            int[] gameIds,
+            CancellationToken cancellationToken = default)
         {
             var httpResponseMessage = await SendRequestAsync(() =>
-                HttpRequestMethods.GetGameInfo(gameIds, "long"));
+                HttpRequestMethods.GetGameInfo(gameIds, "long"),
+                cancellationToken);
 
-            var gameViewModels = await DeserializeObjectsAsync(httpResponseMessage);
+            var gameViewModels = await DeserializeObjectsAsync(
+                httpResponseMessage,
+                cancellationToken);
 
             return gameViewModels;
         }
 
-        private async Task<HttpResponseMessage> SendRequestAsync(Func<HttpRequestMessage> createRequest)
+        private async Task<HttpResponseMessage> SendRequestAsync(
+            Func<HttpRequestMessage> createRequest,
+            CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient();
 
             var request = createRequest();
-            var response = await client.SendAsync(request);
+            var response = await client
+                .SendAsync(request, cancellationToken);
             response.EnsureSuccessStatusCode();
             return response;
         }
 
-        private async Task<GameInfo[]> DeserializeObjectsAsync(HttpResponseMessage httpResponseMessage)
+        private async Task<GameInfo[]> DeserializeObjectsAsync(
+            HttpResponseMessage httpResponseMessage,
+            CancellationToken cancellationToken)
         {
-            var jsonString = await httpResponseMessage.Content.ReadAsStringAsync();
+            var jsonString = await httpResponseMessage.Content
+                .ReadAsStringAsync(cancellationToken);
             var gamesJToken = GetGamesJToken(jsonString);
 
             var results = new GameInfo[gamesJToken.Count];

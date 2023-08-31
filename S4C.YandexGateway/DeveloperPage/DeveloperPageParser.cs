@@ -14,9 +14,13 @@ namespace S4C.YandexGateway.DeveloperPageGateway
             _browsingContext = browsingContext;
         }
 
-        public async Task<int[]> GetAllGameidAsync(string developerPageUrl)
+        public async Task<int[]> GetAllGameidAsync(
+            string developerPageUrl,
+            CancellationToken cancellationToken = default)
         {
-            var gamesHtmlCollection = await GetGamesAsHtmlElementsAsync(developerPageUrl);
+            var gamesHtmlCollection = await GetGamesAsHtmlElementsAsync(
+                developerPageUrl,
+                cancellationToken);
 
             var gameIds = new int[gamesHtmlCollection.Length];
 
@@ -47,10 +51,12 @@ namespace S4C.YandexGateway.DeveloperPageGateway
             return gameId;
         }
 
-        private async Task<IHtmlCollection<IElement>> GetGamesAsHtmlElementsAsync(string developerPageUrl)
+        private async Task<IHtmlCollection<IElement>> GetGamesAsHtmlElementsAsync(
+            string developerPageUrl,
+            CancellationToken cancellationToken = default)
         {
             var document = await _browsingContext
-                .OpenAsync(developerPageUrl);
+                .OpenAsync(developerPageUrl, cancellationToken);
 
             var gridList = document
                 .QuerySelector(".grid-list")
