@@ -13,6 +13,9 @@ namespace C4S.API.Features.Jobs
             : base(mediator)
         { }
 
+        /// <summary>
+        ///  Получить все запланированные jobs.
+        /// </summary>
         [HttpGet("GetAllJobs")]
         public async Task<ActionResult<GetJobs.ResponseViewModel[]>> GetJobsAsync(
             CancellationToken cancellationToken = default)
@@ -22,6 +25,9 @@ namespace C4S.API.Features.Jobs
             return Ok(result);
         }
 
+        /// <summary>
+        /// Обновить все запланированные jobs.
+        /// </summary>
         [HttpPost("UpdateAllJobs")]
         public async Task<ActionResult<UpdateJobs.ResponseViewModel>> UpdateJobsAsync(
             UpdateJobs.Command request,

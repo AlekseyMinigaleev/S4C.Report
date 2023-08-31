@@ -5,6 +5,9 @@ using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
 
 namespace S4C.YandexGateway.DeveloperPageGateway
 {
+    /// <summary>
+    /// Класс выполняющий парсинг html документа, страницы разработчика.
+    /// </summary>
     public class DeveloperPageParser
     {
         private readonly IBrowsingContext _browsingContext;
@@ -14,6 +17,14 @@ namespace S4C.YandexGateway.DeveloperPageGateway
             _browsingContext = browsingContext;
         }
 
+        /// <summary>
+        /// Возвращает id всех игр со страницы разработчика.
+        /// </summary>
+        /// <returns>
+        ///<see cref="int"/>[] представляющих id всех игр на странице разработчика.
+        /// </returns>
+        /// <exception cref="EmptyDeveloperPageException"></exception>
+        /// <exception cref="InvalidGameIdException"></exception>
         public async Task<int[]> GetAllGameidAsync(
             string developerPageUrl,
             CancellationToken cancellationToken = default)

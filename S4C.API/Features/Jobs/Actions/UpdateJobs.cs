@@ -15,19 +15,14 @@ namespace C4S.API.Features.Jobs.Actions
         }
 
         /*TODO: контрукторы для ВМ*/
-        public class RequestViewModel
-        {
-            public HangfireJobTypeEnum JobType { get; set; }
-
-            public string? CronExpression { get; set; }
-
-            public bool IsEnable { get; set; }
-        }
 
         public class ResponseViewModel
         {
             public HangfireJobTypeEnum JobType { get; set; }
 
+            /// <summary>
+            /// Текст возможной ошибки при обновлении HangfireConfigurationModel.
+            /// </summary>
             public string? Error { get; set; }
         }
 
