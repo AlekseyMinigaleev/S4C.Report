@@ -1,6 +1,4 @@
-﻿using C4S.DB.Models;
-
-namespace C4S.Services.Interfaces
+﻿namespace C4S.Services.Interfaces
 {
     public interface IGameDataService
     {
