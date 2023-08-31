@@ -95,14 +95,6 @@ namespace C4S.API.Features.Jobs.Actions
                       ? (null, result) // TODO: уточнить нужно ли сообщение, о том что c пустым CronExpression джоба всегда будет выключена
                       : ("Invalid cron expression", result);
             }
-
-            private async Task UpdateRecurringJobAsync(RequestViewModel updatedJob)
-            {
-                var hangfireJobConfiguration = new HangfireJobConfigurationModel(
-                            updatedJob.JobType,
-                            updatedJob.CronExpression,
-                            updatedJob.IsEnable);
-            }
         }
     }
 }
