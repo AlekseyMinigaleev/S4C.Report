@@ -1,4 +1,5 @@
 ﻿using C4S.DB.Models;
+using Hangfire.Server;
 
 namespace C4S.Services.Interfaces
 {
@@ -16,6 +17,7 @@ namespace C4S.Services.Interfaces
         /// При успешном завершении процесса, создается по 1 записи в таблице <see cref="GameStatisticModel"/> для каждой <see cref="GameModel"/>
         /// </remarks>
         public Task UpdateGameAndCreateGameStatisticRecord(
+            PerformContext hangfireContext,
             CancellationToken cancellationToken = default);
     }
 }

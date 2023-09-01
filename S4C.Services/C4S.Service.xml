@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>C4S.Services</name>
+    </assembly>
+    <members>
+        <member name="T:C4S.Services.Exceptions.InvalidCronExpressionException">
+            <summary>
+            Ошибка, обозначающая некорректное cron выражение.
+            </summary>
+        </member>
+        <member name="F:C4S.Services.Exceptions.InvalidCronExpressionException.CronExpression">
+            <summary>
+            Cron выражение, которое вызвало ошибку.
+            </summary>
+        </member>
+        <member name="M:C4S.Services.Exceptions.InvalidCronExpressionException.#ctor(System.String)">
+            <param name="cronExpression"> Cron выражение, которое вызвало ошибку.</param>
+        </member>
+        <member name="T:C4S.Services.Implements.BackGroundJobService">
+            <inheritdoc cref="T:C4S.Services.Interfaces.IBackGroundJobService"/>s
+        </member>
+        <member name="M:C4S.Services.Implements.BackGroundJobService.UpdateRecurringJobAsync(C4S.DB.Models.Hangfire.HangfireJobConfigurationModel,System.Threading.CancellationToken)">
+            <inheritdoc/>
+            <param name="updatedJobConfig" ><inheritdoc/></param>
+        </member>
+        <member name="M:C4S.Services.Implements.BackGroundJobService.AddMissingHangfirejobsAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:C4S.Services.Implements.GameDataService">
+            <inheritdoc cref="T:C4S.Services.Interfaces.IGameDataService"/>
+        </member>
+        <member name="M:C4S.Services.Implements.GameDataService.UpdateGameAndCreateGameStatisticRecord(Hangfire.Server.PerformContext,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:C4S.Services.Implements.ProjectedGameInfoViewModel">
+            <summary>
+            Модель представляющая данные <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>, подготовленные для обновления базы данных
+            </summary>
+        </member>
+        <member name="P:C4S.Services.Implements.ProjectedGameInfoViewModel.Game">
+            <summary>
+            Данные <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>, подготовленные для обновления таблицы <see cref="T:C4S.DB.Models.GameModel"/>
+            </summary>
+        </member>
+        <member name="P:C4S.Services.Implements.ProjectedGameInfoViewModel.GameStatistic">
+            Данные <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>, подготовленные для обновления таблицы <see cref="P:C4S.Services.Implements.ProjectedGameInfoViewModel.GameStatistic"/>
+        </member>
+        <member name="M:C4S.Services.Implements.ProjectedGameInfoViewModel.#ctor(C4S.DB.Models.GameModel,C4S.DB.Models.GameStatisticModel)">
+            <param name="gameInfo">
+            Данные <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>, подготовленные для обновления таблицы <see cref="P:C4S.Services.Implements.ProjectedGameInfoViewModel.GameStatistic"/>
+            </param>
+            <param name="gameStatisticInfo">
+            Данные <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>, подготовленные для обновления таблицы <see cref="T:C4S.DB.Models.GameModel"/>
+            </param>
+        </member>
+        <member name="T:C4S.Services.Implements.GameIdSyncService">
+            <inheritdoc cref="T:C4S.Services.Interfaces.IGameIdSyncService"/>
+        </member>
+        <member name="M:C4S.Services.Implements.GameIdSyncService.SyncAllGameIdAsync(Hangfire.Server.PerformContext,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:C4S.Services.Interfaces.IBackGroundJobService">
+            <summary>
+            Сервис для управления Hangfires job
+            </summary>
+        </member>
+        <member name="M:C4S.Services.Interfaces.IBackGroundJobService.AddMissingHangfirejobsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Выполняет создание недостающих джоб.
+            </summary>
+            <remarks>
+            Работа метода включает в себя обновление таблицы <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
+            </remarks>
+        </member>
+        <member name="M:C4S.Services.Interfaces.IBackGroundJobService.UpdateRecurringJobAsync(C4S.DB.Models.Hangfire.HangfireJobConfigurationModel,System.Threading.CancellationToken)">
+            <summary>
+            Выполняет обновление указанной джобы.
+            </summary>
+            <remarks>
+            Работа метода включает в себя обновление таблицы <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
+            </remarks>
+            <param name="jobConfig">джоба которую нужно обновить</param>
+        </member>
+        <member name="T:C4S.Services.Interfaces.IGameDataService">
+            <summary>
+            Джоба выполняющая обновление данных в таблице <see cref="T:C4S.DB.Models.GameModel"/> и создание записей в таблице <see cref="T:C4S.DB.Models.GameStatisticModel"/>
+            </summary>
+        </member>
+        <member name="M:C4S.Services.Interfaces.IGameDataService.UpdateGameAndCreateGameStatisticRecord(Hangfire.Server.PerformContext,System.Threading.CancellationToken)">
+            <summary>
+            Выполняет обновление данных в таблице <see cref="T:C4S.DB.Models.GameModel"/> и создает новые записи для таблицы <see cref="T:C4S.DB.Models.GameStatisticModel"/>
+            </summary>
+            <remarks>
+            Если у <see cref="T:C4S.DB.Models.GameModel"/> нет никаких изменений, то обновление данных пропускается.
+            При успешном завершении процесса, создается по 1 записи в таблице <see cref="T:C4S.DB.Models.GameStatisticModel"/> для каждой <see cref="T:C4S.DB.Models.GameModel"/>
+            </remarks>
+        </member>
+        <member name="T:C4S.Services.Interfaces.IGameIdSyncService">
+            <summary>
+            Джоба выполняющая синхронизацию id игр между базой данных и Яндексом.,
+            </summary>
+        </member>
+        <member name="M:C4S.Services.Interfaces.IGameIdSyncService.SyncAllGameIdAsync(Hangfire.Server.PerformContext,System.Threading.CancellationToken)">
+            <summary>
+             Выполняет процесс синхронизации id игр между базой данных и Яндексом.
+            </summary>
+        </member>
+    </members>
+</doc>

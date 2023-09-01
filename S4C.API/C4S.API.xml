@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>С4S.API</name>
+    </assembly>
+    <members>
+        <member name="M:С4S.API.Extensions.ApplicationBuilderExtensions.InitApplicationInfrastructureAsync(Microsoft.AspNetCore.Builder.WebApplication,System.Threading.CancellationToken)">
+            <summary>
+            Инициализирует всю необходимую инфраструктуру приложения
+            </summary>
+        </member>
+        <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
+            <summary>
+            Добавляет все необходимые сервисы для хранилищ
+            </summary>
+        </member>
+        <member name="P:C4S.API.Features.Jobs.Actions.GetJobs.ResponseViewModel.Name">
+            <summary>
+            Название джобы
+            </summary>
+        </member>
+        <member name="P:C4S.API.Features.Jobs.Actions.GetJobs.ResponseViewModel.JobType">
+            <summary>
+            Тип джобы
+            </summary>
+        </member>
+        <member name="P:C4S.API.Features.Jobs.Actions.GetJobs.ResponseViewModel.CronExpression">
+            <summary>
+            cron выражение
+            </summary>
+        </member>
+        <member name="P:C4S.API.Features.Jobs.Actions.GetJobs.ResponseViewModel.IsEnable">
+            <summary>
+            статус джобы
+            </summary>
+        </member>
+        <member name="P:C4S.API.Features.Jobs.Actions.UpdateJobs.Command.UpdatedJobs">
+            <summary>
+            <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>[] с обновленными полями
+            </summary>
+        </member>
+        <member name="P:C4S.API.Features.Jobs.Actions.UpdateJobs.ResponseViewModel.JobType">
+            <summary>
+            тип джобы
+            </summary>
+        </member>
+        <member name="P:C4S.API.Features.Jobs.Actions.UpdateJobs.ResponseViewModel.Error">
+            <summary>
+            Текст возможной ошибки при обновлении HangfireConfigurationModel
+            </summary>
+        </member>
+        <member name="M:C4S.API.Features.Jobs.JobController.GetJobsAsync(System.Threading.CancellationToken)">
+            <summary>
+             Получить все запланированные jobs.
+            </summary>
+        </member>
+        <member name="M:C4S.API.Features.Jobs.JobController.UpdateJobsAsync(C4S.API.Features.Jobs.Actions.UpdateJobs.Command,FluentValidation.IValidator{C4S.API.Features.Jobs.Actions.UpdateJobs.Command},System.Threading.CancellationToken)">
+            <summary>
+            Обновить все запланированные jobs.
+            </summary>
+        </member>
+    </members>
+</doc>
