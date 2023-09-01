@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using C4S.DB;
 using C4S.DB.Models;
-using C4S.Helpers.HangfireHelpers;
+using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,7 @@ namespace C4S.Services.Implements
         private readonly ReportDbContext _dbContext;
         private readonly IDeveloperPageGetaway _developerPageGetaway;
         private readonly IMapper _mapper;
-        private IHangfireLogger _hangfireLogger;
+        private BaseLogger _logger; 
 
         public GameDataService(
             IDeveloperPageGetaway developerPageGetaway,
@@ -37,34 +37,34 @@ namespace C4S.Services.Implements
             PerformContext hangfireContext,
             CancellationToken cancellationToken)
         {
-            _hangfireLogger = new HangfireLogger(hangfireContext);
+            _logger = new HangfireLogger(hangfireContext);
 
             var finalLogMessage = "Процесс успешно завершен.";
             var logErrorMessage = "Процесс завершен с ошибкой: ";
-            var logLevel = HangfireLogLevel.Success;
+            var logLevel = LogLevel.Success;
             try
             {
-                _hangfireLogger.LogInformation("Начат процесс синхронизации всех данных по играм:");
+                _logger.LogInformation("Начат процесс синхронизации всех данных по играм:");
                 await RunAsync(cancellationToken);
             }
             catch (HttpRequestException e)
             {
                 finalLogMessage = $"{logErrorMessage}{e.Message}";
-                logLevel = HangfireLogLevel.Error;
+                logLevel = LogLevel.Error;
             }
             catch (InvalidContractException e)
             {
                 finalLogMessage = $"{logErrorMessage}{e.Message}";
-                logLevel = HangfireLogLevel.Error;
+                logLevel = LogLevel.Error;
             }
             catch (Exception e)
             {
                 finalLogMessage = $"{logErrorMessage}{e.Message}";
-                logLevel = HangfireLogLevel.Error;
+                logLevel = LogLevel.Error;
             }
             finally
             {
-                _hangfireLogger.Log(finalLogMessage, logLevel);
+                _logger.Log(finalLogMessage, logLevel);
             }
         }
 
@@ -78,19 +78,19 @@ namespace C4S.Services.Implements
                 .Select(x => x.Id)
                 .ToArray();
 
-            _hangfireLogger.LogInformation($"Начало получения данных, количество игр: {gameIds.Length}.");
+            _logger.LogInformation($"Начало получения данных, количество игр: {gameIds.Length}.");
             var incomingGameData = await _developerPageGetaway
                 .GetGameInfoAsync(gameIds, cancellationToken);
-            _hangfireLogger.LogSuccess($"Количество игр, по которым успешно получены данные: {gameIds.Length}.");
+            _logger.LogSuccess($"Количество игр, по которым успешно получены данные: {gameIds.Length}.");
 
-            _hangfireLogger.LogInformation($"Начало обработки полученных данных:");
+            _logger.LogInformation($"Начало обработки полученных данных:");
             await ProcessingIncomingDataAsync(incomingGameData, games, cancellationToken);
-            _hangfireLogger.LogSuccess($"Все данные успешно обработаны.");
+            _logger.LogSuccess($"Все данные успешно обработаны.");
 
-            _hangfireLogger.LogInformation($"Начало обновления базы данных.");
+            _logger.LogInformation($"Начало обновления базы данных.");
             await _dbContext
                 .SaveChangesAsync(cancellationToken);
-            _hangfireLogger.LogSuccess($"База данных успешно обновлена.");
+            _logger.LogSuccess($"База данных успешно обновлена.");
         }
 
         private async Task ProcessingIncomingDataAsync(
@@ -115,7 +115,7 @@ namespace C4S.Services.Implements
                     incomingGameInfoViewModel.Game,
                     gameIdForLogs);
 
-                _hangfireLogger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики.");
+                _logger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики.");
                 await _dbContext.GamesStatisticModels
                     .AddAsync(incomingGameInfoViewModel.GameStatistic, cancellationToken);
             }
@@ -140,11 +140,11 @@ namespace C4S.Services.Implements
             if (sourceGame.Name == incomingGame.Name
                 && sourceGame.PublicationDate == incomingGame.PublicationDate)
             {
-                _hangfireLogger.LogInformation($"[{gameIdForLogs}] данные актуальны.");
+                _logger.LogInformation($"[{gameIdForLogs}] данные актуальны.");
             }
             else
             {
-                _hangfireLogger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
+                _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
                 sourceGame.Update(
                     incomingGame.Name!,
                     incomingGame.PublicationDate!.Value);

@@ -1,17 +1,17 @@
-﻿namespace C4S.Helpers.HangfireHelpers
+﻿namespace C4S.Helpers.Logger
 {
-	/// <summary>
-	/// Перечисление всех возможных уровней логирования, логгера <see cref="IHangfireLogger"/>
-	/// </summary>
-	public enum HangfireLogLevel
-	{
-		/// <summary>
-		/// Уровень логирование при успешном результате
-		/// </summary>
+    /// <summary>
+    /// Перечисление всех возможных уровней логирования, логгера <see cref="IHangfireLogger"/>
+    /// </summary>
+    public enum LogLevel
+    {
+        /// <summary>
+        /// Уровень логирование при успешном результате
+        /// </summary>
         /// <remarks>
         /// При логировании на этом уровне текст сообщения будет зеленым.
         /// </remarks>
-		Success,
+        Success,
 
         /// <summary>
         /// Уровень логирование при предупреждении

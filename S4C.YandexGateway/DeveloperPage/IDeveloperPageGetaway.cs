@@ -1,4 +1,5 @@
 ﻿using C4S.DB.Models;
+using C4S.Helpers.Logger;
 using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
 using S4C.YandexGateway.DeveloperPageGateway.Models;
 
@@ -22,6 +23,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
         /// <exception cref="EmptyDeveloperPageException"></exception>
         /// <exception cref="InvalidGameIdException"></exception>
         public Task<int[]> GetGameIdsAsync(
+            BaseLogger logger,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -35,6 +37,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
         /// <exception cref="InvalidContractException"></exception>
         public Task<GameInfo[]> GetGameInfoAsync(
             int[] gameIds,
+            BaseLogger logger,
             CancellationToken cancellationToken = default);
     }
 }

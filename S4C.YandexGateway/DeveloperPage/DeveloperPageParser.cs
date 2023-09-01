@@ -1,6 +1,7 @@
 ﻿using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
+using C4S.Helpers.Logger;
 using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
 
 namespace S4C.YandexGateway.DeveloperPageGateway
@@ -27,20 +28,24 @@ namespace S4C.YandexGateway.DeveloperPageGateway
         /// <exception cref="EmptyDeveloperPageException"></exception>
         /// <exception cref="InvalidGameIdException"></exception>
         public async Task<int[]> GetAllGameidAsync(
+            BaseLogger logger,
             string developerPageUrl,
             CancellationToken cancellationToken = default)
         {
+            logger.LogInformation("Начало получения игр как html элементов");
             var gamesHtmlCollection = await GetGamesAsHtmlElementsAsync(
                 developerPageUrl,
                 cancellationToken);
+            logger.LogSuccess($"Успешно получено {gamesHtmlCollection.Count()} элементов") ;
 
+            logger.LogInformation("Начало получения id из html элементов");
             var gameIds = new int[gamesHtmlCollection.Length];
-
             for (int i = 0; i < gamesHtmlCollection.Length; i++)
             {
                 var id = GetGameId(gamesHtmlCollection[i], developerPageUrl);
                 gameIds[i] = id;
             }
+            logger.LogSuccess($"Успешно получено {gameIds.Length} id");
 
             return gameIds;
         }

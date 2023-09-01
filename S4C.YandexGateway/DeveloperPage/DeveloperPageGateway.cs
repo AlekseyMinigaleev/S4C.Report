@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using C4S.Helpers.Logger;
+using Newtonsoft.Json.Linq;
 using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
 using S4C.YandexGateway.DeveloperPageGateway.Models;
 
@@ -23,17 +24,18 @@ namespace S4C.YandexGateway.DeveloperPageGateway
 
         /// <inheritdoc/>
         public async Task<int[]> GetGameIdsAsync(
+            BaseLogger logger,
             CancellationToken cancellationToken = default)
         {
             var gameIds = await _developerPageParser
-                .GetAllGameidAsync(DeveloperPageUrl, cancellationToken);
-
+                .GetAllGameidAsync(logger,DeveloperPageUrl,cancellationToken);
             return gameIds;
         }
 
         /// <inheritdoc/>
         public async Task<GameInfo[]> GetGameInfoAsync(
             int[] gameIds,
+            BaseLogger logger,
             CancellationToken cancellationToken = default)
         {
             var httpResponseMessage = await SendRequestAsync(() =>
