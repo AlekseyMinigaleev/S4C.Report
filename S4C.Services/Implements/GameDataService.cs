@@ -12,7 +12,6 @@ using S4C.YandexGateway.DeveloperPageGateway.Models;
 /*
  * TODO: проверить как будут работать джобы если тыкать много раз на них. И если тыкать их в неправильном порядке.
  */
-
 namespace C4S.Services.Implements
 {
     /// <inheritdoc cref="IGameDataService"/>
@@ -95,7 +94,7 @@ namespace C4S.Services.Implements
         }
 
         private async Task ProcessingIncomingDataAsync(
-            GameInfo[] incomingGamesInfo,
+            GameInfoModel[] incomingGamesInfo,
             GameModel[] sourceGameModels,
             CancellationToken cancellationToken)
         {
@@ -122,11 +121,11 @@ namespace C4S.Services.Implements
             }
         }
 
-        private ProjectedGameInfoViewModel Projection(GameInfo incomingGameInfo)
+        private ProjectedGameInfoViewModel Projection(GameInfoModel incomingGameInfo)
         {
             /*TODO: сделать мапинг срау в ProjectedGameInfoViewModel, вынести вм в отдельный файл*/
-            var incomingGameModel = _mapper.Map<GameInfo, GameModel>(incomingGameInfo);
-            var incomingGameStatisticModel = _mapper.Map<GameInfo, GameStatisticModel>(incomingGameInfo);
+            var incomingGameModel = _mapper.Map<GameInfoModel, GameModel>(incomingGameInfo);
+            var incomingGameStatisticModel = _mapper.Map<GameInfoModel, GameStatisticModel>(incomingGameInfo);
 
             var projectedGameInfoViewModel = new ProjectedGameInfoViewModel(
                 incomingGameModel,
@@ -137,9 +136,9 @@ namespace C4S.Services.Implements
 
         private void UpdateGameModel(GameModel sourceGame, GameModel incomingGame, string gameIdForLogs)
         {
-            /*TODO: вынести в спеку*/
-            if (sourceGame.Name == incomingGame.Name
-                && sourceGame.PublicationDate == incomingGame.PublicationDate)
+            var hasChanges = sourceGame.HasChanges(incomingGame);
+
+            if (hasChanges)
             {
                 _logger.LogInformation($"[{gameIdForLogs}] данные актуальны.");
             }
@@ -154,23 +153,23 @@ namespace C4S.Services.Implements
     }
 
     /// <summary>
-    /// Модель представляющая данные <see cref="GameInfo"/>, подготовленные для обновления базы данных
+    /// Модель представляющая данные <see cref="GameInfoModel"/>, подготовленные для обновления базы данных
     /// </summary>
     public class ProjectedGameInfoViewModel
     {
         /// <summary>
-        /// Данные <see cref="GameInfo"/>, подготовленные для обновления таблицы <see cref="GameModel"/>
+        /// Данные <see cref="GameInfoModel"/>, подготовленные для обновления таблицы <see cref="GameModel"/>
         /// </summary>
         public GameModel Game { get; set; }
 
-        /// Данные <see cref="GameInfo"/>, подготовленные для обновления таблицы <see cref="GameStatistic"/>
+        /// Данные <see cref="GameInfoModel"/>, подготовленные для обновления таблицы <see cref="GameStatistic"/>
         public GameStatisticModel GameStatistic { get; set; }
 
         /// <param name="gameInfo">
-        /// Данные <see cref="GameInfo"/>, подготовленные для обновления таблицы <see cref="GameStatistic"/>
+        /// Данные <see cref="GameInfoModel"/>, подготовленные для обновления таблицы <see cref="GameStatistic"/>
         /// </param>
         /// <param name="gameStatisticInfo">
-        /// Данные <see cref="GameInfo"/>, подготовленные для обновления таблицы <see cref="GameModel"/>
+        /// Данные <see cref="GameInfoModel"/>, подготовленные для обновления таблицы <see cref="GameModel"/>
         /// </param>
         public ProjectedGameInfoViewModel(
             GameModel gameInfo,

@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using System.Linq.Expressions;
 
 namespace C4S.DB.Models.Hangfire
 {
@@ -52,7 +53,23 @@ namespace C4S.DB.Models.Hangfire
         /// <param name="isEnable">новый статус джобы</param>
         public void SetIsEnable(bool isEnable) =>
             IsEnable = !string.IsNullOrWhiteSpace(CronExpression) && isEnable;
+
+        /// <summary>
+        /// Нормализует крон выражение
+        /// </summary>
+        public void NormalizeCronExpression()
+        {
+            //потому что мы поддерживаем CronExpression = string.Empty, а hangfire нет
+            if (string.IsNullOrWhiteSpace(CronExpression))
+                Update(null, IsEnable);
+        }
     }
+
+    /// <summary>
+    /// Справочник <see cref="Expression"/> для <see cref="HangfireJobConfigurationModel"/>
+    /// </summary>
+    public static class HangfireJobConfigurationExpression
+    { }
 
     /// <summary>
     /// Справочник констант для <see cref="HangfireJobConfigurationModel"/>

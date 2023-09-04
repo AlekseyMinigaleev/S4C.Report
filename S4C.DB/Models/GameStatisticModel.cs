@@ -1,4 +1,6 @@
-﻿namespace C4S.DB.Models
+﻿using System.Linq.Expressions;
+
+namespace C4S.DB.Models
 {
     /// <summary>
     /// Сущность игровой статистики
@@ -62,4 +64,10 @@
             Evaluation = evaluation;
         }
     }
+
+    /// <summary>
+    /// Справочник <see cref="Expression"/> для <see cref="GameStatisticModel"/>
+    /// </summary>
+    public static class GameStatisticExpression 
+    { }
 }

@@ -13,17 +13,17 @@ namespace S4C.YandexGateway.DeveloperPageGateway
         // логгер передается как параметр метода, потому что нужен тот же инстанс, что и у вызывающего сервиса.
         
         /// <summary>
-        /// Возвращает <see cref="GameInfo"/>[] со страницы разработчика.
+        /// Возвращает <see cref="GameInfoModel"/>[] со страницы разработчика.
         /// </summary>
-        /// <param name="gameIds">Массив id <see cref="GameModel"/>, для которых необходимо получить <see cref="GameInfo"/>[]</param>
+        /// <param name="gameIds">Массив id <see cref="GameModel"/>, для которых необходимо получить <see cref="GameInfoModel"/>[]</param>
         /// <param name="logger">Объект <see cref="BaseLogger"/>с помощью, которого будет выполняться логирование</param>
         /// <param name="cancellationToken"><inheritdoc cref="CancellationToken"/></param>
         /// <returns>
-        /// <see cref="GameInfo"/>[]
+        /// <see cref="GameInfoModel"/>[]
         /// </returns>
         /// <exception cref="HttpRequestException"></exception>
         /// <exception cref="InvalidContractException"></exception>
-        public Task<GameInfo[]> GetGameInfoAsync(
+        public Task<GameInfoModel[]> GetGameInfoAsync(
             int[] gameIds,
             BaseLogger logger,
             CancellationToken cancellationToken = default);

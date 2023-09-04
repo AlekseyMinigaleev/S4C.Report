@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using C4S.DB.Models;
+using System.Linq.Expressions;
 
 namespace S4C.YandexGateway.DeveloperPageGateway.Models
 {
@@ -9,7 +10,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway.Models
     /// <remarks>
     /// Включает в себя все необходимые поля для <see cref="GameModel"/> и <see cref="GameStatisticModel"/>
     /// </remarks>
-    public class GameInfo
+    public class GameInfoModel
     {
         /// <summary>
         /// Название игры
@@ -41,7 +42,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway.Models
         /// </summary>
         public string[] CategoriesNames { get; set; }
 
-        public GameInfo(
+        public GameInfoModel(
             int appId,
             string title,
             int firstPublished,
@@ -58,24 +59,37 @@ namespace S4C.YandexGateway.DeveloperPageGateway.Models
         }
     }
 
+    /// <summary>
+    /// Справочник <see cref="Expression"/> для <see cref="GameInfoModel"/>
+    /// </summary>
+    public static class GameInfoExpression
+    {
+        public static Expression<Func<GameInfoModel, bool>> IsNew =
+            (gameInfo) => gameInfo.CategoriesNames.Contains("new");
+
+        public static Expression<Func<GameInfoModel, bool>> IsPromoted =
+            (gameInfo) => gameInfo.CategoriesNames.Contains("new");
+    }
+
+    /// <summary>
+    /// Профиль маппинга в <see cref="GameModel"/> из <see cref="GameInfoModel"/>
+    /// </summary>
     public class GameModelProfiler : Profile
     {
         public GameModelProfiler()
         {
-            CreateMap<GameInfo, GameModel>()
+            CreateMap<GameInfoModel, GameModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AppId))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.PublicationDate, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.FirstPublished).DateTime));
 
-            CreateMap<GameInfo, GameStatisticModel>()
+            CreateMap<GameInfoModel, GameStatisticModel>()
                 .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.AppId))
                 .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(src => src.Rating))
                 .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
                 .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
-                /*TODO: вынести в спеку*/
-                .ForMember(dest => dest.IsNew, opt => opt.MapFrom(src => src.CategoriesNames.Contains("new")))
-                /*TODO: вынести в спеку*/
-                .ForMember(dest => dest.IsPromoted, opt => opt.MapFrom(src => src.CategoriesNames.Contains("promoted")))
+                .ForMember(dest => dest.IsNew, opt => opt.MapFrom(GameInfoExpression.IsNew))
+                .ForMember(dest => dest.IsPromoted, opt => opt.MapFrom(GameInfoExpression.IsPromoted))
                 .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now));
         }
     }

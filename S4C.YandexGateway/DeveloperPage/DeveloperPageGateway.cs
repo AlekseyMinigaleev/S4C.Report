@@ -20,7 +20,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
         }
 
         /// <inheritdoc/>
-        public async Task<GameInfo[]> GetGameInfoAsync(
+        public async Task<GameInfoModel[]> GetGameInfoAsync(
             int[] gameIds,
             BaseLogger logger,
             CancellationToken cancellationToken = default)
@@ -53,7 +53,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
             return response;
         }
 
-        private async Task<GameInfo[]> DeserializeObjectsAsync(
+        private async Task<GameInfoModel[]> DeserializeObjectsAsync(
             HttpResponseMessage httpResponseMessage,
             CancellationToken cancellationToken)
         {
@@ -61,7 +61,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
                 .ReadAsStringAsync(cancellationToken);
             var gamesJToken = GetGamesJToken(jsonString);
 
-            var results = new GameInfo[gamesJToken.Count];
+            var results = new GameInfoModel[gamesJToken.Count];
             for (int i = 0; i < gamesJToken.Count; i++)
             {
                 var title = GetValue<string>("title", gamesJToken[i], jsonString);
@@ -71,7 +71,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
                 var playersCount = GetValue<int>("playersCount", gamesJToken[i], jsonString);
                 var categoriesNames = GetValue<string[]>("categoriesNames", gamesJToken[i], jsonString);
 
-                var gameDataViewModel = new GameInfo(
+                var gameDataViewModel = new GameInfoModel(
                     title: title,
                     appId: appId,
                     firstPublished: firstPublished,

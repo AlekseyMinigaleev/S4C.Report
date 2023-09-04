@@ -15,7 +15,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
 
         /*TODO: создать словать форматов*/
         /// <summary>
-        /// Создает <see cref="HttpRequestMessage"/> для получения <see cref="GameInfo"/>.
+        /// Создает <see cref="HttpRequestMessage"/> для получения <see cref="GameInfoModel"/>.
         /// </summary>
         /// <param name="appIDs">массив, содержащий id <see cref="GameModel"/>, по которым необходимо получить информацию</param>
         /// <param name="format">формат ответа</param>.
