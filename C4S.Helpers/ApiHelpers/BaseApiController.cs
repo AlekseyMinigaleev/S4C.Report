@@ -2,10 +2,11 @@
 using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using ControllerBase = Microsoft.AspNetCore.Mvc.ControllerBase;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
-namespace C4S.ApiHelpers.Controllers
+namespace C4S.Helpers.ApiHeplers.Controllers
 {
     /// <summary>
     /// Базовый класс для всех контроллеров

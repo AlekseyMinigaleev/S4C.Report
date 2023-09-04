@@ -1,4 +1,4 @@
-﻿namespace C4S.ApiHelpers.Helpers.Swagger
+﻿namespace C4S.Helpers.ApiHeplers.Swagger
 {
     /*TODO: разобраться + рефакторинг*/
     /// <summary>
@@ -16,7 +16,7 @@
         public static string Selector(Type t)
         {
             if (_specialWords.Contains(t.Name) && (object)t.DeclaringType != null)
-                return t.DeclaringType!.Name +"." + t.Name;
+                return t.DeclaringType!.Name + "." + t.Name;
 
             var declaringType = t.DeclaringType;
             var text = string.Empty;
@@ -29,7 +29,7 @@
             if (t.IsGenericType)
             {
                 var genericArguments = t.GetGenericArguments();
-                var text2 = string.Join(string.Empty, genericArguments.Select((Type x) => x.Name));
+                var text2 = string.Join(string.Empty, genericArguments.Select((x) => x.Name));
                 var trimChars = $"`{genericArguments.Length}".ToCharArray();
                 return (text + t.Name).TrimEnd(trimChars) + text2;
             }

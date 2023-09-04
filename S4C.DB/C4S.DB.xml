@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>C4S.DB</name>
+    </assembly>
+    <members>
+        <member name="T:C4S.DB.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:C4S.DB.Migrations.AddHangfireJobConfigurationTable">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.AddHangfireJobConfigurationTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.AddHangfireJobConfigurationTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.AddHangfireJobConfigurationTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:C4S.DB.Migrations.correctedtypeinHangfireJobConfiguration">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.correctedtypeinHangfireJobConfiguration.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.correctedtypeinHangfireJobConfiguration.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.correctedtypeinHangfireJobConfiguration.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:C4S.DB.Migrations.removeGameModel">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.removeGameModel.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.removeGameModel.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.removeGameModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:C4S.DB.Migrations.updateIDENTITY_INSERTtoONandupdatenullablefildsinGameModel">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.updateIDENTITY_INSERTtoONandupdatenullablefildsinGameModel.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.updateIDENTITY_INSERTtoONandupdatenullablefildsinGameModel.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.updateIDENTITY_INSERTtoONandupdatenullablefildsinGameModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:C4S.DB.Migrations.splitstatusinGameStatisticModel">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.splitstatusinGameStatisticModel.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.splitstatusinGameStatisticModel.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.splitstatusinGameStatisticModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:C4S.DB.Models.GameModel">
+            <summary>
+            Сущность игры
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameModel.Id">
+            <summary>
+            Id игры
+            </summary>
+            <remarks>
+            Должно быть такое же как и на странице разработчика
+            </remarks>
+        </member>
+        <member name="P:C4S.DB.Models.GameModel.Name">
+            <summary>
+            Название игры
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameModel.PublicationDate">
+            <summary>
+            Дата публикации
+            </summary>
+        </member>
+        <member name="M:C4S.DB.Models.GameModel.Update(System.String,System.DateTime)">
+            <summary>
+            Выполняет обновление сущности
+            </summary>
+            <param name="name">Название игры</param>
+            <param name="publicationDate">дата публикации</param>
+        </member>
+        <member name="T:C4S.DB.Models.GameStatisticModel">
+            <summary>
+            Сущность игровой статистики
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameStatisticModel.Id">
+            <summary>
+            Id сущности
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameStatisticModel.GameId">
+            <summary>
+            Связь c таблицей <see cref="T:C4S.DB.Models.GameModel"/>
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameStatisticModel.IsNew">
+            <summary>
+            Статус новой игры
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameStatisticModel.IsPromoted">
+            <summary>
+            Статус продвигаемой игры
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameStatisticModel.Evaluation">
+            <summary>
+            Оценка игры
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameStatisticModel.PlayersCount">
+            <summary>
+            Количество игроков
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameStatisticModel.LastSynchroDate">
+            <summary>
+            Дата последней синхронизации с яндексом
+            </summary>
+        </member>
+        <member name="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel">
+            <summary>
+            Сущность конфигурации джобы
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel.JobType">
+            <summary>
+            Тип джобы
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel.CronExpression">
+            <summary>
+            cron выражение
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel.IsEnable">
+            <summary>
+            Статус джобы
+            </summary>
+        </member>
+        <member name="M:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel.Update(System.String,System.Boolean)">
+            <summary>
+            Выполняет обновление <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
+            </summary>
+            <param name="cronExpression">cron выражение</param>
+            <param name="isEnable">статус джобы</param>
+        </member>
+        <member name="M:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel.SetIsEnable(System.Boolean)">
+            <summary>
+            Изменяет статус джобы на указанный
+            </summary>
+            <param name="isEnable">новый статус джобы</param>
+        </member>
+        <member name="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationConstants">
+            <summary>
+            Справочник констант для <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
+            </summary>
+        </member>
+        <member name="P:C4S.DB.ReportDbContext.GameModels">
+            <summary>
+            Таблица игры
+            </summary>
+        </member>
+        <member name="P:C4S.DB.ReportDbContext.GamesStatisticModels">
+            <summary>
+            Таблица игровой статистики
+            </summary>
+        </member>
+        <member name="P:C4S.DB.ReportDbContext.HangfireConfigurationModels">
+            <summary>
+            Таблица джобы.
+            </summary>
+        </member>
+    </members>
+</doc>

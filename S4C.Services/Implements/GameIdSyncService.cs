@@ -1,44 +1,43 @@
 ﻿using C4S.DB;
 using C4S.DB.Models;
+using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
-
+using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using S4C.YandexGateway.DeveloperPageGateway;
+using S4C.YandexGateway.DeveloperPage;
 using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
-
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace C4S.Services.Implements
 {
     /// <inheritdoc cref="IGameIdSyncService"/>
     public class GameIdSyncService : IGameIdSyncService
     {
-        private readonly ILogger<GameIdSyncService> _logger;
-        private readonly IDeveloperPageGetaway _developerPageGetaway;
-        private readonly ReportDbContext _dbcontext;
+        private readonly ReportDbContext _dbContext;
+        private readonly IDeveloperPageParser _developerPageParser;
+        private BaseLogger _logger;
 
         public GameIdSyncService(
             ReportDbContext dbContext,
-            ILogger<GameIdSyncService> logger,
-            IDeveloperPageGetaway developerPageGetaway)
+            IDeveloperPageParser developerPageParser)
         {
-            _dbcontext = dbContext;
-            _logger = logger;
-            _developerPageGetaway = developerPageGetaway;
+            _dbContext = dbContext;
+            _developerPageParser = developerPageParser;
         }
 
         /// <inheritdoc/>
         public async Task SyncAllGameIdAsync(
+            PerformContext hangfireContext,
             CancellationToken cancellationToken = default)
         {
-            var finalLogMessage = "процесс успешно завершен";
-            var errorLogMessage = "процесс завершен c ошибкой: ";
-            var warningLogMessage = "процесс завершен: ";
-            var logLevel = LogLevel.Information;
+            _logger = new HangfireLogger(hangfireContext);
+
+            var finalLogMessage = "Процесс успешно завершен.";
+            var errorLogMessage = "Процесс завершен c ошибкой: ";
+            var warningLogMessage = "Процесс завершен: ";
+            var logLevel = LogLevel.Success;
             try
             {
-                _logger.LogInformation($"Запущен процесс парсинга id игр");
+                _logger.LogInformation($"Запущен процесс парсинга id игр:");
                 await RunAsync(cancellationToken);
             }
             catch (EmptyDeveloperPageException e)
@@ -58,7 +57,7 @@ namespace C4S.Services.Implements
             }
             finally
             {
-                _logger.Log(logLevel, finalLogMessage);
+                _logger.Log(finalLogMessage, logLevel);
             }
         }
 
@@ -66,15 +65,14 @@ namespace C4S.Services.Implements
             CancellationToken cancellationToken)
         {
             /*TODO: поправить логи*/
-            _logger.LogInformation($"получение id игр");
-            var gameIds = await _developerPageGetaway
-                .GetGameIdsAsync(cancellationToken);
-            _logger.LogInformation($"успешно получено id: {gameIds.Length}");
+            _logger.LogInformation($"Получение id всех игр.");
+            var gameIds = await _developerPageParser
+                .GetGameIdsAsync(_logger, cancellationToken);
 
             /*TODO: поправить логи*/
-            _logger.LogInformation($"начало обработки всех id");
+            _logger.LogInformation($"Начало обработки всех id:");
             await ProcessingIncomingGameIdsAsync(gameIds, cancellationToken);
-            _logger.LogInformation($"все id обработаны");
+            _logger.LogSuccess($"Все id обработаны.");
         }
 
         private async Task ProcessingIncomingGameIdsAsync(
@@ -87,9 +85,9 @@ namespace C4S.Services.Implements
                 var increment = await ProcessingIncomingIdAsync(gameId, cancellationToken);
                 countOfMissingGames += increment;
             }
-            _logger.LogInformation($"начло добавления {countOfMissingGames}, записей в базу данных");
-            await _dbcontext.SaveChangesAsync(cancellationToken);
-            _logger.LogInformation($"все записи успешно добавлены");
+            _logger.LogInformation($"Начло добавления {countOfMissingGames}, записей в базу данных:");
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            _logger.LogSuccess($"Все записи успешно добавлены");
         }
 
         // этот метод возвращает инкремент для переменной countOfMissingGame
@@ -97,7 +95,7 @@ namespace C4S.Services.Implements
             int gameId,
             CancellationToken cancellationToken)
         {
-            var existingGameIds = _dbcontext.GameModels
+            var existingGameIds = _dbContext.GameModels
                 .Select(x => x.Id);
 
             var isExistingGame = await existingGameIds
@@ -105,18 +103,18 @@ namespace C4S.Services.Implements
 
             if (!isExistingGame)
             {
-                _logger.LogInformation($"[{gameId}] id игры не содержится в базе данных");
+                _logger.LogInformation($"[{gameId}] id игры не содержится в базе данных.");
                 var gameModel = new GameModel(gameId);
-                await _dbcontext.GameModels
+                await _dbContext.GameModels
                     .AddAsync(gameModel, cancellationToken);
-                _logger.LogInformation($"[{gameId}] id игры помечено на добавление в базу данных");
+                _logger.LogInformation($"[{gameId}] id игры помечено на добавление в базу данных.");
 
                 // если игра не содержится в бд, увеличиваем countOfMissingGame
                 return 1;
             }
             else
             {
-                _logger.LogInformation($"[{gameId}] id игры уже содержится в базе данных");
+                _logger.LogInformation($"[{gameId}] id игры уже содержится в базе данных.");
 
                 // если игра содержится в бд, не увеличиваем countOfMissingGame
                 return 0;

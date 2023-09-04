@@ -1,6 +1,6 @@
 ﻿using C4S.DB;
 using C4S.DB.Models.Hangfire;
-using C4S.Services.Extensions;
+using C4S.Services.Exceptions;
 using C4S.Services.Interfaces;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +38,7 @@ namespace C4S.Services.Implements
             if (isValidCron)
                 await UpdateRecurringJobAsync(updatedJobConfig, cancellationToken);
             else
-                throw new InvalidCronExpression(updatedJobConfig.CronExpression);
+                throw new InvalidCronExpressionException(updatedJobConfig.CronExpression);
 
             existenceJobConfig.Update(updatedJobConfig.CronExpression, updatedJobConfig.IsEnable);
 
@@ -97,13 +97,13 @@ namespace C4S.Services.Implements
                 case HangfireJobTypeEnum.ParseGameIdsFromDeveloperPage:
                     AddOrUpdateRecurringJob<IGameIdSyncService>(
                         jobConfig,
-                        (service) => service.SyncAllGameIdAsync(CancellationToken.None));
+                        (service) => service.SyncAllGameIdAsync(null, CancellationToken.None));
                     break;
 
                 case HangfireJobTypeEnum.SyncGameInfoAndGameCreateGameStatistic:
                     AddOrUpdateRecurringJob<IGameDataService>(
                         jobConfig,
-                        (service) => service.UpdateGameAndCreateGameStatisticRecord(CancellationToken.None));
+                        (service) => service.UpdateGameAndCreateGameStatisticRecord(null, CancellationToken.None));
                     break;
 
                 default:

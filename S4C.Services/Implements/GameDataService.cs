@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
 using C4S.DB;
 using C4S.DB.Models;
+using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
-
+using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using S4C.YandexGateway.DeveloperPageGateway;
 using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
 using S4C.YandexGateway.DeveloperPageGateway.Models;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+
+/*
+ * TODO: проверить как будут работать джобы если тыкать много раз на них. И если тыкать их в неправильном порядке.
+ */
 
 namespace C4S.Services.Implements
 {
@@ -16,17 +19,15 @@ namespace C4S.Services.Implements
     public class GameDataService : IGameDataService
     {
         private readonly ReportDbContext _dbContext;
-        private readonly ILogger<IGameDataService> _logger;
         private readonly IDeveloperPageGetaway _developerPageGetaway;
         private readonly IMapper _mapper;
+        private BaseLogger _logger;
 
         public GameDataService(
-            ILogger<IGameDataService> logger,
             IDeveloperPageGetaway developerPageGetaway,
             IMapper mapper,
             ReportDbContext dbContext)
         {
-            _logger = logger;
             _developerPageGetaway = developerPageGetaway;
             _mapper = mapper;
             _dbContext = dbContext;
@@ -34,14 +35,17 @@ namespace C4S.Services.Implements
 
         /// <inheritdoc/>
         public async Task UpdateGameAndCreateGameStatisticRecord(
+            PerformContext hangfireContext,
             CancellationToken cancellationToken)
         {
-            var finalLogMessage = "процесс успешно завершен";
-            var logErrorMessage = "процесс завершен с ошибкой: ";
-            var logLevel = LogLevel.Information;
+            _logger = new HangfireLogger(hangfireContext);
+
+            var finalLogMessage = "Процесс успешно завершен.";
+            var logErrorMessage = "Процесс завершен с ошибкой: ";
+            var logLevel = LogLevel.Success;
             try
             {
-                _logger.LogInformation("начат процесс синхронизации всех данных по играм");
+                _logger.LogInformation("Начат процесс синхронизации всех данных по играм:");
                 await RunAsync(cancellationToken);
             }
             catch (HttpRequestException e)
@@ -61,7 +65,7 @@ namespace C4S.Services.Implements
             }
             finally
             {
-                _logger.Log(logLevel, finalLogMessage);
+                _logger.Log(finalLogMessage, logLevel);
             }
         }
 
@@ -75,18 +79,19 @@ namespace C4S.Services.Implements
                 .Select(x => x.Id)
                 .ToArray();
 
-            _logger.LogInformation($"получение данных, количество игр: {gameIds.Length}");
+            _logger.LogInformation($"Начало получения данных, количество игр: {gameIds.Length}.");
             var incomingGameData = await _developerPageGetaway
-                .GetGameInfoAsync(gameIds, cancellationToken);
-            _logger.LogInformation($"все данные успешно получены");
+                .GetGameInfoAsync(gameIds, _logger, cancellationToken);
+            _logger.LogSuccess($"Количество игр, по которым успешно получены данные: {gameIds.Length}.");
 
-            _logger.LogInformation($"начало обработки полученных данных");
+            _logger.LogInformation($"Начало обработки полученных данных:");
             await ProcessingIncomingDataAsync(incomingGameData, games, cancellationToken);
+            _logger.LogSuccess($"Все данные успешно обработаны.");
 
-            _logger.LogInformation($"начало обновления базы данных");
+            _logger.LogInformation($"Начало обновления базы данных.");
             await _dbContext
                 .SaveChangesAsync(cancellationToken);
-            _logger.LogInformation($"база данных успешно обновлена");
+            _logger.LogSuccess($"База данных успешно обновлена.");
         }
 
         private async Task ProcessingIncomingDataAsync(
@@ -108,25 +113,26 @@ namespace C4S.Services.Implements
 
                 UpdateGameModel(
                     sourceGameModel,
-                    incomingGameInfoViewModel.GameI,
+                    incomingGameInfoViewModel.Game,
                     gameIdForLogs);
 
-                _logger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики");
+                _logger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики.");
                 await _dbContext.GamesStatisticModels
                     .AddAsync(incomingGameInfoViewModel.GameStatistic, cancellationToken);
             }
         }
 
-        private IncomingGameInfoViewModel Projection(GameInfo incomingGameInfo)
+        private ProjectedGameInfoViewModel Projection(GameInfo incomingGameInfo)
         {
+            /*TODO: сделать мапинг срау в ProjectedGameInfoViewModel, вынести вм в отдельный файл*/
             var incomingGameModel = _mapper.Map<GameInfo, GameModel>(incomingGameInfo);
             var incomingGameStatisticModel = _mapper.Map<GameInfo, GameStatisticModel>(incomingGameInfo);
 
-            var incomingGameInfoViewModel = new IncomingGameInfoViewModel(
+            var projectedGameInfoViewModel = new ProjectedGameInfoViewModel(
                 incomingGameModel,
                 incomingGameStatisticModel);
 
-            return incomingGameInfoViewModel;
+            return projectedGameInfoViewModel;
         }
 
         private void UpdateGameModel(GameModel sourceGame, GameModel incomingGame, string gameIdForLogs)
@@ -135,11 +141,11 @@ namespace C4S.Services.Implements
             if (sourceGame.Name == incomingGame.Name
                 && sourceGame.PublicationDate == incomingGame.PublicationDate)
             {
-                _logger.LogInformation($"[{gameIdForLogs}] данные актуальны");
+                _logger.LogInformation($"[{gameIdForLogs}] данные актуальны.");
             }
             else
             {
-                _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление");
+                _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
                 sourceGame.Update(
                     incomingGame.Name!,
                     incomingGame.PublicationDate!.Value);
@@ -147,16 +153,30 @@ namespace C4S.Services.Implements
         }
     }
 
-    public class IncomingGameInfoViewModel
+    /// <summary>
+    /// Модель представляющая данные <see cref="GameInfo"/>, подготовленные для обновления базы данных
+    /// </summary>
+    public class ProjectedGameInfoViewModel
     {
-        public GameModel GameI { get; set; }
+        /// <summary>
+        /// Данные <see cref="GameInfo"/>, подготовленные для обновления таблицы <see cref="GameModel"/>
+        /// </summary>
+        public GameModel Game { get; set; }
+
+        /// Данные <see cref="GameInfo"/>, подготовленные для обновления таблицы <see cref="GameStatistic"/>
         public GameStatisticModel GameStatistic { get; set; }
 
-        public IncomingGameInfoViewModel(
+        /// <param name="gameInfo">
+        /// Данные <see cref="GameInfo"/>, подготовленные для обновления таблицы <see cref="GameStatistic"/>
+        /// </param>
+        /// <param name="gameStatisticInfo">
+        /// Данные <see cref="GameInfo"/>, подготовленные для обновления таблицы <see cref="GameModel"/>
+        /// </param>
+        public ProjectedGameInfoViewModel(
             GameModel gameInfo,
             GameStatisticModel gameStatisticInfo)
         {
-            GameI = gameInfo;
+            Game = gameInfo;
             GameStatistic = gameStatisticInfo;
         }
     }

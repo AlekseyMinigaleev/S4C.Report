@@ -20,7 +20,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
         /// <param name="appIDs">массив, содержащий id <see cref="GameModel"/>, по которым необходимо получить информацию</param>
         /// <param name="format">формат ответа</param>.
         /// <returns><see cref="HttpRequestMessage"/></returns>.
-        public static HttpRequestMessage GetGameInfo(int[] appIDs, string format)
+        public static HttpRequestMessage GetGamesInfo(int[] appIDs, string format)
         {
             var requestData = new
             {

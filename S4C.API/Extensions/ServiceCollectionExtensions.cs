@@ -1,5 +1,6 @@
 ﻿using C4S.DB;
 using Hangfire;
+using Hangfire.Console;
 using Microsoft.EntityFrameworkCore;
 
 namespace C4S.API.Extensions
@@ -20,7 +21,8 @@ namespace C4S.API.Extensions
                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                    .UseSimpleAssemblyNameTypeSerializer()
                    .UseRecommendedSerializerSettings()
-                   .UseSqlServerStorage(connectionString));
+                   .UseSqlServerStorage(connectionString)
+                   .UseConsole());
 
             services.AddHangfireServer();
         }
