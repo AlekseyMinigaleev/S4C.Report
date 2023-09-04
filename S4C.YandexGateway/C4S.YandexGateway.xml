@@ -7,27 +7,14 @@
         <member name="T:S4C.YandexGateway.DeveloperPageGateway.DeveloperPageGateway">
             <inheritdoc cref="T:S4C.YandexGateway.DeveloperPageGateway.IDeveloperPageGetaway"/>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.DeveloperPageGateway.GetGameIdsAsync(System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.DeveloperPageGateway.GetGameInfoAsync(System.Int32[],System.Threading.CancellationToken)">
+        <member name="M:S4C.YandexGateway.DeveloperPageGateway.DeveloperPageGateway.GetGameInfoAsync(System.Int32[],C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:S4C.YandexGateway.DeveloperPageGateway.DeveloperPageParser">
-            <summary>
-            Класс выполняющий парсинг html документа, страницы разработчика.
-            </summary>
+            <inheritdoc cref="T:S4C.YandexGateway.DeveloperPage.IDeveloperPageParser"/>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.DeveloperPageParser.GetAllGameidAsync(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Возвращает id всех игр со страницы разработчика.
-            </summary>
-            <param name="developerPageUrl">ссылка на страницу разработчика</param>
-            <returns>
-            Массив id всех игр на странице разработчика.
-            </returns>
-            <exception cref="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.EmptyDeveloperPageException"></exception>
-            <exception cref="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidGameIdException"></exception>
+        <member name="M:S4C.YandexGateway.DeveloperPageGateway.DeveloperPageParser.GetGameIdsAsync(C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
+            <inheritdoc/>
         </member>
         <member name="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.EmptyDeveloperPageException">
             <summary>
@@ -69,7 +56,7 @@
             Словарь, содержащий все <see cref="T:System.Net.Http.HttpRequestMessage"/>, необходимые для получения данных
             </summary>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.HttpRequestMethodDitctionary.GetGameInfo(System.Int32[],System.String)">
+        <member name="M:S4C.YandexGateway.DeveloperPageGateway.HttpRequestMethodDitctionary.GetGamesInfo(System.Int32[],System.String)">
             <summary>
             Создает <see cref="T:System.Net.Http.HttpRequestMessage"/> для получения <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>.
             </summary>
@@ -82,24 +69,13 @@
             Шлюз для получения данных со страницы разработчика
             </summary>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.IDeveloperPageGetaway.GetGameIdsAsync(System.Threading.CancellationToken)">
-            <summary>
-            Возвращает id всех игр со страницы разработчика.
-            </summary>
-            <remarks>
-            Для получения id всех игр, используется статичный парсинг html документа, страницы разработчика.
-            </remarks>
-            <returns>
-            <see cref="T:System.Int32"/>[] представляющих id всех игр на странице разработчика.
-            </returns>
-            <exception cref="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.EmptyDeveloperPageException"></exception>
-            <exception cref="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidGameIdException"></exception>
-        </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.IDeveloperPageGetaway.GetGameInfoAsync(System.Int32[],System.Threading.CancellationToken)">
+        <member name="M:S4C.YandexGateway.DeveloperPageGateway.IDeveloperPageGetaway.GetGameInfoAsync(System.Int32[],C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
             <summary>
             Возвращает <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>[] со страницы разработчика.
             </summary>
-            <param name="gameIds">массив id <see cref="T:C4S.DB.Models.GameModel"/>, для которых необходимо получить <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>[]</param>
+            <param name="gameIds">Массив id <see cref="T:C4S.DB.Models.GameModel"/>, для которых необходимо получить <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>[]</param>
+            <param name="logger">Объект <see cref="T:C4S.Helpers.Logger.BaseLogger"/>с помощью, которого будет выполняться логирование</param>
+            <param name="cancellationToken"><inheritdoc cref="T:System.Threading.CancellationToken"/></param>
             <returns>
             <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>[]
             </returns>
@@ -143,6 +119,26 @@
             <summary>
             Имена всех категорий, к которым относится игра
             </summary>
+        </member>
+        <member name="T:S4C.YandexGateway.DeveloperPage.IDeveloperPageParser">
+            <summary>
+            Класс выполняющий парсинг html документа, страницы разработчика.
+            </summary>
+        </member>
+        <member name="M:S4C.YandexGateway.DeveloperPage.IDeveloperPageParser.GetGameIdsAsync(C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
+            <summary>
+            Возвращает id всех игр со страницы разработчика.
+            </summary>
+            <remarks>
+            Для получения id всех игр, используется статичный парсинг html документа, страницы разработчика.
+            </remarks>
+            <param name="logger">Объект <see cref="T:C4S.Helpers.Logger.BaseLogger"/>с помощью, которого будет выполняться логирование</param>
+            <param name="cancellationToken"><inheritdoc cref="T:System.Threading.CancellationToken"/></param>
+            <returns>
+            <see cref="T:System.Int32"/>[] представляющий id всех игр на странице разработчика.
+            </returns>
+            <exception cref="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.EmptyDeveloperPageException"></exception>
+            <exception cref="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidGameIdException"></exception>
         </member>
     </members>
 </doc>

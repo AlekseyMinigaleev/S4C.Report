@@ -2,6 +2,7 @@
 using C4S.Services.Implements;
 using C4S.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using S4C.YandexGateway.DeveloperPage;
 using S4C.YandexGateway.DeveloperPageGateway;
 
 namespace C4S.Services.Extensions
@@ -15,7 +16,7 @@ namespace C4S.Services.Extensions
             services.AddTransient<IGameIdSyncService, GameIdSyncService>();
             services.AddTransient<IGameDataService,GameDataService>();
             services.AddTransient<IDeveloperPageGetaway,DeveloperPageGateway>();
-            services.AddTransient <DeveloperPageParser>();
+            services.AddTransient <IDeveloperPageParser, DeveloperPageParser>();
             services.AddScoped((provider) =>
             {
                 var config = Configuration.Default.WithDefaultLoader();
