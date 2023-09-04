@@ -4,7 +4,7 @@ using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
-using S4C.YandexGateway.DeveloperPageGateway;
+using S4C.YandexGateway.DeveloperPage;
 using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
 
 namespace C4S.Services.Implements
@@ -12,16 +12,16 @@ namespace C4S.Services.Implements
     /// <inheritdoc cref="IGameIdSyncService"/>
     public class GameIdSyncService : IGameIdSyncService
     {
-        private readonly IDeveloperPageGetaway _developerPageGetaway;
         private readonly ReportDbContext _dbContext;
-        private  BaseLogger _logger;
+        private readonly IDeveloperPageParser _developerPageParser;
+        private BaseLogger _logger;
 
         public GameIdSyncService(
             ReportDbContext dbContext,
-            IDeveloperPageGetaway developerPageGetaway)
+            IDeveloperPageParser developerPageParser)
         {
             _dbContext = dbContext;
-            _developerPageGetaway = developerPageGetaway;
+            _developerPageParser = developerPageParser;
         }
 
         /// <inheritdoc/>
@@ -66,8 +66,8 @@ namespace C4S.Services.Implements
         {
             /*TODO: поправить логи*/
             _logger.LogInformation($"Получение id всех игр.");
-            var gameIds = await _developerPageGetaway
-                .GetGameIdsAsync(cancellationToken);
+            var gameIds = await _developerPageParser
+                .GetGameIdsAsync(_logger, cancellationToken);
 
             /*TODO: поправить логи*/
             _logger.LogInformation($"Начало обработки всех id:");

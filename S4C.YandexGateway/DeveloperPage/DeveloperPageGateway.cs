@@ -12,24 +12,11 @@ namespace S4C.YandexGateway.DeveloperPageGateway
         public readonly string DeveloperPageUrl = "https://yandex.ru/games/developer?name=C4S.SHA";
 
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly DeveloperPageParser _developerPageParser; /*TODO: не понимаю нужен тут интерфейс или нет*/
 
         public DeveloperPageGateway(
-            IHttpClientFactory httpClient,
-            DeveloperPageParser developerPageParser)
+            IHttpClientFactory httpClient)
         {
             _httpClientFactory = httpClient;
-            _developerPageParser = developerPageParser;
-        }
-
-        /// <inheritdoc/>
-        public async Task<int[]> GetGameIdsAsync(
-            BaseLogger logger,
-            CancellationToken cancellationToken = default)
-        {
-            var gameIds = await _developerPageParser
-                .GetAllGameidAsync(logger,DeveloperPageUrl,cancellationToken);
-            return gameIds;
         }
 
         /// <inheritdoc/>
@@ -38,13 +25,17 @@ namespace S4C.YandexGateway.DeveloperPageGateway
             BaseLogger logger,
             CancellationToken cancellationToken = default)
         {
+            logger.LogInformation($"Составление запроса на сервер Яндекс");
             var httpResponseMessage = await SendRequestAsync(() =>
-                HttpRequestMethodDitctionary.GetGameInfo(gameIds, "long"),
+                HttpRequestMethodDitctionary.GetGamesInfo(gameIds, "long"),
                 cancellationToken);
+            logger.LogSuccess($"Ответ от Яндекса успешно получен");
 
+            logger.LogInformation($"Начало обработки ответа");
             var gameViewModels = await DeserializeObjectsAsync(
                 httpResponseMessage,
                 cancellationToken);
+            logger.LogSuccess($"Ответ успешно обработан");
 
             return gameViewModels;
         }

@@ -12,6 +12,7 @@ using S4C.YandexGateway.DeveloperPageGateway.Models;
 /*
  * TODO: проверить как будут работать джобы если тыкать много раз на них. И если тыкать их в неправильном порядке.
  */
+
 namespace C4S.Services.Implements
 {
     /// <inheritdoc cref="IGameDataService"/>
@@ -20,7 +21,7 @@ namespace C4S.Services.Implements
         private readonly ReportDbContext _dbContext;
         private readonly IDeveloperPageGetaway _developerPageGetaway;
         private readonly IMapper _mapper;
-        private BaseLogger _logger; 
+        private BaseLogger _logger;
 
         public GameDataService(
             IDeveloperPageGetaway developerPageGetaway,
@@ -80,7 +81,7 @@ namespace C4S.Services.Implements
 
             _logger.LogInformation($"Начало получения данных, количество игр: {gameIds.Length}.");
             var incomingGameData = await _developerPageGetaway
-                .GetGameInfoAsync(gameIds, cancellationToken);
+                .GetGameInfoAsync(gameIds, _logger, cancellationToken);
             _logger.LogSuccess($"Количество игр, по которым успешно получены данные: {gameIds.Length}.");
 
             _logger.LogInformation($"Начало обработки полученных данных:");

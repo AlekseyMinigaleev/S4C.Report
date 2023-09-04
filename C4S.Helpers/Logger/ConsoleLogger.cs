@@ -2,6 +2,9 @@
 
 namespace C4S.Helpers.Logger
 {
+    /// <summary>
+    /// Логгер в консоль
+    /// </summary>
     public class ConsoleLogger<T> : BaseLogger
         where T : class
     {
@@ -12,9 +15,10 @@ namespace C4S.Helpers.Logger
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public override void Log(string message, LogLevel logLevel)
         {
-            var microsofrLogLevel = logLevel switch
+            var microsoftLogLevel = logLevel switch
             {
                 LogLevel.Information => Microsoft.Extensions.Logging.LogLevel.Information,/*TODO: проверить*/
                 LogLevel.Success => Microsoft.Extensions.Logging.LogLevel.Information, /*TODO: проверить*/
@@ -22,26 +26,30 @@ namespace C4S.Helpers.Logger
                 LogLevel.Error => Microsoft.Extensions.Logging.LogLevel.Error,
             };
 
-            _logger.Log(microsofrLogLevel, message);
+            _logger.Log(microsoftLogLevel, message);
         }
 
+        /// <inheritdoc/>
         public override void LogError(string message)
         {
             _logger.LogError(message);
         }
 
         /*TODO: проверить*/
+        /// <inheritdoc/>
         public override void LogInformation(string message)
         {
             _logger.LogInformation(message);
         }
 
         /*TODO: проверить*/
+        /// <inheritdoc/>
         public override void LogSuccess(string message)
         {
             _logger.LogInformation(message);
         }
 
+        /// <inheritdoc/>
         public override void LogWarning(string message)
         {
             _logger.LogWarning(message);
