@@ -1,4 +1,6 @@
-﻿namespace C4S.DB.Models
+﻿using System.Linq.Expressions;
+
+namespace C4S.DB.Models
 {
     /// <summary>
     /// Сущность игры
@@ -43,5 +45,26 @@
             Name = name;
             PublicationDate = publicationDate;
         }
+
+        /// <summary>
+        /// Проверяет есть ли изменения у модели по сравнению с <paramref name="incomingGame"/>
+        /// </summary>
+        /// <param name="incomingGame">Игра с которой происходит сравнение</param>
+        /// <returns>
+        /// <see langword="true"/> если в модели есть изменения, иначе <see langword="false"/>
+        /// </returns>
+        public bool HasChanges(GameModel incomingGame)
+        {
+            var hasChanges = Name == incomingGame.Name
+                && PublicationDate == incomingGame.PublicationDate;
+
+            return hasChanges;
+        }
     }
+
+    /// <summary>
+    /// Справочник <see cref="Expression"/> для <see cref="GameModel"/>
+    /// </summary>
+    public static class GameExpressions
+    { }
 }

@@ -30,10 +30,7 @@ namespace C4S.Services.Implements
 
             var (errorMessage, isValidCron) = IsValidCronExpression(updatedJobConfig.CronExpression);
 
-            //TODO: вынести в спеку?
-            //меняем, потому что мы поддерживаем CronExpression = string.Empty, а hangfire нет
-            if (string.IsNullOrWhiteSpace(updatedJobConfig.CronExpression))
-                updatedJobConfig.Update(null, updatedJobConfig.IsEnable);
+            updatedJobConfig.NormalizeCronExpression();
 
             if (isValidCron)
                 await UpdateRecurringJobAsync(updatedJobConfig, cancellationToken);
