@@ -38,7 +38,7 @@ namespace S4C.YandexGateway.DeveloperPage
         }
     }
 
-    /*TODO:когда будет не впадлу заменить словари на enum*/
+    /*TODO:заменить на enum*/
     /// <summary>
     /// Словарь всех допустимых форматов для запроса на Яндекс игры
     /// </summary>

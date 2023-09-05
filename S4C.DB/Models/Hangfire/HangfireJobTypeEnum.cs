@@ -2,6 +2,7 @@
 
 namespace C4S.DB.Models.Hangfire
 {
+	/*TODO: разобраться с Enum display*/
 	public enum HangfireJobTypeEnum
 	{
 		[Display(Name = "Парсинг id игр со страницы разработчика")]
