@@ -35,23 +35,23 @@
         </member>
         <member name="T:C4S.Services.Implements.ProjectedGameInfoViewModel">
             <summary>
-            Модель представляющая данные <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>, подготовленные для обновления базы данных
+            Модель представляющая данные <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>, подготовленные для обновления базы данных
             </summary>
         </member>
         <member name="P:C4S.Services.Implements.ProjectedGameInfoViewModel.Game">
             <summary>
-            Данные <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>, подготовленные для обновления таблицы <see cref="T:C4S.DB.Models.GameModel"/>
+            Данные <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>, подготовленные для обновления таблицы <see cref="T:C4S.DB.Models.GameModel"/>
             </summary>
         </member>
         <member name="P:C4S.Services.Implements.ProjectedGameInfoViewModel.GameStatistic">
-            Данные <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>, подготовленные для обновления таблицы <see cref="P:C4S.Services.Implements.ProjectedGameInfoViewModel.GameStatistic"/>
+            Данные <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>, подготовленные для обновления таблицы <see cref="P:C4S.Services.Implements.ProjectedGameInfoViewModel.GameStatistic"/>
         </member>
         <member name="M:C4S.Services.Implements.ProjectedGameInfoViewModel.#ctor(C4S.DB.Models.GameModel,C4S.DB.Models.GameStatisticModel)">
             <param name="gameInfo">
-            Данные <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>, подготовленные для обновления таблицы <see cref="P:C4S.Services.Implements.ProjectedGameInfoViewModel.GameStatistic"/>
+            Данные <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>, подготовленные для обновления таблицы <see cref="P:C4S.Services.Implements.ProjectedGameInfoViewModel.GameStatistic"/>
             </param>
             <param name="gameStatisticInfo">
-            Данные <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>, подготовленные для обновления таблицы <see cref="T:C4S.DB.Models.GameModel"/>
+            Данные <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>, подготовленные для обновления таблицы <see cref="T:C4S.DB.Models.GameModel"/>
             </param>
         </member>
         <member name="T:C4S.Services.Implements.GameIdSyncService">

@@ -1,5 +1,5 @@
 ﻿using C4S.Helpers.Logger;
-using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
+using S4C.YandexGateway.DeveloperPage.Exceptions;
 
 namespace S4C.YandexGateway.DeveloperPage
 {
@@ -16,6 +16,7 @@ namespace S4C.YandexGateway.DeveloperPage
         /// Для получения id всех игр, используется статичный парсинг html документа, страницы разработчика.
         /// </remarks>
         /// <param name="logger">Объект <see cref="BaseLogger"/>с помощью, которого будет выполняться логирование</param>
+        /// <param name="developerPageUrl">Ссылка на страницу разработчика</param>
         /// <param name="cancellationToken"><inheritdoc cref="CancellationToken"/></param>
         /// <returns>
         /// <see cref="int"/>[] представляющий id всех игр на странице разработчика.
@@ -23,6 +24,7 @@ namespace S4C.YandexGateway.DeveloperPage
         /// <exception cref="EmptyDeveloperPageException"></exception>
         /// <exception cref="InvalidGameIdException"></exception>
         public Task<int[]> GetGameIdsAsync(
+            string developerPageUrl,
             BaseLogger logger,
             CancellationToken cancellationToken = default);
     }

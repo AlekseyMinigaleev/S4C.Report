@@ -1,9 +1,9 @@
 ﻿using C4S.DB.Models;
 using C4S.Helpers.Logger;
-using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
-using S4C.YandexGateway.DeveloperPageGateway.Models;
+using S4C.YandexGateway.DeveloperPage.Exceptions;
+using S4C.YandexGateway.DeveloperPage.Models;
 
-namespace S4C.YandexGateway.DeveloperPageGateway
+namespace S4C.YandexGateway.DeveloperPage
 {
     /// <summary>
     /// Шлюз для получения данных со страницы разработчика

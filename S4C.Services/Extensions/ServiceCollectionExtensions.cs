@@ -1,28 +1,20 @@
-﻿using AngleSharp;
-using C4S.Services.Implements;
+﻿using C4S.Services.Implements;
 using C4S.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using S4C.YandexGateway.DeveloperPage;
-using S4C.YandexGateway.DeveloperPageGateway;
+using S4C.YandexGateway.DeveloperPage.Extensions;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace C4S.Services.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddServices(this IServiceCollection services)
+        public static void AddServices(this IServiceCollection services, IConfiguration configuration)
         {
             /*TODO: жизненные циклы зависимостей*/
             services.AddTransient<IBackGroundJobService, BackGroundJobService>();
             services.AddTransient<IGameIdSyncService, GameIdSyncService>();
             services.AddTransient<IGameDataService,GameDataService>();
-            services.AddTransient<IDeveloperPageGetaway,DeveloperPageGateway>();
-            services.AddTransient <IDeveloperPageParser, DeveloperPageParser>();
-            services.AddScoped((provider) =>
-            {
-                var config = Configuration.Default.WithDefaultLoader();
-                var browsingContext = BrowsingContext.New(config);
-                return browsingContext;
-            });
+            services.AddYandexGetewayServices(configuration);
         }
     }
 }

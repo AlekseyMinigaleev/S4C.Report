@@ -25,14 +25,36 @@ namespace C4S.DB.Models
         /// </summary>
         public DateTime? PublicationDate { get; private set; }
 
-        public ISet<GameStatisticModel> GameStatistics { get; private set; }
+        /// <summary>
+        /// Аккаунт Яндекс игр
+        /// </summary>
+        public YandexGamesAccountModel YandexGamesAccount { get; private set; } 
+        /// <summary>
+        /// FK
+        /// </summary>
+        public Guid YandexGamesAccountId { get; private set; }
+
+        /// <summary>
+        /// Список записей статистики
+        /// </summary>
+        public ISet<GameStatisticModel>? GameStatistics { get; private set; }
 
         private GameModel()
         { }
 
-        public GameModel(int id)
+        public GameModel(
+            int id,
+            YandexGamesAccountModel yandexGamesAccount,
+            string? name = default,
+            DateTime? publicationDate = default,
+            ISet<GameStatisticModel>? gameStatistics = default)
         {
             Id = id;
+            YandexGamesAccount = yandexGamesAccount;
+            YandexGamesAccountId = yandexGamesAccount.Id;
+            Name = name;
+            PublicationDate = publicationDate;
+            GameStatistics = gameStatistics;
         }
 
         /// <summary>

@@ -4,7 +4,7 @@ using C4S.DB.Models;
 
 namespace C4S.DB.ModelConfigurations
 {
-    public class GameModelConfiguration : IEntityTypeConfiguration<GameModel>
+    public class GameConfiguration : IEntityTypeConfiguration<GameModel>
     {
         public void Configure(EntityTypeBuilder<GameModel> builder)
         {

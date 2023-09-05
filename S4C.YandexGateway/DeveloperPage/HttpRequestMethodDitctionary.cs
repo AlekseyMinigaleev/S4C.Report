@@ -1,43 +1,57 @@
 ﻿using C4S.DB.Models;
 using Newtonsoft.Json;
-using S4C.YandexGateway.DeveloperPageGateway.Models;
+using S4C.YandexGateway.DeveloperPage.Models;
 using System.Text;
 
-namespace S4C.YandexGateway.DeveloperPageGateway
+namespace S4C.YandexGateway.DeveloperPage
 {
     /// <summary>
     /// Словарь, содержащий все <see cref="HttpRequestMessage"/>, необходимые для получения данных
     /// </summary>
     public static class HttpRequestMethodDitctionary
     {
-        /*TODO: hardcode*/
-        private static readonly string requestUri = "https://yandex.ru/games/_crpd/2fxg324u1/0463a9o-i/WmeCEDy-VUd2S-vlZ9bXdhXct8xMhg5RScdAENGPZD0MTYp-CnAWBj63mxRiHCIVXFZeDaAw-_pk77fa1o_b6g4Xg239frXHxqdDTPsCJvJt3LvIFdsyWTgHsRSlg2gFVAn_fn8Fai4yy38QRgReUCh-OlGBcNfvWLe74sbqz5Zec-MdKb4RC2o7w6B3xtYebdzT9AWKalVo_1w4uaM0ZTRFyxZfGXY2fqdDaGoYZhAYXmJlpUjnxzjnm7qCgo-iAmfXZTHqURtCO-uoV9q6KgHwv7hZsgJROONgJLXfBAl0VbtaeyV2LmKrXxBiECIYEHJSPa0Ip_N4z8-CmsLHkg5vx31Bsh0LWj-buBuKzm45jOv8PZoyHTjHDAytsxw9IC2zIgc1ek4ugztIQgBeUEACDlHlYIuLZN_7_sb6s_5uG-M1WcYtV2Ybv7B31qZSAZiv_BH6MglQu3AklesQUVA1-3IDMQJM";
-
-        /*TODO: создать словать форматов*/
         /// <summary>
         /// Создает <see cref="HttpRequestMessage"/> для получения <see cref="GameInfoModel"/>.
         /// </summary>
+        /// <param name="requestUrl">url запроса</param>
         /// <param name="appIDs">массив, содержащий id <see cref="GameModel"/>, по которым необходимо получить информацию</param>
         /// <param name="format">формат ответа</param>.
         /// <returns><see cref="HttpRequestMessage"/></returns>.
-        public static HttpRequestMessage GetGamesInfo(int[] appIDs, string format)
+        public static HttpRequestMessage GetGamesInfo(string requestUrl, int[] appIDs, string format)
         {
             var requestData = new
             {
-                appIDs,
-                format
+                appIDs = appIDs,
+                format = format,
             };
 
             var jsonPayload = JsonConvert.SerializeObject(requestData);
 
             var payload = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-            var result = new HttpRequestMessage(HttpMethod.Post, requestUri)
+            var result = new HttpRequestMessage(HttpMethod.Post, requestUrl)
             {
                 Content = payload
             };
 
             return result;
         }
+    }
+
+    /*TODO:заменить на enum*/
+    /// <summary>
+    /// Словарь всех допустимых форматов для запроса на Яндекс игры
+    /// </summary>
+    public static class HttpRequestDictionary
+    {
+        /// <summary>
+        /// Полный формат
+        /// </summary>
+        public static string LongFormat = "long";
+
+        /// <summary>
+        /// Короткий формат
+        /// </summary>
+        public static string ShortFormat = "short";
     }
 }
