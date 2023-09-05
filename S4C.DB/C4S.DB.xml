@@ -245,6 +245,11 @@
             Справочник констант для <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
             </summary>
         </member>
+        <member name="T:C4S.DB.Models.Hangfire.HangfireJobTypeEnum">
+            <summary>
+            Перечисление всех возможных типов джоб
+            </summary>
+        </member>
         <member name="T:C4S.DB.Models.UserModel">
             <summary>
             C4S пользователь

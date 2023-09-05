@@ -8,9 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using S4C.YandexGateway.DeveloperPage;
 using S4C.YandexGateway.DeveloperPage.Models;
 
-/*
- * TODO: проверить как будут работать джобы если тыкать много раз на них. И если тыкать их в неправильном порядке.
- */
 namespace C4S.Services.Implements
 {
     /// <inheritdoc cref="IGameDataService"/>
@@ -77,8 +74,7 @@ namespace C4S.Services.Implements
             _logger.LogSuccess($"Все данные успешно обработаны.");
 
             _logger.LogInformation($"Начало обновления базы данных.");
-            await _dbContext
-                .SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
             _logger.LogSuccess($"База данных успешно обновлена.");
         }
 
@@ -97,30 +93,26 @@ namespace C4S.Services.Implements
                         ? sourceGameModel.Id.ToString()
                         : sourceGameModel.Name;
 
-                var incomingGameInfoViewModel = Projection(incomingGameInfo);
+                var (incomingGameModel,
+                incomingGameStatisticModel) = Projection(incomingGameInfo);
 
                 UpdateGameModel(
                     sourceGameModel,
-                    incomingGameInfoViewModel.Game,
+                    incomingGameModel,
                     gameIdForLogs);
 
                 _logger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики.");
                 await _dbContext.GamesStatisticModels
-                    .AddAsync(incomingGameInfoViewModel.GameStatistic, cancellationToken);
+                    .AddAsync(incomingGameStatisticModel, cancellationToken);
             }
         }
 
-        private ProjectedGameInfoViewModel Projection(GameInfoModel incomingGameInfo)
+        private (GameModel,GameStatisticModel) Projection(GameInfoModel incomingGameInfo)
         {
-            /*TODO: сделать мапинг срау в ProjectedGameInfoViewModel, вынести вм в отдельный файл*/
             var incomingGameModel = _mapper.Map<GameInfoModel, GameModel>(incomingGameInfo);
             var incomingGameStatisticModel = _mapper.Map<GameInfoModel, GameStatisticModel>(incomingGameInfo);
 
-            var projectedGameInfoViewModel = new ProjectedGameInfoViewModel(
-                incomingGameModel,
-                incomingGameStatisticModel);
-
-            return projectedGameInfoViewModel;
+            return (incomingGameModel,incomingGameStatisticModel);
         }
 
         private void UpdateGameModel(GameModel sourceGame, GameModel incomingGame, string gameIdForLogs)
@@ -138,34 +130,6 @@ namespace C4S.Services.Implements
                     incomingGame.Name!,
                     incomingGame.PublicationDate!.Value);
             }
-        }
-    }
-
-    /// <summary>
-    /// Модель представляющая данные <see cref="GameInfoModel"/>, подготовленные для обновления базы данных
-    /// </summary>
-    public class ProjectedGameInfoViewModel
-    {
-        /// <summary>
-        /// Данные <see cref="GameInfoModel"/>, подготовленные для обновления таблицы <see cref="GameModel"/>
-        /// </summary>
-        public GameModel Game { get; set; }
-
-        /// Данные <see cref="GameInfoModel"/>, подготовленные для обновления таблицы <see cref="GameStatistic"/>
-        public GameStatisticModel GameStatistic { get; set; }
-
-        /// <param name="gameInfo">
-        /// Данные <see cref="GameInfoModel"/>, подготовленные для обновления таблицы <see cref="GameStatistic"/>
-        /// </param>
-        /// <param name="gameStatisticInfo">
-        /// Данные <see cref="GameInfoModel"/>, подготовленные для обновления таблицы <see cref="GameModel"/>
-        /// </param>
-        public ProjectedGameInfoViewModel(
-            GameModel gameInfo,
-            GameStatisticModel gameStatisticInfo)
-        {
-            Game = gameInfo;
-            GameStatistic = gameStatisticInfo;
         }
     }
 }

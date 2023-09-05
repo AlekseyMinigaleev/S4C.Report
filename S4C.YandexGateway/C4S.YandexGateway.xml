@@ -16,6 +16,21 @@
         <member name="M:S4C.YandexGateway.DeveloperPage.DeveloperPageParser.GetGameIdsAsync(System.String,C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
+        <member name="T:S4C.YandexGateway.DeveloperPage.Enums.RequestFormat">
+            <summary>
+            Словарь всех допустимых форматов для запроса на Яндекс игры
+            </summary>
+        </member>
+        <member name="F:S4C.YandexGateway.DeveloperPage.Enums.RequestFormat.Long">
+            <summary>
+            Полный формат
+            </summary>
+        </member>
+        <member name="F:S4C.YandexGateway.DeveloperPage.Enums.RequestFormat.Short">
+            <summary>
+            Короткий формат
+            </summary>
+        </member>
         <member name="T:S4C.YandexGateway.DeveloperPage.Exceptions.EmptyDeveloperPageException">
             <summary>
             Ошибка указывающая, на то что страница разработчика не содержит игр
@@ -56,7 +71,7 @@
             Словарь, содержащий все <see cref="T:System.Net.Http.HttpRequestMessage"/>, необходимые для получения данных
             </summary>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPage.HttpRequestMethodDitctionary.GetGamesInfo(System.String,System.Int32[],System.String)">
+        <member name="M:S4C.YandexGateway.DeveloperPage.HttpRequestMethodDitctionary.GetGamesInfo(System.String,System.Int32[],S4C.YandexGateway.DeveloperPage.Enums.RequestFormat)">
             <summary>
             Создает <see cref="T:System.Net.Http.HttpRequestMessage"/> для получения <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>.
             </summary>
@@ -64,21 +79,6 @@
             <param name="appIDs">массив, содержащий id <see cref="T:C4S.DB.Models.GameModel"/>, по которым необходимо получить информацию</param>
             <param name="format">формат ответа</param>.
             <returns><see cref="T:System.Net.Http.HttpRequestMessage"/></returns>.
-        </member>
-        <member name="T:S4C.YandexGateway.DeveloperPage.HttpRequestDictionary">
-            <summary>
-            Словарь всех допустимых форматов для запроса на Яндекс игры
-            </summary>
-        </member>
-        <member name="F:S4C.YandexGateway.DeveloperPage.HttpRequestDictionary.LongFormat">
-            <summary>
-            Полный формат
-            </summary>
-        </member>
-        <member name="F:S4C.YandexGateway.DeveloperPage.HttpRequestDictionary.ShortFormat">
-            <summary>
-            Короткий формат
-            </summary>
         </member>
         <member name="T:S4C.YandexGateway.DeveloperPage.IDeveloperPageGetaway">
             <summary>

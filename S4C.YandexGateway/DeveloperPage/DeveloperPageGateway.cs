@@ -1,6 +1,7 @@
 ﻿using C4S.Helpers.Logger;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using S4C.YandexGateway.DeveloperPage.Enums;
 using S4C.YandexGateway.DeveloperPage.Exceptions;
 using S4C.YandexGateway.DeveloperPage.Models;
 
@@ -32,17 +33,17 @@ namespace S4C.YandexGateway.DeveloperPage
                 HttpRequestMethodDitctionary.GetGamesInfo(
                     _yandexGamesRequestUrl,
                     gameIds,
-                    HttpRequestDictionary.LongFormat),
+                    RequestFormat.Long),
                 cancellationToken);
             logger.LogSuccess($"Ответ от Яндекса успешно получен");
 
             logger.LogInformation($"Начало обработки ответа");
-            var gameViewModels = await DeserializeObjectsAsync(
+            var gameInfoModel = await DeserializeObjectsAsync(
                 httpResponseMessage,
                 cancellationToken);
             logger.LogSuccess($"Ответ успешно обработан");
 
-            return gameViewModels;
+            return gameInfoModel;
         }
 
         private async Task<HttpResponseMessage> SendRequestAsync(
@@ -76,7 +77,7 @@ namespace S4C.YandexGateway.DeveloperPage
                 var playersCount = GetValue<int>("playersCount", gamesJToken[i], jsonString);
                 var categoriesNames = GetValue<string[]>("categoriesNames", gamesJToken[i], jsonString);
 
-                var gameDataViewModel = new GameInfoModel(
+                var gameInfo = new GameInfoModel(
                     title: title,
                     appId: appId,
                     firstPublished: firstPublished,
@@ -84,7 +85,7 @@ namespace S4C.YandexGateway.DeveloperPage
                     playersCount: playersCount,
                     categoriesNames: categoriesNames);
 
-                results[i] = gameDataViewModel;
+                results[i] = gameInfo;
             }
 
             return results;

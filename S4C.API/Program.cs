@@ -36,7 +36,6 @@ app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.MapControllers();
 
-/* TODO: чу тут с токеном делать*/
 await app.InitApplicationInfrastructureAsync();
 
 app.Run();

@@ -10,10 +10,9 @@ namespace C4S.Services.Extensions
     {
         public static void AddServices(this IServiceCollection services, IConfiguration configuration)
         {
-            /*TODO: жизненные циклы зависимостей*/
             services.AddTransient<IBackGroundJobService, BackGroundJobService>();
-            services.AddTransient<IGameIdSyncService, GameIdSyncService>();
-            services.AddTransient<IGameDataService,GameDataService>();
+            services.AddScoped<IGameIdSyncService, GameIdSyncService>();
+            services.AddScoped<IGameDataService,GameDataService>();
             services.AddYandexGetewayServices(configuration);
         }
     }
