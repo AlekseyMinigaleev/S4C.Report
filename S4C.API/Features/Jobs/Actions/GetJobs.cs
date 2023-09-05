@@ -34,6 +34,18 @@ namespace C4S.API.Features.Jobs.Actions
             /// статус джобы
             /// </summary>
             public bool IsEnable { get; set; }
+
+            public ResponseViewModel(
+                string name,
+                HangfireJobTypeEnum jobType,
+                bool isEnable,
+                string? cronExpression = default)
+            {
+                Name = name;
+                JobType = jobType;
+                CronExpression = cronExpression;
+                IsEnable = isEnable;
+            }
         }
 
         public class ResponseViewModelProfiler : Profile

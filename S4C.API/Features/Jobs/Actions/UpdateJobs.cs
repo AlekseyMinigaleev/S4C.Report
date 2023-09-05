@@ -28,6 +28,14 @@ namespace C4S.API.Features.Jobs.Actions
             /// Текст возможной ошибки при обновлении HangfireConfigurationModel
             /// </summary>
             public string? Error { get; set; }
+
+            public ResponseViewModel(
+                HangfireJobTypeEnum jobType,
+                string? error = default)
+            {
+                JobType = jobType;
+                Error = error;
+            }
         }
 
         public class CommandValidator : AbstractValidator<Command>
@@ -59,15 +67,13 @@ namespace C4S.API.Features.Jobs.Actions
 
                 foreach (var updatedJob in command.UpdatedJobs)
                 {
-                    var errors = await UpdateRecurringJobAndGetErrorsAsync(
-                        updatedJob,
-                        cancellationToken);
+                    var error = await UpdateRecurringJobAndGetErrorsAsync(
+                            updatedJob,
+                            cancellationToken);
 
-                    var responseViewModel = new ResponseViewModel
-                    {
-                        JobType = updatedJob.JobType,
-                        Error = errors
-                    };
+                    var responseViewModel = new ResponseViewModel(
+                        jobType: updatedJob.JobType,
+                        error: error);
 
                     responseViewModelList.Add(responseViewModel);
                 }

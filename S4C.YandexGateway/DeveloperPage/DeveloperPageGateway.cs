@@ -38,12 +38,12 @@ namespace S4C.YandexGateway.DeveloperPage
             logger.LogSuccess($"Ответ от Яндекса успешно получен");
 
             logger.LogInformation($"Начало обработки ответа");
-            var gameViewModels = await DeserializeObjectsAsync(
+            var gameInfoModel = await DeserializeObjectsAsync(
                 httpResponseMessage,
                 cancellationToken);
             logger.LogSuccess($"Ответ успешно обработан");
 
-            return gameViewModels;
+            return gameInfoModel;
         }
 
         private async Task<HttpResponseMessage> SendRequestAsync(
@@ -77,7 +77,7 @@ namespace S4C.YandexGateway.DeveloperPage
                 var playersCount = GetValue<int>("playersCount", gamesJToken[i], jsonString);
                 var categoriesNames = GetValue<string[]>("categoriesNames", gamesJToken[i], jsonString);
 
-                var gameDataViewModel = new GameInfoModel(
+                var gameInfo = new GameInfoModel(
                     title: title,
                     appId: appId,
                     firstPublished: firstPublished,
@@ -85,7 +85,7 @@ namespace S4C.YandexGateway.DeveloperPage
                     playersCount: playersCount,
                     categoriesNames: categoriesNames);
 
-                results[i] = gameDataViewModel;
+                results[i] = gameInfo;
             }
 
             return results;
