@@ -4,138 +4,106 @@
         <name>S4C.YandexGateway</name>
     </assembly>
     <members>
-        <member name="T:S4C.YandexGateway.DeveloperPageGateway.DeveloperPageGateway">
-            <inheritdoc cref="T:S4C.YandexGateway.DeveloperPageGateway.IDeveloperPageGetaway"/>
+        <member name="T:S4C.YandexGateway.DeveloperPage.DeveloperPageGateway">
+            <inheritdoc cref="T:S4C.YandexGateway.DeveloperPage.IDeveloperPageGetaway"/>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.DeveloperPageGateway.GetGameInfoAsync(System.Int32[],C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
+        <member name="M:S4C.YandexGateway.DeveloperPage.DeveloperPageGateway.GetGameInfoAsync(System.Int32[],C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="T:S4C.YandexGateway.DeveloperPageGateway.DeveloperPageParser">
+        <member name="T:S4C.YandexGateway.DeveloperPage.DeveloperPageParser">
             <inheritdoc cref="T:S4C.YandexGateway.DeveloperPage.IDeveloperPageParser"/>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.DeveloperPageParser.GetGameIdsAsync(C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
+        <member name="M:S4C.YandexGateway.DeveloperPage.DeveloperPageParser.GetGameIdsAsync(System.String,C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.EmptyDeveloperPageException">
+        <member name="T:S4C.YandexGateway.DeveloperPage.Exceptions.EmptyDeveloperPageException">
             <summary>
             Ошибка указывающая, на то что страница разработчика не содержит игр
             </summary>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.Exceptions.EmptyDeveloperPageException.#ctor(System.String)">
+        <member name="M:S4C.YandexGateway.DeveloperPage.Exceptions.EmptyDeveloperPageException.#ctor(System.String)">
             <param name="developerPageUrl">страница разработчика</param>
         </member>
-        <member name="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidContractException">
+        <member name="T:S4C.YandexGateway.DeveloperPage.Exceptions.InvalidContractException">
             <summary>
             Ошибка, указывающая на обновление контракта
             </summary>
         </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidContractException.JsonString">
+        <member name="P:S4C.YandexGateway.DeveloperPage.Exceptions.InvalidContractException.JsonString">
             <summary>
             Объект возвращаемый яндексом
             </summary>
         </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidContractException.Key">
+        <member name="P:S4C.YandexGateway.DeveloperPage.Exceptions.InvalidContractException.Key">
             <summary>
             Ключ по которому произошла ошибка
             </summary>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidContractException.#ctor(System.String,System.String)">
+        <member name="M:S4C.YandexGateway.DeveloperPage.Exceptions.InvalidContractException.#ctor(System.String,System.String)">
             <param name="jsonString">Объект возвращаемый яндексом</param>
             <param name="key">Ключ по которому произошла ошибка</param>
         </member>
-        <member name="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidGameIdException">
+        <member name="T:S4C.YandexGateway.DeveloperPage.Exceptions.InvalidGameIdException">
             <summary>
             Ошибка, указывающая на некорректное id игры.
             </summary>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidGameIdException.#ctor(System.String)">
+        <member name="M:S4C.YandexGateway.DeveloperPage.Exceptions.InvalidGameIdException.#ctor(System.String)">
             <param name="gameId">id игры, которое вызвало ошибку</param>
         </member>
-        <member name="T:S4C.YandexGateway.DeveloperPageGateway.HttpRequestMethodDitctionary">
+        <member name="T:S4C.YandexGateway.DeveloperPage.HttpRequestMethodDitctionary">
             <summary>
             Словарь, содержащий все <see cref="T:System.Net.Http.HttpRequestMessage"/>, необходимые для получения данных
             </summary>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.HttpRequestMethodDitctionary.GetGamesInfo(System.Int32[],System.String)">
+        <member name="M:S4C.YandexGateway.DeveloperPage.HttpRequestMethodDitctionary.GetGamesInfo(System.String,System.Int32[],System.String)">
             <summary>
-            Создает <see cref="T:System.Net.Http.HttpRequestMessage"/> для получения <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>.
+            Создает <see cref="T:System.Net.Http.HttpRequestMessage"/> для получения <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>.
             </summary>
+            <param name="requestUrl">url запроса</param>
             <param name="appIDs">массив, содержащий id <see cref="T:C4S.DB.Models.GameModel"/>, по которым необходимо получить информацию</param>
             <param name="format">формат ответа</param>.
             <returns><see cref="T:System.Net.Http.HttpRequestMessage"/></returns>.
         </member>
-        <member name="T:S4C.YandexGateway.DeveloperPageGateway.IDeveloperPageGetaway">
+        <member name="T:S4C.YandexGateway.DeveloperPage.HttpRequestDictionary">
+            <summary>
+            Словарь всех допустимых форматов для запроса на Яндекс игры
+            </summary>
+        </member>
+        <member name="F:S4C.YandexGateway.DeveloperPage.HttpRequestDictionary.LongFormat">
+            <summary>
+            Полный формат
+            </summary>
+        </member>
+        <member name="F:S4C.YandexGateway.DeveloperPage.HttpRequestDictionary.ShortFormat">
+            <summary>
+            Короткий формат
+            </summary>
+        </member>
+        <member name="T:S4C.YandexGateway.DeveloperPage.IDeveloperPageGetaway">
             <summary>
             Шлюз для получения данных со страницы разработчика
             </summary>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPageGateway.IDeveloperPageGetaway.GetGameInfoAsync(System.Int32[],C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
+        <member name="M:S4C.YandexGateway.DeveloperPage.IDeveloperPageGetaway.GetGameInfoAsync(System.Int32[],C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
             <summary>
-            Возвращает <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>[] со страницы разработчика.
+            Возвращает <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>[] со страницы разработчика.
             </summary>
-            <param name="gameIds">Массив id <see cref="T:C4S.DB.Models.GameModel"/>, для которых необходимо получить <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>[]</param>
+            <param name="gameIds">Массив id <see cref="T:C4S.DB.Models.GameModel"/>, для которых необходимо получить <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>[]</param>
             <param name="logger">Объект <see cref="T:C4S.Helpers.Logger.BaseLogger"/>с помощью, которого будет выполняться логирование</param>
             <param name="cancellationToken"><inheritdoc cref="T:System.Threading.CancellationToken"/></param>
             <returns>
-            <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>[]
+            <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>[]
             </returns>
             <exception cref="T:System.Net.Http.HttpRequestException"></exception>
-            <exception cref="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidContractException"></exception>
-        </member>
-        <member name="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel">
-            <summary>
-            Информация об игре
-            </summary>
-            <remarks>
-            Включает в себя все необходимые поля для <see cref="T:C4S.DB.Models.GameModel"/> и <see cref="T:C4S.DB.Models.GameStatisticModel"/>
-            </remarks>
-        </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.Title">
-            <summary>
-            Название игры
-            </summary>
-        </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.AppId">
-            <summary>
-            id игры
-            </summary>
-        </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.FirstPublished">
-            <summary>
-            Дата публикации
-            </summary>
-        </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.Rating">
-            <summary>
-            Оценка
-            </summary>
-        </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.PlayersCount">
-            <summary>
-            Количество игроков
-            </summary>
-        </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.CategoriesNames">
-            <summary>
-            Имена всех категорий, к которым относится игра
-            </summary>
-        </member>
-        <member name="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoExpression">
-            <summary>
-            Справочник <see cref="T:System.Linq.Expressions.Expression"/> для <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>
-            </summary>
-        </member>
-        <member name="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameModelProfiler">
-            <summary>
-            Профиль маппинга в <see cref="T:C4S.DB.Models.GameModel"/> из <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>
-            </summary>
+            <exception cref="T:S4C.YandexGateway.DeveloperPage.Exceptions.InvalidContractException"></exception>
         </member>
         <member name="T:S4C.YandexGateway.DeveloperPage.IDeveloperPageParser">
             <summary>
             Класс выполняющий парсинг html документа, страницы разработчика.
             </summary>
         </member>
-        <member name="M:S4C.YandexGateway.DeveloperPage.IDeveloperPageParser.GetGameIdsAsync(C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
+        <member name="M:S4C.YandexGateway.DeveloperPage.IDeveloperPageParser.GetGameIdsAsync(System.String,C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
             <summary>
             Возвращает id всех игр со страницы разработчика.
             </summary>
@@ -143,12 +111,61 @@
             Для получения id всех игр, используется статичный парсинг html документа, страницы разработчика.
             </remarks>
             <param name="logger">Объект <see cref="T:C4S.Helpers.Logger.BaseLogger"/>с помощью, которого будет выполняться логирование</param>
+            <param name="developerPageUrl">Ссылка на страницу разработчика</param>
             <param name="cancellationToken"><inheritdoc cref="T:System.Threading.CancellationToken"/></param>
             <returns>
             <see cref="T:System.Int32"/>[] представляющий id всех игр на странице разработчика.
             </returns>
-            <exception cref="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.EmptyDeveloperPageException"></exception>
-            <exception cref="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidGameIdException"></exception>
+            <exception cref="T:S4C.YandexGateway.DeveloperPage.Exceptions.EmptyDeveloperPageException"></exception>
+            <exception cref="T:S4C.YandexGateway.DeveloperPage.Exceptions.InvalidGameIdException"></exception>
+        </member>
+        <member name="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel">
+            <summary>
+            Информация об игре
+            </summary>
+            <remarks>
+            Включает в себя все необходимые поля для <see cref="T:C4S.DB.Models.GameModel"/> и <see cref="T:C4S.DB.Models.GameStatisticModel"/>
+            </remarks>
+        </member>
+        <member name="P:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel.Title">
+            <summary>
+            Название игры
+            </summary>
+        </member>
+        <member name="P:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel.AppId">
+            <summary>
+            id игры
+            </summary>
+        </member>
+        <member name="P:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel.FirstPublished">
+            <summary>
+            Дата публикации
+            </summary>
+        </member>
+        <member name="P:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel.Rating">
+            <summary>
+            Оценка
+            </summary>
+        </member>
+        <member name="P:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel.PlayersCount">
+            <summary>
+            Количество игроков
+            </summary>
+        </member>
+        <member name="P:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel.CategoriesNames">
+            <summary>
+            Имена всех категорий, к которым относится игра
+            </summary>
+        </member>
+        <member name="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoExpression">
+            <summary>
+            Справочник <see cref="T:System.Linq.Expressions.Expression"/> для <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>
+            </summary>
+        </member>
+        <member name="T:S4C.YandexGateway.DeveloperPage.Models.GameModelProfiler">
+            <summary>
+            Профиль маппинга в <see cref="T:C4S.DB.Models.GameModel"/> из <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>
+            </summary>
         </member>
     </members>
 </doc>

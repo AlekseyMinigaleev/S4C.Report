@@ -2,7 +2,7 @@
 using C4S.DB.Models;
 using System.Linq.Expressions;
 
-namespace S4C.YandexGateway.DeveloperPageGateway.Models
+namespace S4C.YandexGateway.DeveloperPage.Models
 {
     /// <summary>
     /// Информация об игре

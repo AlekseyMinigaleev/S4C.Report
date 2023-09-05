@@ -159,7 +159,12 @@
         </member>
         <member name="P:C4S.DB.Models.GameStatisticModel.GameId">
             <summary>
-            Связь c таблицей <see cref="T:C4S.DB.Models.GameModel"/>
+            FK
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameStatisticModel.Game">
+            <summary>
+            Связь с <see cref="T:C4S.DB.Models.GameModel"/>
             </summary>
         </member>
         <member name="P:C4S.DB.Models.GameStatisticModel.IsNew">
@@ -184,7 +189,7 @@
         </member>
         <member name="P:C4S.DB.Models.GameStatisticModel.LastSynchroDate">
             <summary>
-            Дата последней синхронизации с яндексом
+            Дата последней синхронизации с Яндексом
             </summary>
         </member>
         <member name="T:C4S.DB.Models.GameStatisticExpression">
@@ -272,12 +277,12 @@
         </member>
         <member name="P:C4S.DB.Models.YandexGamesAccountModel.DeveloperPageUrl">
             <summary>
-            ссылка на страницу разработчика
+            Ссылка на страницу разработчика
             </summary>
         </member>
         <member name="P:C4S.DB.Models.YandexGamesAccountModel.User">
             <summary>
-            связь с <see cref="T:C4S.DB.Models.UserModel"/>
+            Связь с <see cref="T:C4S.DB.Models.UserModel"/>
             </summary>
         </member>
         <member name="P:C4S.DB.Models.YandexGamesAccountModel.UserId">
@@ -293,6 +298,16 @@
         <member name="T:C4S.DB.Models.YandexGamesUserExpression">
             <summary>
             Словарь <see cref="T:System.Linq.Expressions.Expression"/> для модели <see cref="T:C4S.DB.Models.YandexGamesUserExpression"/>/>
+            </summary>
+        </member>
+        <member name="P:C4S.DB.ReportDbContext.Users">
+            <summary>
+            Таблица C4S пользователя
+            </summary>
+        </member>
+        <member name="P:C4S.DB.ReportDbContext.YandexGamesAccounts">
+            <summary>
+            Таблица аккаунта Яндекс игр
             </summary>
         </member>
         <member name="P:C4S.DB.ReportDbContext.GameModels">

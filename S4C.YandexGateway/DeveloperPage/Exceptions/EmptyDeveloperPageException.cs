@@ -1,4 +1,4 @@
-﻿namespace S4C.YandexGateway.DeveloperPageGateway.Exceptions
+﻿namespace S4C.YandexGateway.DeveloperPage.Exceptions
 {
     /// <summary>
     /// Ошибка указывающая, на то что страница разработчика не содержит игр

@@ -4,26 +4,27 @@ using FluentValidation;
 using C4S.Services.Extensions;
 using C4S.API.Extensions;
 using Ñ4S.API.Extensions;
-using S4C.YandexGateway.DeveloperPageGateway;
+using S4C.YandexGateway.DeveloperPage;
 using C4S.Helpers.ApiHeplers.Swagger;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #region services
+var configuration = builder.Configuration;
 builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => 
     options.CustomSchemaIds(ShemaClassesIdsRenamer.Selector));
-builder.Services.AddStorages(builder.Configuration);
+builder.Services.AddStorages(configuration);
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssemblies(typeof(Program).GetTypeInfo().Assembly));
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddAutoMapper(
     typeof(Program),
-    typeof(IDeveloperPageGetaway)); 
-builder.Services.AddServices();
+    typeof(IDeveloperPageGetaway));
+builder.Services.AddServices(configuration);
 #endregion
 
 var app = builder.Build();

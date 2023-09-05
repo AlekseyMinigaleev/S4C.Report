@@ -5,9 +5,8 @@ using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
-using S4C.YandexGateway.DeveloperPageGateway;
-using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
-using S4C.YandexGateway.DeveloperPageGateway.Models;
+using S4C.YandexGateway.DeveloperPage;
+using S4C.YandexGateway.DeveloperPage.Models;
 
 /*
  * TODO: проверить как будут работать джобы если тыкать много раз на них. И если тыкать их в неправильном порядке.
@@ -46,16 +45,6 @@ namespace C4S.Services.Implements
             {
                 _logger.LogInformation("Начат процесс синхронизации всех данных по играм:");
                 await RunAsync(cancellationToken);
-            }
-            catch (HttpRequestException e)
-            {
-                finalLogMessage = $"{logErrorMessage}{e.Message}";
-                logLevel = LogLevel.Error;
-            }
-            catch (InvalidContractException e)
-            {
-                finalLogMessage = $"{logErrorMessage}{e.Message}";
-                logLevel = LogLevel.Error;
             }
             catch (Exception e)
             {

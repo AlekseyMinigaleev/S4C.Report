@@ -1,22 +1,24 @@
 ﻿using C4S.Helpers.Logger;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
-using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
-using S4C.YandexGateway.DeveloperPageGateway.Models;
+using S4C.YandexGateway.DeveloperPage.Exceptions;
+using S4C.YandexGateway.DeveloperPage.Models;
 
-namespace S4C.YandexGateway.DeveloperPageGateway
+namespace S4C.YandexGateway.DeveloperPage
 {
     /// <inheritdoc cref="IDeveloperPageGetaway"/>
     public class DeveloperPageGateway : IDeveloperPageGetaway
     {
-        /*TODO: хардкод*/
-        public readonly string DeveloperPageUrl = "https://yandex.ru/games/developer?name=C4S.SHA";
-
         private readonly IHttpClientFactory _httpClientFactory;
+        private string _yandexGamesRequestUrl;
 
         public DeveloperPageGateway(
-            IHttpClientFactory httpClient)
+            IHttpClientFactory httpClient,
+            IConfiguration configuration)
         {
             _httpClientFactory = httpClient;
+            _yandexGamesRequestUrl = configuration["YandexGamesRequestUrl"]!;
+            ArgumentException.ThrowIfNullOrEmpty("в файле appsetting.json не указана или указана неверно ссылка на запрос по Яндекс играм");
         }
 
         /// <inheritdoc/>
@@ -27,7 +29,10 @@ namespace S4C.YandexGateway.DeveloperPageGateway
         {
             logger.LogInformation($"Составление запроса на сервер Яндекс");
             var httpResponseMessage = await SendRequestAsync(() =>
-                HttpRequestMethodDitctionary.GetGamesInfo(gameIds, "long"),
+                HttpRequestMethodDitctionary.GetGamesInfo(
+                    _yandexGamesRequestUrl,
+                    gameIds,
+                    HttpRequestDictionary.LongFormat),
                 cancellationToken);
             logger.LogSuccess($"Ответ от Яндекса успешно получен");
 

@@ -2,26 +2,30 @@
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using C4S.Helpers.Logger;
-using S4C.YandexGateway.DeveloperPage;
-using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
+using S4C.YandexGateway.DeveloperPage.Exceptions;
 
-namespace S4C.YandexGateway.DeveloperPageGateway
+namespace S4C.YandexGateway.DeveloperPage
 {
     /// <inheritdoc cref="IDeveloperPageParser"/>
     public class DeveloperPageParser : IDeveloperPageParser
     {
-        /*TODO: hard code*/
         private readonly IBrowsingContext _browsingContext;
-        private readonly string _developerPageUrl = "https://yandex.ru/games/developer?name=C4S.SHA";
+        private string _developerPageUrl;
 
-        public DeveloperPageParser(IBrowsingContext browsingContext)
+        public DeveloperPageParser(
+            IBrowsingContext browsingContext)
         {
             _browsingContext = browsingContext;
         }
 
         /// <inheritdoc/>
-        public async Task<int[]> GetGameIdsAsync(BaseLogger logger, CancellationToken cancellationToken = default)
+        public async Task<int[]> GetGameIdsAsync(
+            string developerPageUrl,
+            BaseLogger logger,
+            CancellationToken cancellationToken = default)
         {
+            _developerPageUrl = developerPageUrl;
+
             logger.LogInformation("Начало получения игр как html элементов");
             var gamesHtmlCollection = await GetGamesAsHtmlElementsAsync(
                 cancellationToken);
