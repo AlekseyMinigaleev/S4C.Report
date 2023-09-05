@@ -1,13 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore;
-using C4S.DB.Models;
+﻿using C4S.DB.Models;
 using C4S.DB.Models.Hangfire;
+using Microsoft.EntityFrameworkCore;
 
 namespace C4S.DB
 {
     public class ReportDbContext : DbContext
     {
-        public ReportDbContext(DbContextOptions<ReportDbContext> options):base(options)
+        public ReportDbContext(DbContextOptions<ReportDbContext> options) : base(options)
         { }
+
+        /// <summary>
+        /// Таблица C4S пользователя
+        /// </summary>
+        public DbSet<UserModel> Users { get; set; }
+
+        /// <summary>
+        /// Таблица аккаунта Яндекс игр
+        /// </summary>
+        public DbSet<YandexGamesAccountModel> YandexGamesAccounts { get; set; }
 
         /// <summary>
         /// Таблица игры
