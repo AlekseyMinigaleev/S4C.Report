@@ -76,6 +76,18 @@
         <member name="M:C4S.DB.Migrations.splitstatusinGameStatisticModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:C4S.DB.Migrations.addUserModelandYandexGamesAccountModel">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.addUserModelandYandexGamesAccountModel.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.addUserModelandYandexGamesAccountModel.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.addUserModelandYandexGamesAccountModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:C4S.DB.Models.GameModel">
             <summary>
             Сущность игры
@@ -99,12 +111,41 @@
             Дата публикации
             </summary>
         </member>
+        <member name="P:C4S.DB.Models.GameModel.YandexGamesAccount">
+            <summary>
+            Аккаунт Яндекс игр
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameModel.YandexGamesAccountId">
+            <summary>
+            FK
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameModel.GameStatistics">
+            <summary>
+            Список записей статистики
+            </summary>
+        </member>
         <member name="M:C4S.DB.Models.GameModel.Update(System.String,System.DateTime)">
             <summary>
             Выполняет обновление сущности
             </summary>
             <param name="name">Название игры</param>
             <param name="publicationDate">дата публикации</param>
+        </member>
+        <member name="M:C4S.DB.Models.GameModel.HasChanges(C4S.DB.Models.GameModel)">
+            <summary>
+            Проверяет есть ли изменения у модели по сравнению с <paramref name="incomingGame"/>
+            </summary>
+            <param name="incomingGame">Игра с которой происходит сравнение</param>
+            <returns>
+            <see langword="true"/> если в модели есть изменения, иначе <see langword="false"/>
+            </returns>
+        </member>
+        <member name="T:C4S.DB.Models.GameExpressions">
+            <summary>
+            Справочник <see cref="T:System.Linq.Expressions.Expression"/> для <see cref="T:C4S.DB.Models.GameModel"/>
+            </summary>
         </member>
         <member name="T:C4S.DB.Models.GameStatisticModel">
             <summary>
@@ -146,6 +187,11 @@
             Дата последней синхронизации с яндексом
             </summary>
         </member>
+        <member name="T:C4S.DB.Models.GameStatisticExpression">
+            <summary>
+            Справочник <see cref="T:System.Linq.Expressions.Expression"/> для <see cref="T:C4S.DB.Models.GameStatisticModel"/>
+            </summary>
+        </member>
         <member name="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel">
             <summary>
             Сущность конфигурации джобы
@@ -179,9 +225,74 @@
             </summary>
             <param name="isEnable">новый статус джобы</param>
         </member>
+        <member name="M:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel.NormalizeCronExpression">
+            <summary>
+            Нормализует крон выражение
+            </summary>
+        </member>
+        <member name="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationExpression">
+            <summary>
+            Справочник <see cref="T:System.Linq.Expressions.Expression"/> для <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
+            </summary>
+        </member>
         <member name="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationConstants">
             <summary>
             Справочник констант для <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
+            </summary>
+        </member>
+        <member name="T:C4S.DB.Models.UserModel">
+            <summary>
+            C4S пользователь
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.UserModel.Id">
+            <summary>
+            Id пользователя
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.UserModel.YandexGamesAccounts">
+            <summary>
+            Список аккаунтов Яндекс игр
+            </summary>
+        </member>
+        <member name="T:C4S.DB.Models.UserExpressions">
+            <summary>
+            Словарь <see cref="T:System.Linq.Expressions.Expression"/> для <see cref="T:C4S.DB.Models.UserModel"/>
+            </summary>
+        </member>
+        <member name="T:C4S.DB.Models.YandexGamesAccountModel">
+            <summary>
+            Аккаунт Яндекс игр
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.YandexGamesAccountModel.Id">
+            <summary>
+            Id пользователя Яндекс игр
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.YandexGamesAccountModel.DeveloperPageUrl">
+            <summary>
+            ссылка на страницу разработчика
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.YandexGamesAccountModel.User">
+            <summary>
+            связь с <see cref="T:C4S.DB.Models.UserModel"/>
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.YandexGamesAccountModel.UserId">
+            <summary>
+            FK <see cref="T:C4S.DB.Models.UserModel"/>
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.YandexGamesAccountModel.Games">
+            <summary>
+            Список игр
+            </summary>
+        </member>
+        <member name="T:C4S.DB.Models.YandexGamesUserExpression">
+            <summary>
+            Словарь <see cref="T:System.Linq.Expressions.Expression"/> для модели <see cref="T:C4S.DB.Models.YandexGamesUserExpression"/>/>
             </summary>
         </member>
         <member name="P:C4S.DB.ReportDbContext.GameModels">

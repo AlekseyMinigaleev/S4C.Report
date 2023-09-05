@@ -58,7 +58,7 @@
         </member>
         <member name="M:S4C.YandexGateway.DeveloperPageGateway.HttpRequestMethodDitctionary.GetGamesInfo(System.Int32[],System.String)">
             <summary>
-            Создает <see cref="T:System.Net.Http.HttpRequestMessage"/> для получения <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>.
+            Создает <see cref="T:System.Net.Http.HttpRequestMessage"/> для получения <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>.
             </summary>
             <param name="appIDs">массив, содержащий id <see cref="T:C4S.DB.Models.GameModel"/>, по которым необходимо получить информацию</param>
             <param name="format">формат ответа</param>.
@@ -71,18 +71,18 @@
         </member>
         <member name="M:S4C.YandexGateway.DeveloperPageGateway.IDeveloperPageGetaway.GetGameInfoAsync(System.Int32[],C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
             <summary>
-            Возвращает <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>[] со страницы разработчика.
+            Возвращает <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>[] со страницы разработчика.
             </summary>
-            <param name="gameIds">Массив id <see cref="T:C4S.DB.Models.GameModel"/>, для которых необходимо получить <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>[]</param>
+            <param name="gameIds">Массив id <see cref="T:C4S.DB.Models.GameModel"/>, для которых необходимо получить <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>[]</param>
             <param name="logger">Объект <see cref="T:C4S.Helpers.Logger.BaseLogger"/>с помощью, которого будет выполняться логирование</param>
             <param name="cancellationToken"><inheritdoc cref="T:System.Threading.CancellationToken"/></param>
             <returns>
-            <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo"/>[]
+            <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>[]
             </returns>
             <exception cref="T:System.Net.Http.HttpRequestException"></exception>
             <exception cref="T:S4C.YandexGateway.DeveloperPageGateway.Exceptions.InvalidContractException"></exception>
         </member>
-        <member name="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo">
+        <member name="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel">
             <summary>
             Информация об игре
             </summary>
@@ -90,34 +90,44 @@
             Включает в себя все необходимые поля для <see cref="T:C4S.DB.Models.GameModel"/> и <see cref="T:C4S.DB.Models.GameStatisticModel"/>
             </remarks>
         </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo.Title">
+        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.Title">
             <summary>
             Название игры
             </summary>
         </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo.AppId">
+        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.AppId">
             <summary>
             id игры
             </summary>
         </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo.FirstPublished">
+        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.FirstPublished">
             <summary>
             Дата публикации
             </summary>
         </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo.Rating">
+        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.Rating">
             <summary>
             Оценка
             </summary>
         </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo.PlayersCount">
+        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.PlayersCount">
             <summary>
             Количество игроков
             </summary>
         </member>
-        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfo.CategoriesNames">
+        <member name="P:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel.CategoriesNames">
             <summary>
             Имена всех категорий, к которым относится игра
+            </summary>
+        </member>
+        <member name="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoExpression">
+            <summary>
+            Справочник <see cref="T:System.Linq.Expressions.Expression"/> для <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>
+            </summary>
+        </member>
+        <member name="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameModelProfiler">
+            <summary>
+            Профиль маппинга в <see cref="T:C4S.DB.Models.GameModel"/> из <see cref="T:S4C.YandexGateway.DeveloperPageGateway.Models.GameInfoModel"/>
             </summary>
         </member>
         <member name="T:S4C.YandexGateway.DeveloperPage.IDeveloperPageParser">

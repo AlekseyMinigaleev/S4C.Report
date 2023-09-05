@@ -104,7 +104,8 @@ namespace C4S.Services.Implements
             if (!isExistingGame)
             {
                 _logger.LogInformation($"[{gameId}] id игры не содержится в базе данных.");
-                var gameModel = new GameModel(gameId);
+                /*TODO*/
+                var gameModel = new GameModel(gameId, null!);
                 await _dbContext.GameModels
                     .AddAsync(gameModel, cancellationToken);
                 _logger.LogInformation($"[{gameId}] id игры помечено на добавление в базу данных.");
