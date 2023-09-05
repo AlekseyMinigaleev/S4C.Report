@@ -11,8 +11,8 @@ namespace S4C.YandexGateway.DeveloperPage.Extensions
             IConfiguration configuration)
         {
             services.AddSingleton(configuration);
-            services.AddTransient<IDeveloperPageGetaway, DeveloperPageGateway>();
-            services.AddTransient<IDeveloperPageParser, DeveloperPageParser>();
+            services.AddScoped<IDeveloperPageGetaway, DeveloperPageGateway>();
+            services.AddScoped<IDeveloperPageParser, DeveloperPageParser>();
             services.AddScoped((provider) =>
             {
                 var config = Configuration.Default.WithDefaultLoader();
