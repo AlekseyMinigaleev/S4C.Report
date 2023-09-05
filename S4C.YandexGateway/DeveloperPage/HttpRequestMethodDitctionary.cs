@@ -1,5 +1,7 @@
 ﻿using C4S.DB.Models;
+using C4S.Helpers.Extensions;
 using Newtonsoft.Json;
+using S4C.YandexGateway.DeveloperPage.Enums;
 using S4C.YandexGateway.DeveloperPage.Models;
 using System.Text;
 
@@ -17,12 +19,12 @@ namespace S4C.YandexGateway.DeveloperPage
         /// <param name="appIDs">массив, содержащий id <see cref="GameModel"/>, по которым необходимо получить информацию</param>
         /// <param name="format">формат ответа</param>.
         /// <returns><see cref="HttpRequestMessage"/></returns>.
-        public static HttpRequestMessage GetGamesInfo(string requestUrl, int[] appIDs, string format)
+        public static HttpRequestMessage GetGamesInfo(string requestUrl, int[] appIDs, RequestFormat format)
         {
             var requestData = new
             {
                 appIDs = appIDs,
-                format = format,
+                format = format.GetName(),
             };
 
             var jsonPayload = JsonConvert.SerializeObject(requestData);
@@ -36,22 +38,5 @@ namespace S4C.YandexGateway.DeveloperPage
 
             return result;
         }
-    }
-
-    /*TODO:заменить на enum*/
-    /// <summary>
-    /// Словарь всех допустимых форматов для запроса на Яндекс игры
-    /// </summary>
-    public static class HttpRequestDictionary
-    {
-        /// <summary>
-        /// Полный формат
-        /// </summary>
-        public static string LongFormat = "long";
-
-        /// <summary>
-        /// Короткий формат
-        /// </summary>
-        public static string ShortFormat = "short";
     }
 }

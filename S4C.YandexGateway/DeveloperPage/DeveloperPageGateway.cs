@@ -1,6 +1,7 @@
 ﻿using C4S.Helpers.Logger;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using S4C.YandexGateway.DeveloperPage.Enums;
 using S4C.YandexGateway.DeveloperPage.Exceptions;
 using S4C.YandexGateway.DeveloperPage.Models;
 
@@ -32,7 +33,7 @@ namespace S4C.YandexGateway.DeveloperPage
                 HttpRequestMethodDitctionary.GetGamesInfo(
                     _yandexGamesRequestUrl,
                     gameIds,
-                    HttpRequestDictionary.LongFormat),
+                    RequestFormat.Long),
                 cancellationToken);
             logger.LogSuccess($"Ответ от Яндекса успешно получен");
 

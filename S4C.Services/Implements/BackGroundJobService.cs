@@ -1,5 +1,6 @@
 ﻿using C4S.DB;
 using C4S.DB.Models.Hangfire;
+using C4S.Helpers.Extensions;
 using C4S.Services.Exceptions;
 using C4S.Services.Interfaces;
 using Hangfire;
@@ -108,11 +109,12 @@ namespace C4S.Services.Implements
             }
         }
 
+        /*TODO: если изменить имя в енамке, то изменения вступят в силу после пересоздания бд*/
         private static void AddOrUpdateRecurringJob<T>(
             HangfireJobConfigurationModel jobConfig,
             Expression<Func<T, Task>> methodCall) =>
                 RecurringJob.AddOrUpdate(
-                    jobConfig.JobType.ToString(),
+                    jobConfig.JobType.GetName(),
                     methodCall,
                     jobConfig.CronExpression ?? HangfireJobConfigurationConstants.DefaultCronExpression,
                     new RecurringJobOptions
