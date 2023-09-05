@@ -8,9 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using S4C.YandexGateway.DeveloperPage;
 using S4C.YandexGateway.DeveloperPage.Models;
 
-/*
- * TODO: проверить как будут работать джобы если тыкать много раз на них. И если тыкать их в неправильном порядке.
- */
 namespace C4S.Services.Implements
 {
     /// <inheritdoc cref="IGameDataService"/>
