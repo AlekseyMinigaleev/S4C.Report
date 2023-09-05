@@ -16,7 +16,6 @@ namespace C4S.API.Features.Jobs.Actions
             public HangfireJobConfigurationModel[] UpdatedJobs { get; set; }
         }
 
-        /*TODO: конcтрукторы для ВМ*/
         public class ResponseViewModel
         {
             /// <summary>
