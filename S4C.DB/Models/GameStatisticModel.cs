@@ -3,40 +3,24 @@
 namespace C4S.DB.Models
 {
     /// <summary>
-    /// Сущность игровой статистики
+    /// Таблица игровой статистики
     /// </summary>
     public class GameStatisticModel
     {
         /// <summary>
-        /// Id сущности
+        /// PK
         /// </summary>
         public Guid Id { get; private set; }
-
-        /// <summary>
-        /// FK
-        /// </summary>
-        public int GameId { get; private set; }
 
         /// <summary>
         /// Связь с <see cref="GameModel"/>
         /// </summary>
         public GameModel Game { get; private set; }
 
-        /*TODO: сделать отдельную таблицу*/
-
-        #region game statuses
-
         /// <summary>
-        /// Статус новой игры
+        /// FK <see cref="GameModel"/>
         /// </summary>
-        public bool IsNew { get; private set; }
-
-        /// <summary>
-        /// Статус продвигаемой игры
-        /// </summary>
-        public bool IsPromoted { get; private set; }
-
-        #endregion game statuses
+        public int GameId { get; private set; }
 
         /// <summary>
         /// Оценка игры
@@ -53,26 +37,62 @@ namespace C4S.DB.Models
         /// </summary>
         public DateTime LastSynchroDate { get; private set; }
 
-        private GameStatisticModel()
-        { }
+        /// <summary>
+        /// Список статусов игры
+        /// </summary>
+        public ISet<GameStatusModel> Statuses =>
+            GameGameStatus.Select(x => x.GameStatus).ToHashSet();
+
+        /// <summary>
+        /// Список связей <see cref="GameModel"/> - <see cref="GameStatusModel"/>
+        /// </summary>
+        public ISet<GameGameStatusModel> GameGameStatus
+        {
+            get
+            {
+                return _gameGameStatus ?? new HashSet<GameGameStatusModel>();
+            }
+            set { _gameGameStatus = value; }
+        }
+        private ISet<GameGameStatusModel>? _gameGameStatus;
+
 
         public GameStatisticModel(
             GameModel game,
             int playersCount,
-            bool isNew,
-            bool isPromoted,
             DateTime lastSynchroDate,
+            ISet<GameStatusModel> statuses,
             double? evaluation = default)
         {
             Id = Guid.NewGuid();
             GameId = game.Id;
             Game = game;
-            IsNew = isNew;
-            IsPromoted = isPromoted;
+            AddStatuses(statuses);
             PlayersCount = playersCount;
             LastSynchroDate = lastSynchroDate;
             Evaluation = evaluation;
         }
+
+        private GameStatisticModel()
+        { }
+
+        /// <summary>
+        /// Изменяет список статусов игры на <paramref name="statuses"/>
+        /// </summary>
+        /// <param name="statuses">Новый список статусов игры</param>
+        public void AddStatuses(ISet<GameStatusModel> statuses)
+        {
+            GameGameStatus.Clear();
+            foreach (var status in statuses)
+                AddStatus(status);
+        }
+
+        /// <summary>
+        /// Добавляет <paramref name="status"/> к списку статусов игры
+        /// </summary>
+        /// <param name="status">Добавляемый статус</param>
+        public void AddStatus(GameStatusModel status) =>
+            GameGameStatus.Add(new GameGameStatusModel(this, status));
     }
 
     /// <summary>

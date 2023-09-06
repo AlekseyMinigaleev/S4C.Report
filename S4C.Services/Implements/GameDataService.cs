@@ -57,7 +57,7 @@ namespace C4S.Services.Implements
         private async Task RunAsync(
             CancellationToken cancellationToken)
         {
-            var games = await _dbContext.GameModels
+            var games = await _dbContext.Games
                 .ToArrayAsync(cancellationToken);
 
             var gameIds = games
@@ -85,13 +85,8 @@ namespace C4S.Services.Implements
         {
             foreach (var incomingGameInfo in incomingGamesInfo)
             {
-                var sourceGameModel = sourceGameModels
-                    .Single(x => x.Id == incomingGameInfo.AppId);
-
-                var gameIdForLogs =
-                    sourceGameModel.Name is null
-                        ? sourceGameModel.Id.ToString()
-                        : sourceGameModel.Name;
+                var (sourceGameModel,
+                    gameIdForLogs) = GetDataForProcess(sourceGameModels, incomingGameInfo);
 
                 var (incomingGameModel,
                 incomingGameStatisticModel) = Projection(incomingGameInfo);
@@ -102,17 +97,48 @@ namespace C4S.Services.Implements
                     gameIdForLogs);
 
                 _logger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики.");
-                await _dbContext.GamesStatisticModels
+                await _dbContext.GamesStatistics
                     .AddAsync(incomingGameStatisticModel, cancellationToken);
             }
         }
 
-        private (GameModel,GameStatisticModel) Projection(GameInfoModel incomingGameInfo)
+        private static (GameModel, string) GetDataForProcess(
+            GameModel[] sourceGameModels,
+            GameInfoModel incomingGameInfo)
+        {
+            var sourceGameModel = sourceGameModels
+                .Single(x => x.Id == incomingGameInfo.AppId);
+
+            var gameIdForLogs =
+                sourceGameModel.Name is null
+                    ? sourceGameModel.Id.ToString()
+                    : sourceGameModel.Name;
+
+            return (sourceGameModel, gameIdForLogs);
+        }
+
+        private (GameModel, GameStatisticModel) Projection(GameInfoModel incomingGameInfo)
         {
             var incomingGameModel = _mapper.Map<GameInfoModel, GameModel>(incomingGameInfo);
             var incomingGameStatisticModel = _mapper.Map<GameInfoModel, GameStatisticModel>(incomingGameInfo);
 
-            return (incomingGameModel,incomingGameStatisticModel);
+            SetLinksForStatuses(incomingGameInfo, incomingGameStatisticModel);
+
+            return (incomingGameModel, incomingGameStatisticModel);
+        }
+
+        /*TODO: Сделать поддержку статуса promoted псоле реализации сервиса парсинга с РСЯ*/
+        private void SetLinksForStatuses(GameInfoModel incomingGameInfo, GameStatisticModel incomingGameStatisticModel)
+        {
+            var existingGameStatusQuery = _dbContext.GameStatuses;
+            var incomingGameStatusNames = incomingGameInfo.CategoriesNames;
+
+            var gameStatusQuery = existingGameStatusQuery
+                .Where(x => incomingGameStatusNames
+                    .Contains(x.Name))
+                .ToHashSet();
+
+            incomingGameStatisticModel.AddStatuses(gameStatusQuery);
         }
 
         private void UpdateGameModel(GameModel sourceGame, GameModel incomingGame, string gameIdForLogs)

@@ -26,7 +26,7 @@ namespace C4S.Services.Implements
             HangfireJobConfigurationModel updatedJobConfig,
             CancellationToken cancellationToken = default)
         {
-            var existenceJobConfig = await _dbContext.HangfireConfigurationModels
+            var existenceJobConfig = await _dbContext.HangfireConfigurations
                 .SingleAsync(x => x.JobType == updatedJobConfig.JobType, cancellationToken);
 
             var (errorMessage, isValidCron) = IsValidCronExpression(updatedJobConfig.CronExpression);
@@ -49,7 +49,7 @@ namespace C4S.Services.Implements
         public async Task AddMissingHangfirejobsAsync(
             CancellationToken cancellationToken = default)
         {
-            var existenceJobConfigurations = _dbContext.HangfireConfigurationModels;
+            var existenceJobConfigurations = _dbContext.HangfireConfigurations;
 
             var jobTypes = Enum
                 .GetValues(typeof(HangfireJobTypeEnum))
@@ -67,7 +67,7 @@ namespace C4S.Services.Implements
                        cronExpression: HangfireJobConfigurationConstants.DefaultCronExpression,
                        isEnable: HangfireJobConfigurationConstants.DefaultIsEnable);
 
-                    _dbContext.HangfireConfigurationModels.Add(existence);
+                    _dbContext.HangfireConfigurations.Add(existence);
                     AddOrUpdateRecurringJob(existence);
                 }
             }

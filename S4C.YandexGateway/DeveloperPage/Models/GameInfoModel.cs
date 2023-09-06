@@ -64,9 +64,15 @@ namespace S4C.YandexGateway.DeveloperPage.Models
     /// </summary>
     public static class GameInfoExpression
     {
+        /// <summary>
+        /// <see cref="Expression"/>, указывающий имеет ли игра статус "новая"
+        /// </summary>
         public static Expression<Func<GameInfoModel, bool>> IsNew =
             (gameInfo) => gameInfo.CategoriesNames.Contains("new");
 
+        /// <summary>
+        ///  <see cref="Expression"/>, указывающий имеет ли игра статус "продвигаемая"
+        /// </summary>
         public static Expression<Func<GameInfoModel, bool>> IsPromoted =
             (gameInfo) => gameInfo.CategoriesNames.Contains("new");
     }
@@ -88,8 +94,7 @@ namespace S4C.YandexGateway.DeveloperPage.Models
                 .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(src => src.Rating))
                 .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
                 .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
-                .ForMember(dest => dest.IsNew, opt => opt.MapFrom(GameInfoExpression.IsNew))
-                .ForMember(dest => dest.IsPromoted, opt => opt.MapFrom(GameInfoExpression.IsPromoted))
+                .ForMember(dest => dest.Statuses, opt => opt.Ignore())
                 .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now));
         }
     }
