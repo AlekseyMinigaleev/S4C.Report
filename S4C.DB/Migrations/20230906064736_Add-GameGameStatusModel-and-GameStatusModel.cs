@@ -59,6 +59,7 @@ namespace C4S.DB.Migrations
                 table: "GameGameStatus",
                 column: "GameStatusId");
 
+            /*TODO: Заменить на нормальный инициализатор*/
             migrationBuilder.Sql(
                 "INSERT INTO GameStatus (Id, Name) " +
                 "VALUES " +
