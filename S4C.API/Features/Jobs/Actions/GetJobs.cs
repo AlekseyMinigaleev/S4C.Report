@@ -74,7 +74,7 @@ namespace C4S.API.Features.Jobs.Actions
                 Query request,
                 CancellationToken cancellationToken = default)
             {
-                var jobs = await _dbContext.HangfireConfigurationModels
+                var jobs = await _dbContext.HangfireConfigurations
                     .ProjectTo<ResponseViewModel>(_mapper.ConfigurationProvider)
                     .ToArrayAsync(cancellationToken);
 

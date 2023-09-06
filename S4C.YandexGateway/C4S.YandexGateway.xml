@@ -162,6 +162,16 @@
             Справочник <see cref="T:System.Linq.Expressions.Expression"/> для <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>
             </summary>
         </member>
+        <member name="F:S4C.YandexGateway.DeveloperPage.Models.GameInfoExpression.IsNew">
+            <summary>
+            <see cref="T:System.Linq.Expressions.Expression"/>, указывающий имеет ли игра статус "новая"
+            </summary>
+        </member>
+        <member name="F:S4C.YandexGateway.DeveloperPage.Models.GameInfoExpression.IsPromoted">
+            <summary>
+             <see cref="T:System.Linq.Expressions.Expression"/>, указывающий имеет ли игра статус "продвигаемая"
+            </summary>
+        </member>
         <member name="T:S4C.YandexGateway.DeveloperPage.Models.GameModelProfiler">
             <summary>
             Профиль маппинга в <see cref="T:C4S.DB.Models.GameModel"/> из <see cref="T:S4C.YandexGateway.DeveloperPage.Models.GameInfoModel"/>

@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using C4S.DB.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using C4S.DB.Models;
 
 namespace C4S.DB.ModelConfigurations
 {
@@ -10,6 +10,11 @@ namespace C4S.DB.ModelConfigurations
         {
             builder.ToTable("GameStatistic")
                 .HasKey(x => x.Id);
+
+            builder.HasMany(x => x.GameGameStatus)
+                .WithOne(x => x.GameStatistic)
+                .HasForeignKey(x => x.GameStatisticId);
+            builder.Ignore(x => x.Statuses);
         }
     }
 }

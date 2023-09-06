@@ -88,17 +88,54 @@
         <member name="M:C4S.DB.Migrations.addUserModelandYandexGamesAccountModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:C4S.DB.Migrations.AddGameGameStatusModelandGameStatusModel">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.AddGameGameStatusModelandGameStatusModel.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.AddGameGameStatusModelandGameStatusModel.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:C4S.DB.Migrations.AddGameGameStatusModelandGameStatusModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:C4S.DB.Models.GameGameStatusModel">
+            <summary>
+            Таблица связей <see cref="T:C4S.DB.Models.GameStatisticModel"/> - <see cref="T:C4S.DB.Models.GameStatusModel"/>
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameGameStatusModel.GameStatistic">
+            <summary>
+            Связь с таблицей <see cref="T:C4S.DB.Models.GameStatisticModel"/>
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameGameStatusModel.GameStatisticId">
+            <summary>
+            PK и FK <see cref="T:C4S.DB.Models.GameStatisticModel"/>
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameGameStatusModel.GameStatus">
+            <summary>
+            Связь с таблицей <see cref="T:C4S.DB.Models.GameStatusModel"/>
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameGameStatusModel.GameStatusId">
+            <summary>
+            PK и FK <see cref="T:C4S.DB.Models.GameStatusModel"/>
+            </summary>
+        </member>
         <member name="T:C4S.DB.Models.GameModel">
             <summary>
-            Сущность игры
+            Таблица игры
             </summary>
         </member>
         <member name="P:C4S.DB.Models.GameModel.Id">
             <summary>
-            Id игры
+            PK
             </summary>
             <remarks>
-            Должно быть такое же как и на странице разработчика
+            Является дублированием id со страницы разработчика
             </remarks>
         </member>
         <member name="P:C4S.DB.Models.GameModel.Name">
@@ -118,7 +155,7 @@
         </member>
         <member name="P:C4S.DB.Models.GameModel.YandexGamesAccountId">
             <summary>
-            FK
+            FK <see cref="P:C4S.DB.Models.GameModel.YandexGamesAccount"/>
             </summary>
         </member>
         <member name="P:C4S.DB.Models.GameModel.GameStatistics">
@@ -149,17 +186,12 @@
         </member>
         <member name="T:C4S.DB.Models.GameStatisticModel">
             <summary>
-            Сущность игровой статистики
+            Таблица игровой статистики
             </summary>
         </member>
         <member name="P:C4S.DB.Models.GameStatisticModel.Id">
             <summary>
-            Id сущности
-            </summary>
-        </member>
-        <member name="P:C4S.DB.Models.GameStatisticModel.GameId">
-            <summary>
-            FK
+            PK
             </summary>
         </member>
         <member name="P:C4S.DB.Models.GameStatisticModel.Game">
@@ -167,14 +199,9 @@
             Связь с <see cref="T:C4S.DB.Models.GameModel"/>
             </summary>
         </member>
-        <member name="P:C4S.DB.Models.GameStatisticModel.IsNew">
+        <member name="P:C4S.DB.Models.GameStatisticModel.GameId">
             <summary>
-            Статус новой игры
-            </summary>
-        </member>
-        <member name="P:C4S.DB.Models.GameStatisticModel.IsPromoted">
-            <summary>
-            Статус продвигаемой игры
+            FK <see cref="T:C4S.DB.Models.GameModel"/>
             </summary>
         </member>
         <member name="P:C4S.DB.Models.GameStatisticModel.Evaluation">
@@ -192,9 +219,46 @@
             Дата последней синхронизации с Яндексом
             </summary>
         </member>
+        <member name="P:C4S.DB.Models.GameStatisticModel.Statuses">
+            <summary>
+            Список статусов игры
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameStatisticModel.GameGameStatus">
+            <summary>
+            Список связей <see cref="T:C4S.DB.Models.GameModel"/> - <see cref="T:C4S.DB.Models.GameStatusModel"/>
+            </summary>
+        </member>
+        <member name="M:C4S.DB.Models.GameStatisticModel.AddStatuses(System.Collections.Generic.ISet{C4S.DB.Models.GameStatusModel})">
+            <summary>
+            Изменяет список статусов игры на <paramref name="statuses"/>
+            </summary>
+            <param name="statuses">Новый список статусов игры</param>
+        </member>
+        <member name="M:C4S.DB.Models.GameStatisticModel.AddStatus(C4S.DB.Models.GameStatusModel)">
+            <summary>
+            Добавляет <paramref name="status"/> к списку статусов игры
+            </summary>
+            <param name="status">Добавляемый статус</param>
+        </member>
         <member name="T:C4S.DB.Models.GameStatisticExpression">
             <summary>
             Справочник <see cref="T:System.Linq.Expressions.Expression"/> для <see cref="T:C4S.DB.Models.GameStatisticModel"/>
+            </summary>
+        </member>
+        <member name="T:C4S.DB.Models.GameStatusModel">
+            <summary>
+            Таблица статуса игры
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameStatusModel.Id">
+            <summary>
+            PK
+            </summary>
+        </member>
+        <member name="P:C4S.DB.Models.GameStatusModel.Name">
+            <summary>
+            Название статуса
             </summary>
         </member>
         <member name="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel">
@@ -252,12 +316,12 @@
         </member>
         <member name="T:C4S.DB.Models.UserModel">
             <summary>
-            C4S пользователь
+            Таблица C4S пользователя
             </summary>
         </member>
         <member name="P:C4S.DB.Models.UserModel.Id">
             <summary>
-            Id пользователя
+            PK
             </summary>
         </member>
         <member name="P:C4S.DB.Models.UserModel.YandexGamesAccounts">
@@ -272,12 +336,12 @@
         </member>
         <member name="T:C4S.DB.Models.YandexGamesAccountModel">
             <summary>
-            Аккаунт Яндекс игр
+            Таблица аккаунта Яндекс игр
             </summary>
         </member>
         <member name="P:C4S.DB.Models.YandexGamesAccountModel.Id">
             <summary>
-            Id пользователя Яндекс игр
+            PK
             </summary>
         </member>
         <member name="P:C4S.DB.Models.YandexGamesAccountModel.DeveloperPageUrl">
@@ -307,27 +371,37 @@
         </member>
         <member name="P:C4S.DB.ReportDbContext.Users">
             <summary>
-            Таблица C4S пользователя
+            Список C4S пользователей
             </summary>
         </member>
         <member name="P:C4S.DB.ReportDbContext.YandexGamesAccounts">
             <summary>
-            Таблица аккаунта Яндекс игр
+            Список аккаунтов Яндекс игр
             </summary>
         </member>
-        <member name="P:C4S.DB.ReportDbContext.GameModels">
+        <member name="P:C4S.DB.ReportDbContext.Games">
             <summary>
-            Таблица игры
+            Список игр
             </summary>
         </member>
-        <member name="P:C4S.DB.ReportDbContext.GamesStatisticModels">
+        <member name="P:C4S.DB.ReportDbContext.GamesStatistics">
             <summary>
-            Таблица игровой статистики
+            Список игровых статистик
             </summary>
         </member>
-        <member name="P:C4S.DB.ReportDbContext.HangfireConfigurationModels">
+        <member name="P:C4S.DB.ReportDbContext.HangfireConfigurations">
             <summary>
-            Таблица джобы.
+            список джоб.
+            </summary>
+        </member>
+        <member name="P:C4S.DB.ReportDbContext.GameStatuses">
+            <summary>
+            Список статусов игр
+            </summary>
+        </member>
+        <member name="P:C4S.DB.ReportDbContext.GameGameStatuses">
+            <summary>
+            Список связей <see cref="T:C4S.DB.Models.GameStatusModel"/> - <see cref="T:C4S.DB.Models.GameStatisticModel"/>
             </summary>
         </member>
     </members>

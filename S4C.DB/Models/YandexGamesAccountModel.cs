@@ -3,12 +3,12 @@
 namespace C4S.DB.Models
 {
     /// <summary>
-    /// Аккаунт Яндекс игр
+    /// Таблица аккаунта Яндекс игр
     /// </summary>
     public class YandexGamesAccountModel
     {
         /// <summary>
-        /// Id пользователя Яндекс игр
+        /// PK
         /// </summary>
         public Guid Id { get; set; }
 

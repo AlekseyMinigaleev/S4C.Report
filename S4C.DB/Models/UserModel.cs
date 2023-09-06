@@ -3,12 +3,12 @@
 namespace C4S.DB.Models
 {
     /// <summary>
-    /// C4S пользователь
+    /// Таблица C4S пользователя
     /// </summary>
     public class UserModel
     {
         /// <summary>
-        /// Id пользователя
+        /// PK
         /// </summary>
         public Guid Id { get; private set; }
 

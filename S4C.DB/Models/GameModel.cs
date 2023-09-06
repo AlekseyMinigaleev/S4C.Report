@@ -3,15 +3,15 @@
 namespace C4S.DB.Models
 {
     /// <summary>
-    /// Сущность игры
+    /// Таблица игры
     /// </summary>
     public class GameModel
     {
         /// <summary>
-        /// Id игры
+        /// PK
         /// </summary>
         /// <remarks>
-        /// Должно быть такое же как и на странице разработчика
+        /// Является дублированием id со страницы разработчика
         /// </remarks>
         public int Id { get; private set; }
 
@@ -28,9 +28,10 @@ namespace C4S.DB.Models
         /// <summary>
         /// Аккаунт Яндекс игр
         /// </summary>
-        public YandexGamesAccountModel YandexGamesAccount { get; private set; } 
+        public YandexGamesAccountModel YandexGamesAccount { get; private set; }
+        
         /// <summary>
-        /// FK
+        /// FK <see cref="YandexGamesAccount"/>
         /// </summary>
         public Guid YandexGamesAccountId { get; private set; }
 

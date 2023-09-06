@@ -95,7 +95,7 @@ namespace C4S.Services.Implements
             int gameId,
             CancellationToken cancellationToken)
         {
-            var existingGameIds = _dbContext.GameModels
+            var existingGameIds = _dbContext.Games
                 .Select(x => x.Id);
 
             var isExistingGame = await existingGameIds
@@ -112,7 +112,7 @@ namespace C4S.Services.Implements
 
                 var gameModel = new GameModel(gameId, yandexGamesAccount!);
 
-                await _dbContext.GameModels
+                await _dbContext.Games
                     .AddAsync(gameModel, cancellationToken);
                 _logger.LogInformation($"[{gameId}] id игры помечено на добавление в базу данных.");
 

@@ -10,29 +10,39 @@ namespace C4S.DB
         { }
 
         /// <summary>
-        /// Таблица C4S пользователя
+        /// Список C4S пользователей
         /// </summary>
         public DbSet<UserModel> Users { get; set; }
 
         /// <summary>
-        /// Таблица аккаунта Яндекс игр
+        /// Список аккаунтов Яндекс игр
         /// </summary>
         public DbSet<YandexGamesAccountModel> YandexGamesAccounts { get; set; }
 
         /// <summary>
-        /// Таблица игры
+        /// Список игр
         /// </summary>
-        public DbSet<GameModel> GameModels { get; set; }
+        public DbSet<GameModel> Games { get; set; }
 
         /// <summary>
-        /// Таблица игровой статистики
+        /// Список игровых статистик
         /// </summary>
-        public DbSet<GameStatisticModel> GamesStatisticModels { get; set; }
+        public DbSet<GameStatisticModel> GamesStatistics { get; set; }
 
         /// <summary>
-        /// Таблица джобы.
+        /// список джоб.
         /// </summary>
-        public DbSet<HangfireJobConfigurationModel> HangfireConfigurationModels { get; set; }
+        public DbSet<HangfireJobConfigurationModel> HangfireConfigurations { get; set; }
+
+        /// <summary>
+        /// Список статусов игр
+        /// </summary>
+        public DbSet<GameStatusModel> GameStatuses { get; set; }
+
+        /// <summary>
+        /// Список связей <see cref="GameStatusModel"/> - <see cref="GameStatisticModel"/>
+        /// </summary>
+        public DbSet<GameGameStatusModel> GameGameStatuses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

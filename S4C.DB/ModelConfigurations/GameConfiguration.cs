@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using C4S.DB.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using C4S.DB.Models;
 
 namespace C4S.DB.ModelConfigurations
 {
@@ -10,7 +10,7 @@ namespace C4S.DB.ModelConfigurations
         {
             builder.ToTable("Game")
                 .HasKey(x => x.Id);
-            
+
             builder.Property(x => x.Id)
                 .ValueGeneratedNever();
 
