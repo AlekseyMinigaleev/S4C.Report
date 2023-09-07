@@ -29,15 +29,6 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "S4C.API": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "applicationUrl": "https://localhost:7035;http://localhost:5041",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,

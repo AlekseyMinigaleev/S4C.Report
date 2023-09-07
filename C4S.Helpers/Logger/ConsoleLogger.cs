@@ -36,6 +36,7 @@ namespace C4S.Helpers.Logger
         }
 
         /*TODO: проверить*/
+
         /// <inheritdoc/>
         public override void LogInformation(string message)
         {
@@ -43,6 +44,7 @@ namespace C4S.Helpers.Logger
         }
 
         /*TODO: проверить*/
+
         /// <inheritdoc/>
         public override void LogSuccess(string message)
         {

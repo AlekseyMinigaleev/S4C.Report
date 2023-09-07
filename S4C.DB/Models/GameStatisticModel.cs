@@ -54,8 +54,8 @@ namespace C4S.DB.Models
             }
             set { _gameGameStatus = value; }
         }
-        private ISet<GameGameStatusModel>? _gameGameStatus;
 
+        private ISet<GameGameStatusModel>? _gameGameStatus;
 
         public GameStatisticModel(
             GameModel game,

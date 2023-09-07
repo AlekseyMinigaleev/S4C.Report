@@ -29,7 +29,7 @@ namespace C4S.DB.Models
         /// Аккаунт Яндекс игр
         /// </summary>
         public YandexGamesAccountModel YandexGamesAccount { get; private set; }
-        
+
         /// <summary>
         /// FK <see cref="YandexGamesAccount"/>
         /// </summary>

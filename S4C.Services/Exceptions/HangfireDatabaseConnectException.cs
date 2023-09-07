@@ -4,14 +4,16 @@
     {
         public string? ConnectionString { get; set; }
 
+        public static string ErrorMessage = "Не удалось подключиться к базе данных hangfire.";
+
         public HangfireDatabaseConnectException(string connectionString)
-            : base($"Не удалось подключиться к базе данных hangfire. ConnectionString: {connectionString}")
+            : base($"{ErrorMessage}. {connectionString}")
         {
             ConnectionString = connectionString;
         }
 
         public HangfireDatabaseConnectException()
-            : base($"Не удалось подключиться к базе данных hangfire.")
+            : base($"{ErrorMessage}")
         { }
     }
 }
