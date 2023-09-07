@@ -4,19 +4,6 @@
         <name>C4S.Services</name>
     </assembly>
     <members>
-        <member name="T:C4S.Services.Exceptions.InvalidCronExpressionException">
-            <summary>
-            Ошибка, обозначающая некорректное cron выражение.
-            </summary>
-        </member>
-        <member name="F:C4S.Services.Exceptions.InvalidCronExpressionException.CronExpression">
-            <summary>
-            Cron выражение, которое вызвало ошибку.
-            </summary>
-        </member>
-        <member name="M:C4S.Services.Exceptions.InvalidCronExpressionException.#ctor(System.String)">
-            <param name="cronExpression"> Cron выражение, которое вызвало ошибку.</param>
-        </member>
         <member name="T:C4S.Services.Implements.BackGroundJobService">
             <inheritdoc cref="T:C4S.Services.Interfaces.IBackGroundJobService"/>s
         </member>

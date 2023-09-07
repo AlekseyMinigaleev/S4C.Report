@@ -21,7 +21,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="NCrontab.Signed" Version="3.3.3" />
     <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="7.22.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\C4S.Helpers\C4S.Helpers.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,10 @@
-﻿using Hangfire;
+﻿using C4S.Db.Exceptions;
+using FluentValidation.Results;
+using Hangfire;
+using Microsoft.IdentityModel.Tokens;
+using NCrontab;
 using System.Linq.Expressions;
+using ValidationFailure = FluentValidation.Results.ValidationFailure;
 
 namespace C4S.DB.Models.Hangfire
 {
@@ -11,7 +16,7 @@ namespace C4S.DB.Models.Hangfire
         /// <summary>
         /// Тип джобы
         /// </summary>
-        public HangfireJobTypeEnum JobType { get; private set; }
+        public HangfireJobType JobType { get; private set; }
 
         /// <summary>
         /// cron выражение
@@ -27,7 +32,7 @@ namespace C4S.DB.Models.Hangfire
         { }
 
         public HangfireJobConfigurationModel(
-            HangfireJobTypeEnum jobType,
+            HangfireJobType jobType,
             string? cronExpression,
             bool isEnable)
         {
@@ -43,6 +48,15 @@ namespace C4S.DB.Models.Hangfire
         /// <param name="isEnable">статус джобы</param>
         public void Update(string? cronExpression, bool isEnable)
         {
+            var validationResult = IsValidCronExpression(CronExpression);
+
+            if (!validationResult.IsValid)
+                throw new InvalidCronExpressionException(CronExpression);
+
+            //потому что мы поддерживаем CronExpression = string.Empty, а hangfire нет
+            if (string.IsNullOrWhiteSpace(CronExpression))
+                Update(null, IsEnable);
+
             CronExpression = cronExpression;
             SetIsEnable(isEnable);
         }
@@ -54,14 +68,32 @@ namespace C4S.DB.Models.Hangfire
         public void SetIsEnable(bool isEnable) =>
             IsEnable = !string.IsNullOrWhiteSpace(CronExpression) && isEnable;
 
+        //TODO: уточнить, сейчас пользователь может оставить пустое значение для CronExpression и в таком случае IsEnable = false,
+        //т.е.пользователь не должен иметь возможности седлать IsEnable = false и CronExpression = string.Empty?
         /// <summary>
-        /// Нормализует крон выражение
+        /// Проверяет CronExpression на валидность.
         /// </summary>
-        public void NormalizeCronExpression()
+        /// <remarks>
+        /// <see cref="string.IsNullOrWhiteSpace(string?)"/> является валидным значением
+        /// </remarks>
+        /// <returns></returns>
+        public static ValidationResult IsValidCronExpression(string? cronExpression)
         {
-            //потому что мы поддерживаем CronExpression = string.Empty, а hangfire нет
-            if (string.IsNullOrWhiteSpace(CronExpression))
-                Update(null, IsEnable);
+            /*TODO: проверить случай с cronExpression = string.Empty*/
+            var crontabSchedule = CrontabSchedule.TryParse(cronExpression);
+            var result = new ValidationResult();
+
+            if (crontabSchedule is null && !cronExpression.IsNullOrEmpty())
+            {
+                var errors = new List<ValidationFailure>
+                {
+                    new ValidationFailure(nameof(cronExpression),InvalidCronExpressionException.ErrorMessage),
+                };
+
+                result = new ValidationResult(errors);
+            }
+
+            return result;
         }
     }
 

@@ -4,6 +4,24 @@
         <name>C4S.DB</name>
     </assembly>
     <members>
+        <member name="T:C4S.Db.Exceptions.InvalidCronExpressionException">
+            <summary>
+            Ошибка, обозначающая некорректное cron выражение.
+            </summary>
+        </member>
+        <member name="F:C4S.Db.Exceptions.InvalidCronExpressionException.CronExpression">
+            <summary>
+            Cron выражение, которое вызвало ошибку.
+            </summary>
+        </member>
+        <member name="F:C4S.Db.Exceptions.InvalidCronExpressionException.ErrorMessage">
+            <summary>
+            Сообщение об ошибке
+            </summary>
+        </member>
+        <member name="M:C4S.Db.Exceptions.InvalidCronExpressionException.#ctor(System.String)">
+            <param name="cronExpression"> Cron выражение, которое вызвало ошибку.</param>
+        </member>
         <member name="T:C4S.DB.Migrations.InitialCreate">
             <inheritdoc />
         </member>
@@ -294,10 +312,14 @@
             </summary>
             <param name="isEnable">новый статус джобы</param>
         </member>
-        <member name="M:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel.NormalizeCronExpression">
+        <member name="M:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel.IsValidCronExpression(System.String)">
             <summary>
-            Нормализует крон выражение
+            Проверяет CronExpression на валидность.
             </summary>
+            <remarks>
+            <see cref="M:System.String.IsNullOrWhiteSpace(System.String)"/> является валидным значением
+            </remarks>
+            <returns></returns>
         </member>
         <member name="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationExpression">
             <summary>
@@ -309,7 +331,7 @@
             Справочник констант для <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
             </summary>
         </member>
-        <member name="T:C4S.DB.Models.Hangfire.HangfireJobTypeEnum">
+        <member name="T:C4S.DB.Models.Hangfire.HangfireJobType">
             <summary>
             Перечисление всех возможных типов джоб
             </summary>

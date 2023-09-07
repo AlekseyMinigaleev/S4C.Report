@@ -23,7 +23,7 @@ namespace C4S.API.Features.Jobs.Actions
             /// <summary>
             /// Тип джобы
             /// </summary>
-            public HangfireJobTypeEnum JobType { get; set; }
+            public HangfireJobType JobType { get; set; }
 
             /// <summary>
             /// cron выражение
@@ -37,7 +37,7 @@ namespace C4S.API.Features.Jobs.Actions
 
             public ResponseViewModel(
                 string name,
-                HangfireJobTypeEnum jobType,
+                HangfireJobType jobType,
                 bool isEnable,
                 string? cronExpression = default)
             {
@@ -46,6 +46,9 @@ namespace C4S.API.Features.Jobs.Actions
                 CronExpression = cronExpression;
                 IsEnable = isEnable;
             }
+
+            private ResponseViewModel()
+            { }
         }
 
         public class ResponseViewModelProfiler : Profile
