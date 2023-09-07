@@ -1,6 +1,7 @@
 ﻿namespace C4S.Helpers.ApiHeplers.Swagger
 {
     /*TODO: разобраться + рефакторинг*/
+
     /// <summary>
     /// Переименовыватель id схемык класса
     /// </summary>

@@ -25,7 +25,6 @@
         /// </summary>
         public Guid GameStatusId { get; set; }
 
-
         public GameGameStatusModel(
             GameStatisticModel gameStatistic,
             GameStatusModel status)

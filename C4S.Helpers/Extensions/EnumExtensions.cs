@@ -22,7 +22,7 @@ namespace C4S.Helpers.Extensions
                 var fieldInfo = type.GetField(name);
                 var result = (DisplayAttribute?)Attribute.GetCustomAttribute(fieldInfo!, typeof(DisplayAttribute));
 
-                if(result is not null)
+                if (result is not null)
                     name = result.Name;
             }
 

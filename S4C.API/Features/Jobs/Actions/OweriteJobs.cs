@@ -6,7 +6,7 @@ namespace С4S.API.Features.Jobs.Actions
 {
     public class OweriteJobs
     {
-        public class Command:IRequest
+        public class Command : IRequest
         { }
 
         public class Handler : IRequestHandler<Command>

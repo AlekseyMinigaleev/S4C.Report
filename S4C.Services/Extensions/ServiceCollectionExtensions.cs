@@ -12,7 +12,7 @@ namespace C4S.Services.Extensions
         {
             services.AddTransient<IHangfireBackgroundJobService, BackgroundJobService>();
             services.AddScoped<IGameIdSyncService, GameIdSyncService>();
-            services.AddScoped<IGameDataService,GameDataService>();
+            services.AddScoped<IGameDataService, GameDataService>();
             services.AddYandexGetewayServices(configuration);
         }
     }

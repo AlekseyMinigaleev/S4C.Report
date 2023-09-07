@@ -11,7 +11,7 @@ namespace S4C.YandexGateway.DeveloperPage
     public interface IDeveloperPageGetaway
     {
         // логгер передается как параметр метода, потому что нужен тот же инстанс, что и у вызывающего сервиса.
-        
+
         /// <summary>
         /// Возвращает <see cref="GameInfoModel"/>[] со страницы разработчика.
         /// </summary>

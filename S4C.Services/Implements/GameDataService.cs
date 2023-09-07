@@ -128,6 +128,7 @@ namespace C4S.Services.Implements
         }
 
         /*TODO: Сделать поддержку статуса promoted псоле реализации сервиса парсинга с РСЯ*/
+
         private void SetLinksForStatuses(GameInfoModel incomingGameInfo, GameStatisticModel incomingGameStatisticModel)
         {
             var existingGameStatusQuery = _dbContext.GameStatuses;

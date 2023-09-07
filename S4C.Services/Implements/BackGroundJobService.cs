@@ -195,7 +195,6 @@ namespace C4S.Services.Implements
 
         #endregion AddMissingHangfirejobsAsync Helpers
 
-        
         private void AddOrUpdateRecurringJob(HangfireJobConfigurationModel jobConfig)
         {
             switch (jobConfig.JobType)

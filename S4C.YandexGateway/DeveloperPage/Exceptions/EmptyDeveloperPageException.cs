@@ -9,4 +9,5 @@
         public EmptyDeveloperPageException(string developerPageUrl) :
             base($"На странице {developerPageUrl} нет игр")
         { }
-    }}
+    }
+}

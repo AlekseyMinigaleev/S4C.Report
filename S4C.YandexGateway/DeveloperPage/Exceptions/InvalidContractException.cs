@@ -9,15 +9,21 @@
         /// Объект возвращаемый яндексом
         /// </summary>
         public string JsonString { get; private set; }
+
         /// <summary>
         /// Ключ по которому произошла ошибка
         /// </summary>
         public string? Key { get; private set; }
 
+        /// <summary>
+        /// Сообщение об ошибке
+        /// </summary>
+        public static string ErrorMessage = "Ошибка при десериализации JSON-string, возможно со стороны Yandex, был обновлен контракт.";
+
         /// <param name="jsonString">Объект возвращаемый яндексом</param>
         /// <param name="key">Ключ по которому произошла ошибка</param>
         public InvalidContractException(string jsonString, string? key = default) :
-            base("Ошибка при десериализации JSON-string, возможно со стороны Yandex, был обновлен контракт.")
+            base(ErrorMessage)
         {
             JsonString = jsonString;
             Key = key;
