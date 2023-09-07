@@ -3,6 +3,7 @@ using C4S.Helpers.ApiHeplers.Controllers;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using С4S.API.Features.Jobs.Actions;
 
 namespace C4S.API.Features.Jobs
 {
@@ -14,7 +15,7 @@ namespace C4S.API.Features.Jobs
         { }
 
         /// <summary>
-        ///  Получить все запланированные jobs.
+        ///  Выдает конфигурации всех запланированных джоб.
         /// </summary>
         [HttpGet("GetAllJobs")]
         public async Task<ActionResult<GetJobs.ResponseViewModel[]>> GetJobsAsync(
@@ -26,7 +27,7 @@ namespace C4S.API.Features.Jobs
         }
 
         /// <summary>
-        /// Обновить все запланированные jobs.
+        /// Выполняет обновление конфигураций всех запланированных джоб.
         /// </summary>
         [HttpPost("UpdateAllJobs")]
         public async Task<ActionResult<UpdateJobs.ResponseViewModel>> UpdateJobsAsync(
@@ -42,6 +43,20 @@ namespace C4S.API.Features.Jobs
             var result = await Mediator.Send(request, cancellationToken);
 
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Запускает процесс перезаписи всех джоб в hangfire базе данных
+        /// </summary>
+        [HttpGet("OweriteAllJobs")]
+        public async Task<IActionResult> OweriteJobsAsyc(
+            CancellationToken cancellationToken)
+        {
+            var command = new OweriteJobs.Command();
+
+            await Mediator.Send(command, cancellationToken);
+
+            return Ok();
         }
     }
 }

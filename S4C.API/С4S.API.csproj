@@ -38,6 +38,12 @@
     <ProjectReference Include="..\S4C.Services\C4S.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="C4S.API.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://json.schemastore.org/appsscript.json" /></VisualStudio></ProjectExtensions>
 
 </Project>

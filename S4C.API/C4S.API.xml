@@ -63,12 +63,17 @@
         </member>
         <member name="M:C4S.API.Features.Jobs.JobController.GetJobsAsync(System.Threading.CancellationToken)">
             <summary>
-             Получить все запланированные jobs.
+             Выдает все запланированные джобы.
             </summary>
         </member>
         <member name="M:C4S.API.Features.Jobs.JobController.UpdateJobsAsync(C4S.API.Features.Jobs.Actions.UpdateJobs.Command,FluentValidation.IValidator{C4S.API.Features.Jobs.Actions.UpdateJobs.Command},System.Threading.CancellationToken)">
             <summary>
-            Обновить все запланированные jobs.
+            Выполняет обновление конфигураций всех запланированных джобы.
+            </summary>
+        </member>
+        <member name="M:C4S.API.Features.Jobs.JobController.OweriteJobsAsyc(System.Threading.CancellationToken)">
+            <summary>
+            Запускает процесс перезаписывания всех джоб в hangfire базе данных
             </summary>
         </member>
     </members>

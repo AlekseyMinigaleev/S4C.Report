@@ -51,9 +51,9 @@ namespace C4S.API.Features.Jobs.Actions
 
         public class Handler : IRequestHandler<Command, List<ResponseViewModel>>
         {
-            private readonly IBackGroundJobService _backgroundJobService;
+            private readonly IHangfireBackgroundJobService _backgroundJobService;
 
-            public Handler(IBackGroundJobService backGroundJobService)
+            public Handler(IHangfireBackgroundJobService backGroundJobService)
             {
                 _backgroundJobService = backGroundJobService;
             }

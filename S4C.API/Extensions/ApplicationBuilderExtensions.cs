@@ -27,13 +27,13 @@ namespace С4S.API.Extensions
             await backGroundJobService.AddMissingHangfirejobsAsync(logger, cancellationToken);
         }
 
-        private static (ConsoleLogger<Program>, IBackGroundJobService, ReportDbContext) GetDependencies(IServiceScope scope)
+        private static (ConsoleLogger<Program>, IHangfireBackgroundJobService, ReportDbContext) GetDependencies(IServiceScope scope)
         {
             var services = scope.ServiceProvider;
 
             var defaultLogger = services.GetRequiredService<ILogger<Program>>();
             var logger = new ConsoleLogger<Program>(defaultLogger);
-            var backGroundJobService = services.GetRequiredService<IBackGroundJobService>();
+            var backGroundJobService = services.GetRequiredService<IHangfireBackgroundJobService>();
             var dbContext = services.GetRequiredService<ReportDbContext>();
 
             return (logger, backGroundJobService, dbContext);

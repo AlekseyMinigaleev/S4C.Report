@@ -5,17 +5,18 @@ using C4S.Helpers.Logger;
 using C4S.Services.Exceptions;
 using C4S.Services.Interfaces;
 using Hangfire;
+using Hangfire.Storage;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace C4S.Services.Implements
 {
-    /// <inheritdoc cref="IBackGroundJobService"/>s
-    public class BackGroundJobService : IBackGroundJobService
+    /// <inheritdoc cref="IHangfireBackgroundJobService"/>s
+    public class BackgroundJobService : IHangfireBackgroundJobService
     {
         private readonly ReportDbContext _dbContext;
 
-        public BackGroundJobService(ReportDbContext dbContext)
+        public BackgroundJobService(ReportDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -56,6 +57,37 @@ namespace C4S.Services.Implements
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             localLogger.LogFinish();
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public async Task OweriteJobsAsyncs(
+            BaseLogger logger,
+            CancellationToken cancellationToken)
+        {
+            logger.LogInformation($"Запущен процесс перезаписи всех джоб в hangfire базе данных");
+            var jobIds = Enum
+                .GetValues(typeof(HangfireJobType))
+                .Cast<HangfireJobType>()
+                .Select(x => x.GetName())
+                .ToArray();
+
+            using var connection = JobStorage.Current.GetConnection();
+            var recurringJobs = connection
+                .GetRecurringJobs()
+                .Where(x => !jobIds.Contains(x.Id))
+                .ToList();
+
+            recurringJobs.ForEach(x => RecurringJob.RemoveIfExists(x.Id));
+            logger.LogInformation($"Все джобы удалены");
+
+            var hangfireJobConfigurations = _dbContext.HangfireConfigurations;
+            await hangfireJobConfigurations
+                .ForEachAsync(AddOrUpdateRecurringJob, cancellationToken);
+            logger.LogInformation($"Все джобы восстановлены");
+
+            logger.LogSuccess($"Процесс успешно завершен, все джобы перезаписаны");
         }
 
         #region AddMissingHangfirejobsAsync Helpers
@@ -163,6 +195,7 @@ namespace C4S.Services.Implements
 
         #endregion AddMissingHangfirejobsAsync Helpers
 
+        
         private void AddOrUpdateRecurringJob(HangfireJobConfigurationModel jobConfig)
         {
             switch (jobConfig.JobType)

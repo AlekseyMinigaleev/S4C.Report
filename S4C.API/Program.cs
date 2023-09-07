@@ -16,8 +16,11 @@ var configuration = builder.Configuration;
 services.AddHttpClient();
 services.AddControllers();
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen(options => 
-    options.CustomSchemaIds(ShemaClassesIdsRenamer.Selector));
+services.AddSwaggerGen(options =>
+{
+    options.IncludeXmlComments($"{AppContext.BaseDirectory}C4S.API.xml");
+    options.CustomSchemaIds(ShemaClassesIdsRenamer.Selector) ;
+});
 services.AddStorages(configuration);
 services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssemblies(typeof(Program).GetTypeInfo().Assembly));

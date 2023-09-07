@@ -6,7 +6,7 @@ namespace C4S.Services.Interfaces
     /// <summary>
     /// Сервис для управления Hangfires job
     /// </summary>
-    public interface IBackGroundJobService
+    public interface IHangfireBackgroundJobService
     {
         /// <summary>
         /// Выполняет создание недостающих джоб.
@@ -28,5 +28,17 @@ namespace C4S.Services.Interfaces
         public Task UpdateRecurringJobAsync(
             HangfireJobConfigurationModel jobConfig,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// выполнят перезапись всех джоб в hangfire базе данных
+        /// </summary>
+        /// <remarks>
+        /// Перезаписанные джобы будут с конфигурацией, сохраненной в Report базе данных
+        /// </remarks>
+        /// <param name="logger"></param>
+        /// <param name="cancellationToken"></param>
+        public Task OweriteJobsAsyncs(
+            BaseLogger logger,
+            CancellationToken cancellationToken);
     }
 }
