@@ -5,7 +5,7 @@ namespace C4S.DB.Models.Hangfire
 	/// <summary>
 	/// Перечисление всех возможных типов джоб
 	/// </summary>
-	public enum HangfireJobTypeEnum
+	public enum HangfireJobType
 	{
 		[Display(Name = "Парсинг id игр со страницы разработчика")]
 		ParseGameIdsFromDeveloperPage,

@@ -4,28 +4,20 @@
         <name>C4S.Services</name>
     </assembly>
     <members>
-        <member name="T:C4S.Services.Exceptions.InvalidCronExpressionException">
-            <summary>
-            Ошибка, обозначающая некорректное cron выражение.
-            </summary>
+        <member name="T:C4S.Services.Implements.BackgroundJobService">
+            <inheritdoc cref="T:C4S.Services.Interfaces.IHangfireBackgroundJobService"/>s
         </member>
-        <member name="F:C4S.Services.Exceptions.InvalidCronExpressionException.CronExpression">
-            <summary>
-            Cron выражение, которое вызвало ошибку.
-            </summary>
-        </member>
-        <member name="M:C4S.Services.Exceptions.InvalidCronExpressionException.#ctor(System.String)">
-            <param name="cronExpression"> Cron выражение, которое вызвало ошибку.</param>
-        </member>
-        <member name="T:C4S.Services.Implements.BackGroundJobService">
-            <inheritdoc cref="T:C4S.Services.Interfaces.IBackGroundJobService"/>s
-        </member>
-        <member name="M:C4S.Services.Implements.BackGroundJobService.UpdateRecurringJobAsync(C4S.DB.Models.Hangfire.HangfireJobConfigurationModel,System.Threading.CancellationToken)">
+        <member name="M:C4S.Services.Implements.BackgroundJobService.UpdateRecurringJobAsync(C4S.DB.Models.Hangfire.HangfireJobConfigurationModel,System.Threading.CancellationToken)">
             <inheritdoc/>
             <param name="updatedJobConfig" ><inheritdoc/></param>
         </member>
-        <member name="M:C4S.Services.Implements.BackGroundJobService.AddMissingHangfirejobsAsync(System.Threading.CancellationToken)">
+        <member name="M:C4S.Services.Implements.BackgroundJobService.AddMissingHangfirejobsAsync(C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
             <inheritdoc/>
+        </member>
+        <member name="M:C4S.Services.Implements.BackgroundJobService.OweriteJobsAsyncs(C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
+            <summary>
+            <inheritdoc/>
+            </summary>
         </member>
         <member name="T:C4S.Services.Implements.GameDataService">
             <inheritdoc cref="T:C4S.Services.Interfaces.IGameDataService"/>
@@ -38,28 +30,6 @@
         </member>
         <member name="M:C4S.Services.Implements.GameIdSyncService.SyncAllGameIdAsync(Hangfire.Server.PerformContext,System.Threading.CancellationToken)">
             <inheritdoc/>
-        </member>
-        <member name="T:C4S.Services.Interfaces.IBackGroundJobService">
-            <summary>
-            Сервис для управления Hangfires job
-            </summary>
-        </member>
-        <member name="M:C4S.Services.Interfaces.IBackGroundJobService.AddMissingHangfirejobsAsync(System.Threading.CancellationToken)">
-            <summary>
-            Выполняет создание недостающих джоб.
-            </summary>
-            <remarks>
-            Работа метода включает в себя обновление таблицы <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
-            </remarks>
-        </member>
-        <member name="M:C4S.Services.Interfaces.IBackGroundJobService.UpdateRecurringJobAsync(C4S.DB.Models.Hangfire.HangfireJobConfigurationModel,System.Threading.CancellationToken)">
-            <summary>
-            Выполняет обновление указанной джобы.
-            </summary>
-            <remarks>
-            Работа метода включает в себя обновление таблицы <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
-            </remarks>
-            <param name="jobConfig">джоба которую нужно обновить</param>
         </member>
         <member name="T:C4S.Services.Interfaces.IGameDataService">
             <summary>
@@ -84,6 +54,38 @@
             <summary>
              Выполняет процесс синхронизации id игр между базой данных и Яндексом.
             </summary>
+        </member>
+        <member name="T:C4S.Services.Interfaces.IHangfireBackgroundJobService">
+            <summary>
+            Сервис для управления Hangfires job
+            </summary>
+        </member>
+        <member name="M:C4S.Services.Interfaces.IHangfireBackgroundJobService.AddMissingHangfirejobsAsync(C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
+            <summary>
+            Выполняет создание недостающих джоб.
+            </summary>
+            <remarks>
+            Работа метода включает в себя обновление таблицы <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
+            </remarks>
+        </member>
+        <member name="M:C4S.Services.Interfaces.IHangfireBackgroundJobService.UpdateRecurringJobAsync(C4S.DB.Models.Hangfire.HangfireJobConfigurationModel,System.Threading.CancellationToken)">
+            <summary>
+            Выполняет обновление указанной джобы.
+            </summary>
+            <remarks>
+            Работа метода включает в себя обновление таблицы <see cref="T:C4S.DB.Models.Hangfire.HangfireJobConfigurationModel"/>
+            </remarks>
+            <param name="jobConfig">джоба которую нужно обновить</param>
+        </member>
+        <member name="M:C4S.Services.Interfaces.IHangfireBackgroundJobService.OweriteJobsAsyncs(C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
+            <summary>
+            выполнят перезапись всех джоб в hangfire базе данных
+            </summary>
+            <remarks>
+            Перезаписанные джобы будут с конфигурацией, сохраненной в Report базе данных
+            </remarks>
+            <param name="logger"></param>
+            <param name="cancellationToken"></param>
         </member>
     </members>
 </doc>

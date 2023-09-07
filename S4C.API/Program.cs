@@ -3,31 +3,35 @@ using MediatR;
 using FluentValidation;
 using C4S.Services.Extensions;
 using C4S.API.Extensions;
-using Ñ4S.API.Extensions;
 using S4C.YandexGateway.DeveloperPage;
 using C4S.Helpers.ApiHeplers.Swagger;
 using System.Reflection;
+using Ñ4S.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var configuration = builder.Configuration;
 
 #region services
-var configuration = builder.Configuration;
-builder.Services.AddHttpClient();
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options => 
-    options.CustomSchemaIds(ShemaClassesIdsRenamer.Selector));
-builder.Services.AddStorages(configuration);
-builder.Services.AddMediatR(cfg => 
+services.AddHttpClient();
+services.AddControllers();
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen(options =>
+{
+    options.IncludeXmlComments($"{AppContext.BaseDirectory}C4S.API.xml");
+    options.CustomSchemaIds(ShemaClassesIdsRenamer.Selector) ;
+});
+services.AddStorages(configuration);
+services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssemblies(typeof(Program).GetTypeInfo().Assembly));
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-builder.Services.AddAutoMapper(
+services.AddValidatorsFromAssemblyContaining<Program>();
+services.AddAutoMapper(
     typeof(Program),
     typeof(IDeveloperPageGetaway));
-builder.Services.AddServices(configuration);
+services.AddServices(configuration);
 #endregion
 
-var app = builder.Build();
+var app = builder.BuildWithHangfireStorage(configuration);
 
 #region middleware
 app.UseSwagger();
@@ -36,7 +40,6 @@ app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.MapControllers();
 
-await app.InitApplicationInfrastructureAsync();
-
+await app.InitApplicationAsync();
 app.Run();
 #endregion

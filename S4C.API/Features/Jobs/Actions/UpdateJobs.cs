@@ -1,5 +1,5 @@
-﻿using C4S.DB.Models.Hangfire;
-using C4S.Services.Exceptions;
+﻿using C4S.Db.Exceptions;
+using C4S.DB.Models.Hangfire;
 using C4S.Services.Interfaces;
 using FluentValidation;
 using MediatR;
@@ -21,7 +21,7 @@ namespace C4S.API.Features.Jobs.Actions
             /// <summary>
             /// тип джобы
             /// </summary>
-            public HangfireJobTypeEnum JobType { get; set; }
+            public HangfireJobType JobType { get; set; }
 
             /// <summary>
             /// Текст возможной ошибки при обновлении HangfireConfigurationModel
@@ -29,7 +29,7 @@ namespace C4S.API.Features.Jobs.Actions
             public string? Error { get; set; }
 
             public ResponseViewModel(
-                HangfireJobTypeEnum jobType,
+                HangfireJobType jobType,
                 string? error = default)
             {
                 JobType = jobType;
@@ -51,9 +51,9 @@ namespace C4S.API.Features.Jobs.Actions
 
         public class Handler : IRequestHandler<Command, List<ResponseViewModel>>
         {
-            private readonly IBackGroundJobService _backgroundJobService;
+            private readonly IHangfireBackgroundJobService _backgroundJobService;
 
-            public Handler(IBackGroundJobService backGroundJobService)
+            public Handler(IHangfireBackgroundJobService backGroundJobService)
             {
                 _backgroundJobService = backGroundJobService;
             }

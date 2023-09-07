@@ -65,7 +65,17 @@ namespace C4S.DB.Migrations
                 "VALUES " +
                     "(NEWID(), 'new'), " +
                     "(NEWID(), 'promoted');");
-        }
+
+            /*TODO: Заменить на нормальный инициализатор*/
+            migrationBuilder.Sql(
+                "DECLARE @UserId UNIQUEIDENTIFIER = NEWID();" +
+
+                "INSERT INTO [User] (id, [Login], [Password])" +
+                "VALUES (@UserId, 'testS4CUser1', '123');" +
+
+                "INSERT INTO YandexGamesAccount (Id, UserId, DeveloperPageUrl)" +
+                "VALUES (NEWID(), @UserId, 'https://yandex.ru/games/developer?name=C4S.SHA');");
+            }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
