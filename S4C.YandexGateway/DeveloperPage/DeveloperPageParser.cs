@@ -1,39 +1,53 @@
 ﻿using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
+using C4S.Helpers.Logger;
+using S4C.YandexGateway.DeveloperPage.Exceptions;
 
-namespace S4C.YandexGateway.DeveloperPageGateway
+namespace S4C.YandexGateway.DeveloperPage
 {
-    public class DeveloperPageParser
+    /// <inheritdoc cref="IDeveloperPageParser"/>
+    public class DeveloperPageParser : IDeveloperPageParser
     {
         private readonly IBrowsingContext _browsingContext;
+        private string _developerPageUrl;
 
-        public DeveloperPageParser(IBrowsingContext browsingContext)
+        public DeveloperPageParser(
+            IBrowsingContext browsingContext)
         {
             _browsingContext = browsingContext;
         }
 
-        public async Task<int[]> GetAllGameidAsync(string developerPageUrl)
+        /// <inheritdoc/>
+        public async Task<int[]> GetGameIdsAsync(
+            string developerPageUrl,
+            BaseLogger logger,
+            CancellationToken cancellationToken = default)
         {
-            var gamesHtmlCollection = await GetGamesAsHtmlElementsAsync(developerPageUrl);
+            _developerPageUrl = developerPageUrl;
 
+            logger.LogInformation("Начало получения игр как html элементов");
+            var gamesHtmlCollection = await GetGamesAsHtmlElementsAsync(
+                cancellationToken);
+            logger.LogSuccess($"Успешно получено {gamesHtmlCollection.Count()} элементов");
+
+            logger.LogInformation("Начало получения id из html элементов");
             var gameIds = new int[gamesHtmlCollection.Length];
-
             for (int i = 0; i < gamesHtmlCollection.Length; i++)
             {
-                var id = GetGameId(gamesHtmlCollection[i], developerPageUrl);
+                var id = GetGameId(gamesHtmlCollection[i]);
                 gameIds[i] = id;
             }
+            logger.LogSuccess($"Успешно получено {gameIds.Length} id");
 
             return gameIds;
         }
 
-        private static int GetGameId(IElement element, string developerPageUrl)
+        private int GetGameId(IElement element)
         {
             var gameUrlElement = element
                 .QuerySelector(".game-url") as IHtmlAnchorElement
-                ?? throw new EmptyDeveloperPageException(developerPageUrl);
+                ?? throw new EmptyDeveloperPageException(_developerPageUrl);
 
             var path = gameUrlElement!.PathName;
 
@@ -47,14 +61,15 @@ namespace S4C.YandexGateway.DeveloperPageGateway
             return gameId;
         }
 
-        private async Task<IHtmlCollection<IElement>> GetGamesAsHtmlElementsAsync(string developerPageUrl)
+        private async Task<IHtmlCollection<IElement>> GetGamesAsHtmlElementsAsync(
+            CancellationToken cancellationToken = default)
         {
             var document = await _browsingContext
-                .OpenAsync(developerPageUrl);
+                .OpenAsync(_developerPageUrl, cancellationToken);
 
             var gridList = document
                 .QuerySelector(".grid-list")
-                ?? throw new EmptyDeveloperPageException(developerPageUrl); /*TODO: проверить*/
+                ?? throw new EmptyDeveloperPageException(_developerPageUrl); /*TODO: проверить*/
 
             var children = gridList.Children;
 

@@ -1,8 +1,8 @@
-﻿using C4S.DB.Models.Hangfire;
+﻿using C4S.Db.Exceptions;
+using C4S.DB.Models.Hangfire;
 using C4S.Services.Interfaces;
 using FluentValidation;
 using MediatR;
-using NCrontab;
 
 namespace C4S.API.Features.Jobs.Actions
 {
@@ -10,24 +10,31 @@ namespace C4S.API.Features.Jobs.Actions
     {
         public class Command : IRequest<List<ResponseViewModel>>
         {
-            /*TODO: почему я не могу передать HangfireJobModel*/
+            /// <summary>
+            /// <see cref="HangfireJobConfigurationModel"/>[] с обновленными полями
+            /// </summary>
             public HangfireJobConfigurationModel[] UpdatedJobs { get; set; }
-        }
-
-        public class RequestViewModel
-        {
-            public HangfireJobTypeEnum JobType { get; set; }
-
-            public string? CronExpression { get; set; }
-
-            public bool IsEnable { get; set; }
         }
 
         public class ResponseViewModel
         {
-            public HangfireJobTypeEnum JobType { get; set; }
+            /// <summary>
+            /// тип джобы
+            /// </summary>
+            public HangfireJobType JobType { get; set; }
 
+            /// <summary>
+            /// Текст возможной ошибки при обновлении HangfireConfigurationModel
+            /// </summary>
             public string? Error { get; set; }
+
+            public ResponseViewModel(
+                HangfireJobType jobType,
+                string? error = default)
+            {
+                JobType = jobType;
+                Error = error;
+            }
         }
 
         public class CommandValidator : AbstractValidator<Command>
@@ -44,64 +51,54 @@ namespace C4S.API.Features.Jobs.Actions
 
         public class Handler : IRequestHandler<Command, List<ResponseViewModel>>
         {
-            private readonly IBackGroundJobService _backgroundJobService;
+            private readonly IHangfireBackgroundJobService _backgroundJobService;
 
-            public Handler(IBackGroundJobService backGroundJobService)
+            public Handler(IHangfireBackgroundJobService backGroundJobService)
             {
                 _backgroundJobService = backGroundJobService;
             }
 
-            public async Task<List<ResponseViewModel>> Handle(Command command, CancellationToken cancellationToken)
+            public async Task<List<ResponseViewModel>> Handle(
+                Command command,
+                CancellationToken cancellationToken = default)
             {
                 var responseViewModelList = new List<ResponseViewModel>();
 
                 foreach (var updatedJob in command.UpdatedJobs)
                 {
-                    var responseVieModel = await CreateResponseAndUpdateRecurringJobAsync(updatedJob);
-                    responseViewModelList.Add(responseVieModel);
+                    var error = await UpdateRecurringJobAndGetErrorsAsync(
+                            updatedJob,
+                            cancellationToken);
+
+                    var responseViewModel = new ResponseViewModel(
+                        jobType: updatedJob.JobType,
+                        error: error);
+
+                    responseViewModelList.Add(responseViewModel);
                 }
 
                 return responseViewModelList;
             }
 
-            private async Task<ResponseViewModel> CreateResponseAndUpdateRecurringJobAsync(HangfireJobConfigurationModel updatedJob)
+            private async Task<string?> UpdateRecurringJobAndGetErrorsAsync(
+                HangfireJobConfigurationModel updatedJob,
+                CancellationToken cancellationToken)
             {
-                //меняем, потому что мы поддерживаем CronExpression = string.Empty, а hangfire нет
-                if (string.IsNullOrWhiteSpace(updatedJob.CronExpression))
-                    updatedJob.Update(null, updatedJob.IsEnable);
-
-                var (errorMessage, isValidCron) = IsValidCronExpression(updatedJob.CronExpression);
-
-                if (isValidCron)
-                    await _backgroundJobService.UpdateRecurringJobAsync(updatedJob);
-
-                var responseViewModel = new ResponseViewModel
+                string errors = null;
+                try
                 {
-                    JobType = updatedJob.JobType,
-                    Error = errorMessage
-                };
+                    await _backgroundJobService.UpdateRecurringJobAsync(updatedJob, cancellationToken);
+                }
+                catch (InvalidCronExpressionException e)
+                {
+                    errors = $"{e.Message}: {e.CronExpression}";
+                }
+                catch (Exception e)
+                {
+                    errors = $"{e.Message}";
+                }
 
-                return responseViewModel;
-            }
-
-            //TODO: уточнить, сейчас пользователь может оставить пустое значение для CronExpression и в таком случае IsEnable = false,
-            //т.е.пользователь не должен иметь возможности седлать IsEnable = false и CronExpression = string.Empty
-            private static (string?, bool) IsValidCronExpression(string? cronExpression)
-            {
-                var crontabSchedule = CrontabSchedule.TryParse(cronExpression);
-                var result = crontabSchedule is null;
-
-                return result
-                      ? (null, result) // TODO: уточнить нужно ли сообщение, о том что c пустым CronExpression джоба всегда будет выключена
-                      : ("Invalid cron expression", result);
-            }
-
-            private async Task UpdateRecurringJobAsync(RequestViewModel updatedJob)
-            {
-                var hangfireJobConfiguration = new HangfireJobConfigurationModel(
-                            updatedJob.JobType,
-                            updatedJob.CronExpression,
-                            updatedJob.IsEnable);
+                return errors;
             }
         }
     }

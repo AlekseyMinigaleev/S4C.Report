@@ -1,55 +1,47 @@
 ﻿using AutoMapper;
 using C4S.DB;
 using C4S.DB.Models;
+using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
-
+using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using S4C.YandexGateway.DeveloperPageGateway;
-using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
-using S4C.YandexGateway.DeveloperPageGateway.Models;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using S4C.YandexGateway.DeveloperPage;
+using S4C.YandexGateway.DeveloperPage.Models;
 
 namespace C4S.Services.Implements
 {
+    /// <inheritdoc cref="IGameDataService"/>
     public class GameDataService : IGameDataService
     {
         private readonly ReportDbContext _dbContext;
-        private readonly ILogger<IGameDataService> _logger;
         private readonly IDeveloperPageGetaway _developerPageGetaway;
         private readonly IMapper _mapper;
+        private BaseLogger _logger;
 
         public GameDataService(
-            ILogger<IGameDataService> logger,
             IDeveloperPageGetaway developerPageGetaway,
             IMapper mapper,
             ReportDbContext dbContext)
         {
-            _logger = logger;
             _developerPageGetaway = developerPageGetaway;
             _mapper = mapper;
             _dbContext = dbContext;
         }
 
-        public async Task GetAllGameDataAsync()
+        /// <inheritdoc/>
+        public async Task UpdateGameAndCreateGameStatisticRecord(
+            PerformContext hangfireContext,
+            CancellationToken cancellationToken)
         {
-            var finalLogMessage = "процесс успешно завершен";
-            var logErrorMessage = "процесс завершен с ошибкой: ";
-            var logLevel = LogLevel.Information;
+            _logger = new HangfireLogger(hangfireContext);
+
+            var finalLogMessage = "Процесс успешно завершен.";
+            var logErrorMessage = "Процесс завершен с ошибкой: ";
+            var logLevel = LogLevel.Success;
             try
             {
-                _logger.LogInformation("начат процесс синхронизации всех данных по играм");
-                await RunAsync();
-            }
-            catch (HttpRequestException e)
-            {
-                finalLogMessage = $"{logErrorMessage}{e.Message}";
-                logLevel = LogLevel.Error;
-            }
-            catch (InvalidContractException e)
-            {
-                finalLogMessage = $"{logErrorMessage}{e.Message}";
-                logLevel = LogLevel.Error;
+                _logger.LogInformation("Начат процесс синхронизации всех данных по играм:");
+                await RunAsync(cancellationToken);
             }
             catch (Exception e)
             {
@@ -58,99 +50,112 @@ namespace C4S.Services.Implements
             }
             finally
             {
-                _logger.Log(logLevel, finalLogMessage);
+                _logger.Log(finalLogMessage, logLevel);
             }
         }
 
-        private async Task RunAsync()
+        private async Task RunAsync(
+            CancellationToken cancellationToken)
         {
-            var games = await _dbContext.GameModels
-                .ToArrayAsync();
+            var games = await _dbContext.Games
+                .ToArrayAsync(cancellationToken);
 
             var gameIds = games
                 .Select(x => x.Id)
                 .ToArray();
 
-            _logger.LogInformation($"получение данных, количество игр: {gameIds.Length}");
+            _logger.LogInformation($"Начало получения данных, количество игр: {gameIds.Length}.");
             var incomingGameData = await _developerPageGetaway
-                .GetGameInfoAsync(gameIds);
-            _logger.LogInformation($"все данные успешно получены");
+                .GetGameInfoAsync(gameIds, _logger, cancellationToken);
+            _logger.LogSuccess($"Количество игр, по которым успешно получены данные: {gameIds.Length}.");
 
-            _logger.LogInformation($"начало обработки полученных данных");
-            await ProcessingIncomingDataAsync(incomingGameData, games);
+            _logger.LogInformation($"Начало обработки полученных данных:");
+            await ProcessingIncomingDataAsync(incomingGameData, games, cancellationToken);
+            _logger.LogSuccess($"Все данные успешно обработаны.");
 
-            _logger.LogInformation($"начало обновления базы данных");
-            await _dbContext
-                .SaveChangesAsync();
-            _logger.LogInformation($"база данных успешно обновлена");
+            _logger.LogInformation($"Начало обновления базы данных.");
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            _logger.LogSuccess($"База данных успешно обновлена.");
         }
 
-        private async Task ProcessingIncomingDataAsync(GameInfo[] incomingGamesInfo, GameModel[] sourceGameModels)
+        private async Task ProcessingIncomingDataAsync(
+            GameInfoModel[] incomingGamesInfo,
+            GameModel[] sourceGameModels,
+            CancellationToken cancellationToken)
         {
             foreach (var incomingGameInfo in incomingGamesInfo)
             {
-                var sourceGameModel = sourceGameModels
-                    .Single(x => x.Id == incomingGameInfo.AppId);
+                var (sourceGameModel,
+                    gameIdForLogs) = GetDataForProcess(sourceGameModels, incomingGameInfo);
 
-                var gameIdForLogs =
-                    sourceGameModel.Name is null
-                        ? sourceGameModel.Id.ToString()
-                        : sourceGameModel.Name;
-
-                var incomingGameInfoViewModel = Projection(incomingGameInfo);
+                var (incomingGameModel,
+                incomingGameStatisticModel) = Projection(incomingGameInfo);
 
                 UpdateGameModel(
                     sourceGameModel,
-                    incomingGameInfoViewModel.GameI,
+                    incomingGameModel,
                     gameIdForLogs);
 
-                _logger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики");
-                await _dbContext.GamesStatisticModels
-                    .AddAsync(incomingGameInfoViewModel.GameStatistic);
+                _logger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики.");
+                await _dbContext.GamesStatistics
+                    .AddAsync(incomingGameStatisticModel, cancellationToken);
             }
         }
 
-        private IncomingGameInfoViewModel Projection(GameInfo incomingGameInfo)
+        private static (GameModel, string) GetDataForProcess(
+            GameModel[] sourceGameModels,
+            GameInfoModel incomingGameInfo)
         {
-            var incomingGameModel = _mapper.Map<GameInfo, GameModel>(incomingGameInfo);
-            var incomingGameStatisticModel = _mapper.Map<GameInfo, GameStatisticModel>(incomingGameInfo);
+            var sourceGameModel = sourceGameModels
+                .Single(x => x.Id == incomingGameInfo.AppId);
 
-            var incomingGameInfoViewModel = new IncomingGameInfoViewModel(
-                incomingGameModel,
-                incomingGameStatisticModel);
+            var gameIdForLogs =
+                sourceGameModel.Name is null
+                    ? sourceGameModel.Id.ToString()
+                    : sourceGameModel.Name;
 
-            return incomingGameInfoViewModel;
+            return (sourceGameModel, gameIdForLogs);
+        }
+
+        private (GameModel, GameStatisticModel) Projection(GameInfoModel incomingGameInfo)
+        {
+            var incomingGameModel = _mapper.Map<GameInfoModel, GameModel>(incomingGameInfo);
+            var incomingGameStatisticModel = _mapper.Map<GameInfoModel, GameStatisticModel>(incomingGameInfo);
+
+            SetLinksForStatuses(incomingGameInfo, incomingGameStatisticModel);
+
+            return (incomingGameModel, incomingGameStatisticModel);
+        }
+
+        /*TODO: Сделать поддержку статуса promoted псоле реализации сервиса парсинга с РСЯ*/
+        private void SetLinksForStatuses(GameInfoModel incomingGameInfo, GameStatisticModel incomingGameStatisticModel)
+        {
+            var existingGameStatusQuery = _dbContext.GameStatuses;
+            var incomingGameStatusNames = incomingGameInfo.CategoriesNames;
+
+            var gameStatusQuery = existingGameStatusQuery
+                .Where(x => incomingGameStatusNames
+                    .Contains(x.Name))
+                .ToHashSet();
+
+            incomingGameStatisticModel.AddStatuses(gameStatusQuery);
         }
 
         private void UpdateGameModel(GameModel sourceGame, GameModel incomingGame, string gameIdForLogs)
         {
-            /*TODO: вынести в спеку*/
-            if (sourceGame.Name == incomingGame.Name
-                && sourceGame.PublicationDate == incomingGame.PublicationDate)
+            var hasChanges = sourceGame.HasChanges(incomingGame);
+
+            if (hasChanges)
             {
-                _logger.LogInformation($"[{gameIdForLogs}] данные актуальны");
+                _logger.LogInformation($"[{gameIdForLogs}] данные актуальны.");
             }
             else
             {
-                _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление");
+                _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
                 sourceGame.Update(
                     incomingGame.Name!,
                     incomingGame.PublicationDate!.Value);
             }
-        }
-    }
-
-    public class IncomingGameInfoViewModel
-    {
-        public GameModel GameI { get; set; }
-        public GameStatisticModel GameStatistic { get; set; }
-
-        public IncomingGameInfoViewModel(
-            GameModel gameInfo,
-            GameStatisticModel gameStatisticInfo)
-        {
-            GameI = gameInfo;
-            GameStatistic = gameStatisticInfo;
         }
     }
 }

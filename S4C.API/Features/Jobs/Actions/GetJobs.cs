@@ -15,13 +15,40 @@ namespace C4S.API.Features.Jobs.Actions
 
         public class ResponseViewModel
         {
+            /// <summary>
+            /// Название джобы
+            /// </summary>
             public string Name { get; set; }
 
-            public HangfireJobTypeEnum JobType { get; set; }
+            /// <summary>
+            /// Тип джобы
+            /// </summary>
+            public HangfireJobType JobType { get; set; }
 
+            /// <summary>
+            /// cron выражение
+            /// </summary>
             public string? CronExpression { get; set; }
 
+            /// <summary>
+            /// статус джобы
+            /// </summary>
             public bool IsEnable { get; set; }
+
+            public ResponseViewModel(
+                string name,
+                HangfireJobType jobType,
+                bool isEnable,
+                string? cronExpression = default)
+            {
+                Name = name;
+                JobType = jobType;
+                CronExpression = cronExpression;
+                IsEnable = isEnable;
+            }
+
+            private ResponseViewModel()
+            { }
         }
 
         public class ResponseViewModelProfiler : Profile
@@ -38,17 +65,21 @@ namespace C4S.API.Features.Jobs.Actions
             private readonly ReportDbContext _dbContext;
             private readonly IMapper _mapper;
 
-            public Handler(ReportDbContext dbContext, IMapper mapper)
+            public Handler(
+                ReportDbContext dbContext,
+                IMapper mapper)
             {
                 _dbContext = dbContext;
                 _mapper = mapper;
             }
 
-            public async Task<ResponseViewModel[]> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<ResponseViewModel[]> Handle(
+                Query request,
+                CancellationToken cancellationToken = default)
             {
-                var jobs = await _dbContext.HangfireConfigurationModels
+                var jobs = await _dbContext.HangfireConfigurations
                     .ProjectTo<ResponseViewModel>(_mapper.ConfigurationProvider)
-                    .ToArrayAsync();
+                    .ToArrayAsync(cancellationToken);
 
                 return jobs;
             }

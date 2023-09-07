@@ -1,58 +1,73 @@
-﻿using Newtonsoft.Json.Linq;
-using S4C.YandexGateway.DeveloperPageGateway.Exceptions;
-using S4C.YandexGateway.DeveloperPageGateway.Models;
+﻿using C4S.Helpers.Logger;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
+using S4C.YandexGateway.DeveloperPage.Enums;
+using S4C.YandexGateway.DeveloperPage.Exceptions;
+using S4C.YandexGateway.DeveloperPage.Models;
 
-namespace S4C.YandexGateway.DeveloperPageGateway
+namespace S4C.YandexGateway.DeveloperPage
 {
+    /// <inheritdoc cref="IDeveloperPageGetaway"/>
     public class DeveloperPageGateway : IDeveloperPageGetaway
     {
-        /*TODO: хардкод*/
-        public readonly string DeveloperPageUrl = "https://yandex.ru/games/developer?name=C4S.SHA";
-
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly DeveloperPageParser _developerPageParser; /*TODO: не понимаю нужен тут интерфейс или нет*/
+        private string _yandexGamesRequestUrl;
 
         public DeveloperPageGateway(
             IHttpClientFactory httpClient,
-            DeveloperPageParser developerPageParser)
+            IConfiguration configuration)
         {
             _httpClientFactory = httpClient;
-            _developerPageParser = developerPageParser;
+            _yandexGamesRequestUrl = configuration["YandexGamesRequestUrl"]!;
+            ArgumentException.ThrowIfNullOrEmpty("в файле appsetting.json не указана или указана неверно ссылка на запрос по Яндекс играм");
         }
 
-        public async Task<int[]> GetGameIdsAsync()
+        /// <inheritdoc/>
+        public async Task<GameInfoModel[]> GetGameInfoAsync(
+            int[] gameIds,
+            BaseLogger logger,
+            CancellationToken cancellationToken = default)
         {
-            var gameIds = await _developerPageParser.GetAllGameidAsync(DeveloperPageUrl);
-
-            return gameIds;
-        }
-
-        public async Task<GameInfo[]> GetGameInfoAsync(int[] gameIds)
-        {
+            logger.LogInformation($"Составление запроса на сервер Яндекс");
             var httpResponseMessage = await SendRequestAsync(() =>
-                HttpRequestMethods.GetGameInfo(gameIds, "long"));
+                HttpRequestMethodDitctionary.GetGamesInfo(
+                    _yandexGamesRequestUrl,
+                    gameIds,
+                    RequestFormat.Long),
+                cancellationToken);
+            logger.LogSuccess($"Ответ от Яндекса успешно получен");
 
-            var gameViewModels = await DeserializeObjectsAsync(httpResponseMessage);
+            logger.LogInformation($"Начало обработки ответа");
+            var gameInfoModel = await DeserializeObjectsAsync(
+                httpResponseMessage,
+                cancellationToken);
+            logger.LogSuccess($"Ответ успешно обработан");
 
-            return gameViewModels;
+            return gameInfoModel;
         }
 
-        private async Task<HttpResponseMessage> SendRequestAsync(Func<HttpRequestMessage> createRequest)
+        private async Task<HttpResponseMessage> SendRequestAsync(
+            Func<HttpRequestMessage> createRequest,
+            CancellationToken cancellationToken = default)
         {
             var client = _httpClientFactory.CreateClient();
 
             var request = createRequest();
-            var response = await client.SendAsync(request);
+            var response = await client
+                .SendAsync(request, cancellationToken);
             response.EnsureSuccessStatusCode();
             return response;
         }
 
-        private async Task<GameInfo[]> DeserializeObjectsAsync(HttpResponseMessage httpResponseMessage)
+        private async Task<GameInfoModel[]> DeserializeObjectsAsync(
+            HttpResponseMessage httpResponseMessage,
+            CancellationToken cancellationToken)
         {
-            var jsonString = await httpResponseMessage.Content.ReadAsStringAsync();
+            var jsonString = await httpResponseMessage.Content
+                .ReadAsStringAsync(cancellationToken);
             var gamesJToken = GetGamesJToken(jsonString);
 
-            var results = new GameInfo[gamesJToken.Count];
+            var results = new GameInfoModel[gamesJToken.Count];
             for (int i = 0; i < gamesJToken.Count; i++)
             {
                 var title = GetValue<string>("title", gamesJToken[i], jsonString);
@@ -62,7 +77,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
                 var playersCount = GetValue<int>("playersCount", gamesJToken[i], jsonString);
                 var categoriesNames = GetValue<string[]>("categoriesNames", gamesJToken[i], jsonString);
 
-                var gameDataViewModel = new GameInfo(
+                var gameInfo = new GameInfoModel(
                     title: title,
                     appId: appId,
                     firstPublished: firstPublished,
@@ -70,7 +85,7 @@ namespace S4C.YandexGateway.DeveloperPageGateway
                     playersCount: playersCount,
                     categoriesNames: categoriesNames);
 
-                results[i] = gameDataViewModel;
+                results[i] = gameInfo;
             }
 
             return results;
