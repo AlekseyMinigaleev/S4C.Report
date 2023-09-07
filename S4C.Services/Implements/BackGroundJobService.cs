@@ -162,7 +162,7 @@ namespace C4S.Services.Implements
 
             public void SetLogPrefix(string jobName)
             {
-                LogPrefix = $"[{jobName} ({ProcessedJobIndex}/{JobTypeCount})] ";
+                LogPrefix = $"['{jobName}' ({ProcessedJobIndex}/{JobTypeCount})] ";
             }
 
             public void Log(bool isMissingJob, string jobName)
