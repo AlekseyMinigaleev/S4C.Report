@@ -30,7 +30,7 @@ namespace C4S.DB
         public DbSet<GameStatisticModel> GamesStatistics { get; set; }
 
         /// <summary>
-        /// список джоб.
+        /// Список джоб.
         /// </summary>
         public DbSet<HangfireJobConfigurationModel> HangfireConfigurations { get; set; }
 

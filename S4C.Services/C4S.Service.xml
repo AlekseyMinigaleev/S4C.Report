@@ -24,7 +24,7 @@
             <inheritdoc/>
             <param name="updatedJobConfig" ><inheritdoc/></param>
         </member>
-        <member name="M:C4S.Services.Implements.BackGroundJobService.AddMissingHangfirejobsAsync(System.Threading.CancellationToken)">
+        <member name="M:C4S.Services.Implements.BackGroundJobService.AddMissingHangfirejobsAsync(C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:C4S.Services.Implements.GameDataService">
@@ -44,7 +44,7 @@
             Сервис для управления Hangfires job
             </summary>
         </member>
-        <member name="M:C4S.Services.Interfaces.IBackGroundJobService.AddMissingHangfirejobsAsync(System.Threading.CancellationToken)">
+        <member name="M:C4S.Services.Interfaces.IBackGroundJobService.AddMissingHangfirejobsAsync(C4S.Helpers.Logger.BaseLogger,System.Threading.CancellationToken)">
             <summary>
             Выполняет создание недостающих джоб.
             </summary>

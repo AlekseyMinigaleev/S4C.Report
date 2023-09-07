@@ -4,10 +4,22 @@
         <name>С4S.API</name>
     </assembly>
     <members>
-        <member name="M:С4S.API.Extensions.ApplicationBuilderExtensions.InitApplicationInfrastructureAsync(Microsoft.AspNetCore.Builder.WebApplication,System.Threading.CancellationToken)">
+        <member name="M:С4S.API.Extensions.ApplicationBuilderExtensions.InitApplicationAsync(Microsoft.AspNetCore.Builder.WebApplication,System.Threading.CancellationToken)">
             <summary>
-            Инициализирует всю необходимую инфраструктуру приложения
+            Выполняет все необходимые процессы, для корректной работы приложения
             </summary>
+            <remarks>
+            Подразумевает в момент выполнения наличие базы данных для Hangfire
+            </remarks>
+        </member>
+        <member name="M:С4S.API.Extensions.WebApplicationBuilderExtensions.BuildWithHangfireStorage(Microsoft.AspNetCore.Builder.WebApplicationBuilder,Microsoft.Extensions.Configuration.ConfigurationManager)">
+            <summary>
+            <inheritdoc cref="M:Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build"/>
+            </summary>
+            <remarks>
+            Перед созданием <see cref="T:Microsoft.AspNetCore.Builder.WebApplication"/> создает хранилище для Hangfire
+            </remarks>
+            <returns><inheritdoc cref="M:Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build"/></returns>
         </member>
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>

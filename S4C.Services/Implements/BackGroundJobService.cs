@@ -1,6 +1,7 @@
 ﻿using C4S.DB;
 using C4S.DB.Models.Hangfire;
 using C4S.Helpers.Extensions;
+using C4S.Helpers.Logger;
 using C4S.Services.Exceptions;
 using C4S.Services.Interfaces;
 using Hangfire;
@@ -47,9 +48,10 @@ namespace C4S.Services.Implements
 
         /// <inheritdoc/>
         public async Task AddMissingHangfirejobsAsync(
+            BaseLogger logger,
             CancellationToken cancellationToken = default)
         {
-            var existenceJobConfigurations = _dbContext.HangfireConfigurations;
+            logger.LogInformation($"Запущен процесс регистрации недостающих джоб");
 
             var jobTypes = Enum
                 .GetValues(typeof(HangfireJobTypeEnum))

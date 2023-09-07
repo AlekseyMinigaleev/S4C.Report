@@ -391,7 +391,7 @@
         </member>
         <member name="P:C4S.DB.ReportDbContext.HangfireConfigurations">
             <summary>
-            список джоб.
+            Список джоб.
             </summary>
         </member>
         <member name="P:C4S.DB.ReportDbContext.GameStatuses">
