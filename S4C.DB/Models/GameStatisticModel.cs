@@ -99,5 +99,10 @@ namespace C4S.DB.Models
     /// Справочник <see cref="Expression"/> для <see cref="GameStatisticModel"/>
     /// </summary>
     public static class GameStatisticExpression
-    { }
+    {
+        public static readonly Expression<Func<GameStatisticModel, string>> GetStatusesAsStringExpression = (gameStatistic) =>
+            gameStatistic.Statuses.Count() == 0
+                ? "-"
+                : string.Join(", ", gameStatistic);
+    }   
 }

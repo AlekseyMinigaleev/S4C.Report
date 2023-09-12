@@ -1,4 +1,6 @@
-﻿using C4S.DB;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using C4S.DB;
 using C4S.DB.Models;
 using C4S.Helpers.Extensions;
 using C4S.Helpers.Logger;
@@ -6,6 +8,7 @@ using C4S.Helpers.Models;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using System.Drawing;
 
 namespace C4S.Services.Implements.ReportExcelFile.WorksheetCreators
 {
@@ -15,16 +18,19 @@ namespace C4S.Services.Implements.ReportExcelFile.WorksheetCreators
     public class DetailedReportWorksheetCreator : BaseWorksheetCreator
     {
         private readonly ReportDbContext _dbContext;
-        private const int GameNameCellLength = 4;
+        private readonly IMapper _mapper;
+        private const int GameNameCellLength = 5;
 
         public DetailedReportWorksheetCreator(
             ReportDbContext dbContext,
+            IMapper mapper,
             ExcelPackage package,
             string worksheetName,
             BaseLogger logger)
             : base(package, worksheetName, logger)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -38,107 +44,138 @@ namespace C4S.Services.Implements.ReportExcelFile.WorksheetCreators
               .Add(WorksheetName);
             Logger.LogInformation($"в файл добавлена страница `{WorksheetName}`");
 
-            var games = await _dbContext.Games
-                .Include(x => x.GameStatistics)
-                    .ThenInclude(x => x.GameGameStatus)
-                        .ThenInclude(x => x.GameStatus)
-                 .ToArrayAsync(cancellationToken);
+            var gameViewModelQuery = _dbContext.Games
+                .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider);
+
             Logger.LogInformation($"Получены данные по всем играм");
 
             Logger.LogInformation($"Начат процесс записи данных страницы `{WorksheetName}`");
-            WriteData(games);
+            WriteData(gameViewModelQuery);
             Logger.LogSuccess($"Процесс записи данных страницы `{WorksheetName}` завершен");
         }
 
-        private void WriteData(IEnumerable<GameModel> games)
+        private void WriteData(IQueryable<GameViewModel> gameViewModelQuery)
         {
             var cell = new ExcelCell(1, 1);
-            foreach (var game in games)
+            foreach (var game in gameViewModelQuery)
             {
-                PrintGameName(cell, game);
-                Logger.LogInformation($"Записан заголовок для игры '{game.Name}'");
 
-                var statisticColumns = GetStatisticColumns(game.GameStatistics);
+                PrintGameName(cell, game.Name);
+                Logger.LogInformation($"Записан заголовок для игры '{game.Name}'");
 
                 var nextCell = new ExcelCell(
                     cell.Row + 1,
                     cell.Column);
 
                 Logger.LogInformation($"Начата запись игровой статистики игры '{game.Name}'");
-                PrintStatisticColumns(nextCell, statisticColumns);
-                Logger.LogSuccess($"Игровая статистика игры '{game.Name}' записана");
 
-                cell.Column += GameNameCellLength;
+                PrintGameStatisticColumns(game.GameStatistics, nextCell);
+
+                Logger.LogSuccess($"Игровая статистика игры '{game.Name}' записана");
+                cell.Column+= GameNameCellLength;
             }
         }
 
         private void PrintGameName(
            ExcelCell mergedCellStart,
-           GameModel game)
+           string gameName)
         {
             var mergedCellEnd = new ExcelCell(
                 mergedCellStart.Row,
                 mergedCellStart.Column + GameNameCellLength - 1); //текущая колонка + длина и исключаем текущую колонку
-            var value = $"{game.Name} ({game.PublicationDate?.ToString("MM/dd/yyyy")})";
 
-            Worksheet
-                .Cells[mergedCellStart.Row, mergedCellStart.Column, mergedCellEnd.Row, mergedCellEnd.Column]
-                .Value = value;
+            var excelRange = Worksheet
+                .Cells[mergedCellStart.Row, mergedCellStart.Column, mergedCellEnd.Row, mergedCellEnd.Column];
 
-            Worksheet
-                .Cells[mergedCellStart.Row, mergedCellStart.Column, mergedCellEnd.Row, mergedCellEnd.Column]
-                .Merge = true;
-
-            Worksheet
-                .Cells[mergedCellStart.Row, mergedCellStart.Column, mergedCellEnd.Row, mergedCellEnd.Column]
-                .Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            excelRange.SetCellValueWithAligment(gameName, ExcelHorizontalAlignment.Center);
+            excelRange.Merge = true;
         }
 
-        private Dictionary<string, IEnumerable<object?>> GetStatisticColumns(
-            IEnumerable<GameStatisticModel> gameStatistics)
+        private void PrintGameStatisticColumns(
+            IEnumerable<GameStatisticViewModel> gameStatistic,
+            ExcelCell cell)
         {
-            var columns = new Dictionary<string, IEnumerable<object?>>
-            {
-                ["Дата последней синхронизации"] = gameStatistics
-                  .Select(x => x.LastSynchroDate.ToString("MM/dd/yyyy")),
+            PrintColumns(
+                "Дата синхронизации",
+                gameStatistic.Select(x => x.SynchroDate),
+                cell);
+            cell.Column++;
 
-                ["Количество игроков"] = gameStatistics
-                  .Select(x => x.PlayersCount as object),
+            PrintColumnsWithCellState(
+                "Количество игроков",
+                gameStatistic.Select(x => x.PlayersCount).ToArray(),
+                cell);
+            cell.Column++;
 
-                ["Оценка"] = gameStatistics
-                  .Select(x => x.Evaluation as object),
+            PrintColumnsWithCellState(
+                "Оценка",
+                gameStatistic.Select(x => x.Evaluation).ToArray(),
+                cell);
+            cell.Column++;
 
-                ["Статусы"] = gameStatistics
-                .Select(x =>
-                    x.Statuses.Count == 0
-                        ? "-"
-                        : string.Join(", ", x.Statuses))
-            };
+            PrintColumns(
+                "Статусы",
+                gameStatistic.Select(x => x.Statuses),
+                cell);
+            cell.Column++;
 
-            return columns;
+            PrintColumnsWithCellState(
+                "Прибыль",
+                gameStatistic.Select(x => x.CashIncome).ToArray(),
+                cell);
+            cell.Column++;
         }
 
-        private void PrintStatisticColumns(
-            ExcelCell cell,
-            Dictionary<string, IEnumerable<object?>> columnsData)
+        private void PrintColumns<T>(
+            string columnHeader,
+            IEnumerable<T> values,
+            ExcelCell cell)
         {
-            foreach (var columnData in columnsData)
+            PrintGameStatisticHeader(cell, columnHeader);
+            cell.Row++;
+
+            foreach (var value in values)
             {
-                PrintGameStatisticHeaders(cell, columnData.Key);
-                Logger.LogInformation($"Записан заголовок колонки '{columnData.Key}'");
-
-                var nextCell = new ExcelCell(
-                    cell.Row + 1,
-                    cell.Column);
-
-                PrintGameStatisticValues(nextCell, columnData.Value);
-                Logger.LogInformation($"Записаны значения колонки '{columnData.Key}'");
-
-                cell.Column++;
+                Worksheet.Cells[cell.Row, cell.Column]
+                   .SetCellValueWithAligment(
+                       value,
+                       ExcelHorizontalAlignment.Center);
+                cell.Row++;
             }
         }
 
-        private void PrintGameStatisticHeaders(
+        private void PrintColumnsWithCellState<T>(
+            string columnHeader,
+            T[] values,
+            ExcelCell cell)
+            where T : IComparable
+        {
+            PrintGameStatisticHeader(cell, columnHeader);
+            cell.Row++;
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                Worksheet.Cells[cell.Row, cell.Column]
+                  .SetCellValueWithAligment(
+                      values[i],
+                      ExcelHorizontalAlignment.Center);
+
+                if(i!= 0)
+                {
+                    var result = values[i].CompareTo(values[i - 1]);
+                    if(result > 0)
+                        Worksheet.Cells[cell.Row, cell.Column].Style.Fill
+                            .SetBackground(Color.Green);
+                    if(result< 0)
+                        Worksheet.Cells[cell.Row, cell.Column].Style.Fill
+                            .SetBackground(Color.Red);
+                }
+
+                cell.Row++;
+            }
+        }
+
+        private void PrintGameStatisticHeader(
             ExcelCell cell,
             string headerName)
         {
@@ -150,20 +187,41 @@ namespace C4S.Services.Implements.ReportExcelFile.WorksheetCreators
             Worksheet.Cells[cell.Row, cell.Column]
                 .AutoFitColumns();
         }
+    }
 
-        private void PrintGameStatisticValues(
-            ExcelCell cell,
-            IEnumerable<object?> values)
+    public class GameViewModel
+    {
+        public string Name { get; set; }
+        public GameStatisticViewModel[] GameStatistics { get; set; }
+    }
+
+    public class GameStatisticViewModel
+    {
+        public string SynchroDate { get; set; }
+
+        public int PlayersCount { get; set; }
+
+        public double Evaluation { get; set; }
+
+        public string Statuses { get; set; }
+
+        public decimal CashIncome { get; set; }
+    }
+
+    public class GameViewModelProfiler : Profile
+    {
+        public GameViewModelProfiler()
         {
-            foreach (var value in values)
-            {
-                Worksheet.Cells[cell.Row, cell.Column]
-                    .SetCellValueWithAligment(
-                        value,
-                        ExcelHorizontalAlignment.Center);
+            CreateMap<GameModel, GameViewModel>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.Name} ({src.PublicationDate.Value.ToString("MM.dd.yyyy")})"))
+                .ForMember(dest => dest.GameStatistics, opt => opt.MapFrom(src => src.GameStatistics));
 
-                cell.Row++;
-            }
+            CreateMap<GameStatisticModel, GameStatisticViewModel>()
+                .ForMember(dest => dest.SynchroDate, opt => opt.MapFrom(src => src.LastSynchroDate.ToString("MM.dd.yyyy")))
+                .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
+                .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(src => src.Evaluation))
+                .ForMember(dest => dest.Statuses, opt => opt.MapFrom(GameStatisticExpression.GetStatusesAsStringExpression))
+                .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(src => 0M));
         }
     }
 }
