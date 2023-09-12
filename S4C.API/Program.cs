@@ -7,6 +7,7 @@ using S4C.YandexGateway.DeveloperPage;
 using C4S.Helpers.ApiHeplers.Swagger;
 using System.Reflection;
 using Ñ4S.API.Extensions;
+using C4S.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -27,7 +28,8 @@ services.AddMediatR(cfg =>
 services.AddValidatorsFromAssemblyContaining<Program>();
 services.AddAutoMapper(
     typeof(Program),
-    typeof(IDeveloperPageGetaway));
+    typeof(IDeveloperPageGetaway),
+    typeof(IReportExcelFileService));
 services.AddServices(configuration);
 #endregion
 

@@ -211,6 +211,12 @@ namespace C4S.Services.Implements
                         (service) => service.UpdateGameAndCreateGameStatisticRecord(null, CancellationToken.None));
                     break;
 
+                case HangfireJobType.CreateOrUpdateExcelFile:
+                    AddOrUpdateRecurringJob<IReportExcelFileService>(
+                        jobConfig,
+                        (service) => service.CreateFileAsync(default, default));
+                    break;
+
                 default:
                     break;
             }
