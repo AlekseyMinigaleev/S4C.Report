@@ -3,80 +3,79 @@ using AutoMapper.QueryableExtensions;
 using C4S.DB;
 using C4S.DB.Models;
 using C4S.Helpers.Extensions;
-using C4S.Helpers.Logger;
 using C4S.Helpers.Models;
+using C4S.Services.Interfaces;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Drawing;
 
-namespace C4S.Services.Implements.ReportExcelFile.WorksheetCreators
+namespace C4S.Services.Implements.ExcelFileServices
 {
-    /// <summary>
-    /// Класс ответственный за создание листа с отчетом детальной статистики по играм в указанном excel файле
-    /// </summary>
-    public class DetailedReportWorksheetCreator : BaseWorksheetCreator
+    /// <inheritdoc cref="IExcelFileService"/>
+    public class DetailedReportExcelService : IExcelFileService
     {
         private readonly ReportDbContext _dbContext;
         private readonly IMapper _mapper;
+        private ExcelWorksheet Worksheet;
+
         private const int GameNameCellLength = 5;
 
-        public DetailedReportWorksheetCreator(
+        public DetailedReportExcelService(
             ReportDbContext dbContext,
-            IMapper mapper,
-            ExcelPackage package,
-            string worksheetName,
-            BaseLogger logger)
-            : base(package, worksheetName, logger)
+            IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
         }
 
-        /// <summary>
-        /// Создает новый лист, содержащий детальный отчет по статистике всех игр
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public override async Task CreateAsync(CancellationToken cancellationToken = default)
+        /// <inheritdoc/>
+        public ExcelWorksheet AddWorksheet(
+            ExcelPackage package,
+            string fileName)
         {
-            Worksheet = Package.Workbook.Worksheets
-              .Add(WorksheetName);
-            Logger.LogInformation($"в файл добавлена страница `{WorksheetName}`");
+            Worksheet = package.Workbook.Worksheets
+              .Add(fileName);
 
             var gameViewModelQuery = _dbContext.Games
                 .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider);
 
-            Logger.LogInformation($"Получены данные по всем играм");
-
-            Logger.LogInformation($"Начат процесс записи данных страницы `{WorksheetName}`");
             WriteData(gameViewModelQuery);
-            Logger.LogSuccess($"Процесс записи данных страницы `{WorksheetName}` завершен");
+
+            return Worksheet;
         }
 
-        private void WriteData(IQueryable<GameViewModel> gameViewModelQuery)
+        /// <inheritdoc/>
+        public Task<byte[]> CreateNewFileAsync(
+            string fileName,
+            CancellationToken cancellationToken)
+        {
+            using var package = new ExcelPackage();
+            AddWorksheet(package, fileName);
+            var bytes = package.GetAsByteArrayAsync(cancellationToken);
+            return bytes;
+        }
+
+        private void WriteData(
+            IQueryable<GameViewModel> gameViewModelQuery)
         {
             var cell = new ExcelCell(1, 1);
             foreach (var game in gameViewModelQuery)
             {
                 PrintGameName(cell, game.Name);
-                Logger.LogInformation($"Записан заголовок для игры '{game.Name}'");
 
                 var nextCell = new ExcelCell(
                     cell.Row + 1,
                     cell.Column);
 
-                Logger.LogInformation($"Начата запись игровой статистики игры '{game.Name}'");
-
                 PrintGameStatisticColumns(game.GameStatistics, nextCell);
 
-                Logger.LogSuccess($"Игровая статистика игры '{game.Name}' записана");
                 cell.Column += GameNameCellLength;
             }
         }
 
         private void PrintGameName(
-           ExcelCell mergedCellStart,
-           string gameName)
+            ExcelCell mergedCellStart,
+            string gameName)
         {
             var mergedCellEnd = new ExcelCell(
                 mergedCellStart.Row,

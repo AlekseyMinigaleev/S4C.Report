@@ -6,9 +6,12 @@
     public interface IReportExcelFileService
     {
         /// <summary>
-        /// Создает новый excel файл с отчетами по играм
+        /// Создает новый excel файл со всеми отчетами по играм
         /// </summary>
-        public Task<byte[]> GetReportAsByteArray(
+        /// <returns>
+        /// <see langword="byte"/>[], представляющий содержимое excel файла со всеми отчетами по играм
+        /// </returns>
+        public Task<byte[]> GetReportFile(
             CancellationToken cancellationToken);
     }
 }

@@ -22,7 +22,7 @@ namespace С4S.API.Features.GameStatisticReport.Actions
 
             public async Task<FileViewModel> Handle(Query request, CancellationToken cancellationToken)
             {
-                var fileBytes = await _reportExcelFileService.GetReportAsByteArray(cancellationToken);
+                var fileBytes = await _reportExcelFileService.GetReportFile(cancellationToken);
 
                 var file = new FileViewModel(
                     fileBytes,
