@@ -1,6 +1,4 @@
-﻿using Hangfire.Server;
-
-namespace C4S.Services.Interfaces
+﻿namespace C4S.Services.Interfaces
 {
     /// <summary>
     /// Сервис для создания excel файла с отчетами по играм
@@ -10,8 +8,7 @@ namespace C4S.Services.Interfaces
         /// <summary>
         /// Создает новый excel файл с отчетами по играм
         /// </summary>
-        public Task CreateFileAsync(
-            PerformContext hangfireContext,
+        public Task<byte[]> GetReportAsByteArray(
             CancellationToken cancellationToken);
     }
 }

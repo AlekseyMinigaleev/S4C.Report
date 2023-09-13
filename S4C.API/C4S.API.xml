@@ -21,6 +21,11 @@
             </remarks>
             <returns><inheritdoc cref="M:Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build"/></returns>
         </member>
+        <member name="M:С4S.API.Features.GameStatisticReport.GameStatisticReportController.GetGameStatisticReportAsync(System.Threading.CancellationToken)">
+            <summary>
+            Возвращает готовый к скачиванию файл отчета игровой статистики.
+            </summary>
+        </member>
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
             Добавляет все необходимые сервисы для хранилищ

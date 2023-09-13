@@ -3,7 +3,7 @@ using C4S.DB;
 using C4S.Helpers.Logger;
 using C4S.Services.Implements.ReportExcelFile.WorksheetCreators;
 using C4S.Services.Interfaces;
-using Hangfire.Server;
+using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 
 namespace C4S.Services.Implements.ReportExcelFile
@@ -13,38 +13,29 @@ namespace C4S.Services.Implements.ReportExcelFile
     {
         private readonly ReportDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ILogger<ReportExcelFileService> _iLogger;
+
         private BaseLogger _logger;
         private const string DetailedStatisticWorksheetName = "Detailed statistics";
 
         public ReportExcelFileService(
             ReportDbContext dbContext,
+            ILogger<ReportExcelFileService> iLogger,
             IMapper mapper)
         {
             _dbContext = dbContext;
+            _iLogger = iLogger;
             _mapper = mapper;
         }
 
         /// <inheritdoc/>
-        public async Task CreateFileAsync(
-            PerformContext hangfireContext,
+        public async Task<byte[]> GetReportAsByteArray(
             CancellationToken cancellationToken)
         {
-            _logger = new HangfireLogger(hangfireContext);
+            _logger = new ConsoleLogger<ReportExcelFileService>(_iLogger);
 
-            /*TODO: вынести в YandexGameAccount и переименовать таблицу на YandexGameAccountSettings*/
-            var excelPath = @"D:\папка\C4S\S4C.Report.xlsx";
-            var fileInfo = new FileInfo(excelPath);
+            byte[] fileByteArray;
 
-            _logger.LogInformation($"Начат процесс создания файла");
-            if (fileInfo.Exists)
-            {
-                _logger.LogInformation($"Файл уже содержится и будет пересоздан");
-                fileInfo.Delete();
-                _logger.LogInformation($"Файл удален");
-            }
-
-            using var file = fileInfo.Create();
-            _logger.LogInformation($"Создан новый файл");
             using (var package = new ExcelPackage())
             {
                 var detailedWorksheetCreator = new DetailedReportWorksheetCreator(
@@ -57,9 +48,11 @@ namespace C4S.Services.Implements.ReportExcelFile
                 await detailedWorksheetCreator.CreateAsync(
                     cancellationToken);
 
-                package.SaveAs(file);
+                fileByteArray = package.GetAsByteArray();
             };
             _logger.LogSuccess($"Файл сохранен");
+
+            return fileByteArray;
         }
     }
 }

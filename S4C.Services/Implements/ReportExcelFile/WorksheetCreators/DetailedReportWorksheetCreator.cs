@@ -5,7 +5,6 @@ using C4S.DB.Models;
 using C4S.Helpers.Extensions;
 using C4S.Helpers.Logger;
 using C4S.Helpers.Models;
-using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Drawing;
@@ -59,7 +58,6 @@ namespace C4S.Services.Implements.ReportExcelFile.WorksheetCreators
             var cell = new ExcelCell(1, 1);
             foreach (var game in gameViewModelQuery)
             {
-
                 PrintGameName(cell, game.Name);
                 Logger.LogInformation($"Записан заголовок для игры '{game.Name}'");
 
@@ -72,7 +70,7 @@ namespace C4S.Services.Implements.ReportExcelFile.WorksheetCreators
                 PrintGameStatisticColumns(game.GameStatistics, nextCell);
 
                 Logger.LogSuccess($"Игровая статистика игры '{game.Name}' записана");
-                cell.Column+= GameNameCellLength;
+                cell.Column += GameNameCellLength;
             }
         }
 
@@ -160,13 +158,13 @@ namespace C4S.Services.Implements.ReportExcelFile.WorksheetCreators
                       values[i],
                       ExcelHorizontalAlignment.Center);
 
-                if(i!= 0)
+                if (i != 0)
                 {
                     var result = values[i].CompareTo(values[i - 1]);
-                    if(result > 0)
+                    if (result > 0)
                         Worksheet.Cells[cell.Row, cell.Column].Style.Fill
                             .SetBackground(Color.Green);
-                    if(result< 0)
+                    if (result < 0)
                         Worksheet.Cells[cell.Row, cell.Column].Style.Fill
                             .SetBackground(Color.Red);
                 }
