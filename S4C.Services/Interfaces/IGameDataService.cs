@@ -16,7 +16,7 @@ namespace C4S.Services.Interfaces
         /// Если у <see cref="GameModel"/> нет никаких изменений, то обновление данных пропускается.
         /// При успешном завершении процесса, создается по 1 записи в таблице <see cref="GameStatisticModel"/> для каждой <see cref="GameModel"/>
         /// </remarks>
-        public Task UpdateGameAndCreateGameStatisticRecord(
+        public Task SyncGameStatistics(
             PerformContext hangfireContext,
             CancellationToken cancellationToken = default);
     }

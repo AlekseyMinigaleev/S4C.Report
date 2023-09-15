@@ -208,7 +208,7 @@ namespace C4S.Services.Implements
                 case HangfireJobType.SyncGameInfoAndGameCreateGameStatistic:
                     AddOrUpdateRecurringJob<IGameDataService>(
                         jobConfig,
-                        (service) => service.UpdateGameAndCreateGameStatisticRecord(null, CancellationToken.None));
+                        (service) => service.SyncGameStatistics(null, CancellationToken.None));
                     break;
 
                 default:
