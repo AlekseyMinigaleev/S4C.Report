@@ -29,7 +29,7 @@ services.AddValidatorsFromAssemblyContaining<Program>();
 services.AddAutoMapper(
     typeof(Program),
     typeof(IDeveloperPageGetaway),
-    typeof(IReportExcelFileService));
+    typeof(IGameDataService));
 services.AddServices(configuration);
 #endregion
 

@@ -14,11 +14,7 @@ namespace C4S.Services.Extensions
             services.AddTransient<IHangfireBackgroundJobService, BackgroundJobService>();
             services.AddScoped<IGameIdSyncService, GameIdSyncService>();
             services.AddScoped<IGameDataService, GameDataService>();
-            services.AddScoped<IReportExcelFileService, ReportExcelFileService>();
-            #region IExcelFileService
-            services.AddScoped<IExcelFileService, DetailedReportExcelService>();
-            services.AddScoped<IExcelFileService, MinimalReportExcelService>();
-            #endregion
+            services.AddScoped<IExcelFileService,DetailedReportExcelService>();
             services.AddYandexGetewayServices(configuration);
         }
     }

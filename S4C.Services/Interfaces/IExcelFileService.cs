@@ -8,23 +8,22 @@ namespace C4S.Services.Interfaces
     public interface IExcelFileService
     {
         /// <summary>
-        /// Создает новый лист в <paramref name="package"/> с именем <paramref name="fileName"/>
+        /// Создает новый лист с отчетом в <paramref name="package"/> и именем <paramref name="worksheetName"/>/>
         /// </summary>
         /// <param name="package"><see cref="ExcelPackage"/>, в котором будет создан новый лист</param>
-        /// <param name="fileName">имя с которым будет создан новый лист</param>
+        /// <param name="worksheetName">имя с которым будет создан новый лист</param>
         ///<exception cref="InvalidOperationException"/>
         public ExcelWorksheet AddWorksheet(
             ExcelPackage package,
-            string fileName);
+            string worksheetName);
 
         /// <summary>
-        /// Создает новый excel файл с именем <paramref name="fileName"/>
+        /// Создает новый <see cref="ExcelPackage"/>, содержащий лист с отчетом
         /// </summary>
+        /// <param name="worksheetName"> имя с которым будет создан новый лист</param>
         /// <returns>
-        /// <see langword="byte"/>[], представляющий содержимое excel файла
+        /// <see cref="ExcelPackage"/>[], представляющий содержимое excel файла с листом отчета
         /// </returns>
-        public Task<byte[]> CreateNewFileAsync(
-            string fileName,
-            CancellationToken cancellationToken);
+        public ExcelPackage CreateNewExcelPackage(string worksheetName);
     }
 }

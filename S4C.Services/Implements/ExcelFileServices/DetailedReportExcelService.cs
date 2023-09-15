@@ -31,10 +31,10 @@ namespace C4S.Services.Implements.ExcelFileServices
         /// <inheritdoc/>
         public ExcelWorksheet AddWorksheet(
             ExcelPackage package,
-            string fileName)
+            string worksheetName)
         {
             Worksheet = package.Workbook.Worksheets
-              .Add(fileName);
+              .Add(worksheetName);
 
             var gameViewModelQuery = _dbContext.Games
                 .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider);
@@ -45,14 +45,13 @@ namespace C4S.Services.Implements.ExcelFileServices
         }
 
         /// <inheritdoc/>
-        public Task<byte[]> CreateNewFileAsync(
-            string fileName,
-            CancellationToken cancellationToken)
+        public ExcelPackage CreateNewExcelPackage(
+            string worksheetName)
         {
-            using var package = new ExcelPackage();
-            AddWorksheet(package, fileName);
-            var bytes = package.GetAsByteArrayAsync(cancellationToken);
-            return bytes;
+            var package = new ExcelPackage();
+            AddWorksheet(package, worksheetName);
+
+            return package;
         }
 
         private void WriteData(
