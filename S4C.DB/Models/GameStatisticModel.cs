@@ -25,7 +25,7 @@ namespace C4S.DB.Models
         /// <summary>
         /// Оценка игры
         /// </summary>
-        public double? Evaluation { get; private set; }
+        public double Evaluation { get; private set; }
 
         /// <summary>
         /// Количество игроков
@@ -61,8 +61,8 @@ namespace C4S.DB.Models
             GameModel game,
             int playersCount,
             DateTime lastSynchroDate,
-            ISet<GameStatusModel> statuses,
-            double? evaluation = default)
+            double evaluation,
+            ISet<GameStatusModel> statuses)
         {
             Id = Guid.NewGuid();
             GameId = game.Id;
@@ -99,5 +99,10 @@ namespace C4S.DB.Models
     /// Справочник <see cref="Expression"/> для <see cref="GameStatisticModel"/>
     /// </summary>
     public static class GameStatisticExpression
-    { }
+    {
+        public static readonly Expression<Func<GameStatisticModel, string>> GetStatusesAsStringExpression = (gameStatistic) =>
+            gameStatistic.Statuses.Count() == 0
+                ? "-"
+                : string.Join(", ", gameStatistic);
+    }   
 }

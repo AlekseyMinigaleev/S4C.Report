@@ -38,7 +38,7 @@ namespace C4S.DB.Models
         /// <summary>
         /// Список записей статистики
         /// </summary>
-        public ISet<GameStatisticModel>? GameStatistics { get; private set; }
+        public ISet<GameStatisticModel> GameStatistics { get; private set; }
 
         private GameModel()
         { }

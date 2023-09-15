@@ -7,6 +7,8 @@ using S4C.YandexGateway.DeveloperPage;
 using C4S.Helpers.ApiHeplers.Swagger;
 using System.Reflection;
 using Ñ4S.API.Extensions;
+using C4S.Services.Interfaces;
+using C4S.DB;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -25,9 +27,11 @@ services.AddStorages(configuration);
 services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssemblies(typeof(Program).GetTypeInfo().Assembly));
 services.AddValidatorsFromAssemblyContaining<Program>();
+services.AddValidatorsFromAssemblyContaining<ReportDbContext>();
 services.AddAutoMapper(
     typeof(Program),
-    typeof(IDeveloperPageGetaway));
+    typeof(IDeveloperPageGetaway),
+    typeof(IGameDataService));
 services.AddServices(configuration);
 #endregion
 

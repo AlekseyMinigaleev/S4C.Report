@@ -29,7 +29,7 @@ namespace C4S.Services.Implements
         }
 
         /// <inheritdoc/>
-        public async Task UpdateGameAndCreateGameStatisticRecord(
+        public async Task SyncGameStatistics(
             PerformContext hangfireContext,
             CancellationToken cancellationToken)
         {
