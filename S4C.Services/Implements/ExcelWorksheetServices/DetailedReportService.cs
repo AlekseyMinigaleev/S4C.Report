@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using C4S.DB;
+using C4S.DB.DTO;
 using C4S.DB.Models;
 using C4S.Helpers.Extensions;
 using C4S.Helpers.Models;
@@ -11,8 +12,8 @@ using System.Drawing;
 
 namespace C4S.Services.Implements.ExcelFileServices
 {
-    /// <inheritdoc cref="IExcelFileService"/>
-    public class DetailedReportExcelService : IExcelFileService
+    /// <inheritdoc cref="IExcelWorksheetService"/>
+    public class DetailedReportService : IExcelWorksheetService
     {
         private readonly ReportDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -20,7 +21,7 @@ namespace C4S.Services.Implements.ExcelFileServices
 
         private const int GameNameCellLength = 5;
 
-        public DetailedReportExcelService(
+        public DetailedReportService(
             ReportDbContext dbContext,
             IMapper mapper)
         {
@@ -29,27 +30,32 @@ namespace C4S.Services.Implements.ExcelFileServices
         }
 
         /// <inheritdoc/>
-        public ExcelWorksheet AddWorksheet(
+        public ExcelWorksheet Add(
             ExcelPackage package,
-            string worksheetName)
+            string worksheetName,
+            DateTimeRange dateTimeRange)
         {
             Worksheet = package.Workbook.Worksheets
               .Add(worksheetName);
 
             var gameViewModelQuery = _dbContext.Games
+                .Where(x => x.GameStatistics
+                    .Any(gs => dateTimeRange.StartDate.Date <= gs.LastSynchroDate.Date
+                         && dateTimeRange.FinishDate.Date >= gs.LastSynchroDate.Date))
                 .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider);
 
             WriteData(gameViewModelQuery);
-
+         
             return Worksheet;
         }
 
         /// <inheritdoc/>
-        public ExcelPackage CreateNewExcelPackage(
-            string worksheetName)
+        public ExcelPackage AddWithNewPackage(
+            string worksheetName,
+            DateTimeRange dateTimeRange)
         {
             var package = new ExcelPackage();
-            AddWorksheet(package, worksheetName);
+            Add(package, worksheetName, dateTimeRange);
 
             return package;
         }
