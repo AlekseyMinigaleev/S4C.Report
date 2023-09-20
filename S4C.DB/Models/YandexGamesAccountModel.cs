@@ -10,36 +10,35 @@ namespace C4S.DB.Models
         /// <summary>
         /// PK
         /// </summary>
-        public Guid Id { get; set; }
-
-        /*TODO*/
-
-        #region Эти поля пока не используем, тк не понятно в каком виде это должно быть
-
-        public string? Login { get; set; }
-        public string? Password { get; set; }
-
-        #endregion Эти поля пока не используем, тк не понятно в каком виде это должно быть
+        public Guid Id { get; private set; }
 
         /// <summary>
         /// Ссылка на страницу разработчика
         /// </summary>
-        public string DeveloperPageUrl { get; set; }
+        public string DeveloperPageUrl { get; private set; }
+
+        /// <summary>
+        /// Токен авторизации
+        /// </summary>
+        /// <remarks>
+        /// partner2.yandex.ru/api/statistics2
+        /// </remarks>
+        public string AuthorizationToken { get; private set; }
 
         /// <summary>
         /// Связь с <see cref="UserModel"/>
         /// </summary>
-        public UserModel User { get; set; }
+        public UserModel User { get; private set; }
 
         /// <summary>
         /// FK <see cref="UserModel"/>
         /// </summary>
-        public Guid UserId { get; set; }
+        public Guid UserId { get; private set; }
 
         /// <summary>
         /// Список игр
         /// </summary>
-        public ISet<GameModel>? Games { get; set; }
+        public ISet<GameModel>? Games { get; private set; }
 
         public YandexGamesAccountModel(
             string developerPageUrl,

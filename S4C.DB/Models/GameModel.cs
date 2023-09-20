@@ -11,9 +11,17 @@ namespace C4S.DB.Models
         /// PK
         /// </summary>
         /// <remarks>
-        /// Является дублированием id со страницы разработчика
+        /// Является дублированием appId со страницы разработчика
         /// </remarks>
         public int Id { get; private set; }
+
+        /// <summary>
+        /// Id страницы игры.
+        /// </summary>
+        /// <remarks>
+        /// Поле необходимое для  получения данных с РСЯ
+        /// </remarks>
+        public int? PageId { get; private set; }
 
         /// <summary>
         /// Название игры
