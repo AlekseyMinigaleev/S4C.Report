@@ -121,7 +121,7 @@ namespace C4S.Services.Implements.ExcelFileServices
                 cell);
             cell.Column++;
 
-            PrintColumnsWithCellState(
+            PrintCashIncomeColumnsWithCellState(
                 "Прибыль",
                 gameStatistic.Select(x => x.CashIncome).ToArray(),
                 cell);
@@ -142,6 +142,42 @@ namespace C4S.Services.Implements.ExcelFileServices
                    .SetCellValueWithAligment(
                        value,
                        ExcelHorizontalAlignment.Center);
+                cell.Row++;
+            }
+        }
+
+        private void PrintCashIncomeColumnsWithCellState(string columnHeader,
+            double?[] values,
+            ExcelCell cell)
+        {
+            PrintGameStatisticHeader(cell, columnHeader);
+            cell.Row++;
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                var printValue = values[i].HasValue
+                    ? values[i].Value.ToString()
+                    : "-";
+
+                Worksheet.Cells[cell.Row, cell.Column]
+                  .SetCellValueWithAligment(
+                      printValue,
+                      ExcelHorizontalAlignment.Center);
+
+                if (i != 0)
+                {
+                    if (values[i].HasValue)
+                    {
+                        var result = values[i].Value.CompareTo(values[i - 1]);
+                        if (result > 0)
+                            Worksheet.Cells[cell.Row, cell.Column].Style.Fill
+                                .SetBackground(Color.Green);
+                        if (result < 0)
+                            Worksheet.Cells[cell.Row, cell.Column].Style.Fill
+                                .SetBackground(Color.Red);
+                    }
+                }
+
                 cell.Row++;
             }
         }
@@ -208,7 +244,7 @@ namespace C4S.Services.Implements.ExcelFileServices
 
         public string Statuses { get; set; }
 
-        public string CashIncome { get; set; }
+        public double? CashIncome { get; set; }
     }
 
     public class GameViewModelProfiler : Profile
@@ -224,7 +260,7 @@ namespace C4S.Services.Implements.ExcelFileServices
                 .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
                 .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(src => src.Evaluation))
                 .ForMember(dest => dest.Statuses, opt => opt.MapFrom(GameStatisticExpression.GetStatusesAsStringExpression))
-                .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(GameStatisticExpression.GetCashIncomeAsStringExpression));
+                .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(src => src.CashIncome));
         }
     }
 }

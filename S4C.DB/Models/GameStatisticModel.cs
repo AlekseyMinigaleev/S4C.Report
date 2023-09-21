@@ -109,10 +109,5 @@ namespace C4S.DB.Models
             gameStatistic.Statuses.Count() == 0
                 ? "-"
                 : string.Join(", ", gameStatistic);
-
-        public static readonly Expression<Func<GameStatisticModel, string>> GetCashIncomeAsStringExpression = (x) =>
-            x.CashIncome.HasValue
-                ? x.CashIncome.Value.ToString()
-                : "-";
     }   
 }
