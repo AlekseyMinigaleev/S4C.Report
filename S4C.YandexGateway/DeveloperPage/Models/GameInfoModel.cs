@@ -94,7 +94,7 @@ namespace S4C.YandexGateway.DeveloperPage.Models
     {
         public GameModelProfiler()
         {
-            CreateMap<GameInfoModel, GameModelModifiableFields>()
+            CreateMap<GameInfoModel, GameModifiableFields>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.PublicationDate, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.FirstPublished).DateTime));
 

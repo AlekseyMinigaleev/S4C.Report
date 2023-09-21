@@ -35,7 +35,7 @@ namespace C4S.DB.Models
         /// <summary>
         /// Доход
         /// </summary>
-        public double  CashIncome { get; private set; }
+        public double?  CashIncome { get; private set; }
 
         /// <summary>
         /// Дата последней синхронизации с Яндексом
@@ -109,5 +109,10 @@ namespace C4S.DB.Models
             gameStatistic.Statuses.Count() == 0
                 ? "-"
                 : string.Join(", ", gameStatistic);
+
+        public static readonly Expression<Func<GameStatisticModel, string>> GetCashIncomeAsStringExpression = (x) =>
+            x.CashIncome.HasValue
+                ? x.CashIncome.Value.ToString()
+                : "-";
     }   
 }

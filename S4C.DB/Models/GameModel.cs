@@ -79,7 +79,7 @@ namespace C4S.DB.Models
 
         /// <inheritdoc cref="GameModel.HasChanges(GameModel)"/>
         /// <param name="incomingFields"> Поля с которым происходит сравнение</param>
-        public bool HasChanges(GameModelModifiableFields incomingFields)
+        public bool HasChanges(GameModifiableFields incomingFields)
         {
             var hasChanges = Name == incomingFields.Name
                 && PublicationDate == incomingFields.PublicationDate;
@@ -106,7 +106,7 @@ namespace C4S.DB.Models
     /// <summary>
     /// Изменяемые поля модели <see cref="GameModel"/>
     /// </summary>
-    public class GameModelModifiableFields
+    public class GameModifiableFields
     {
         /// <inheritdoc cref="GameModel.Name"/>
         public string Name { get; set; }
@@ -114,7 +114,7 @@ namespace C4S.DB.Models
         /// <inheritdoc cref="GameModel.PublicationDate"/>
         public DateTime PublicationDate { get; set; }
 
-        public GameModelModifiableFields(
+        public GameModifiableFields(
             string name,
             DateTime publicationDate)
         {
@@ -122,7 +122,7 @@ namespace C4S.DB.Models
             PublicationDate = publicationDate;
         }
 
-        private GameModelModifiableFields()
+        private GameModifiableFields()
         { }
     }
 

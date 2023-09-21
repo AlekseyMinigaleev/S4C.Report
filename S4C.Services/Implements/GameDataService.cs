@@ -103,7 +103,7 @@ namespace C4S.Services.Implements
             else
             {
                 await EnrichGameInfoProcess(allIncomingGameData, games, authorizationToken);
-                _logger.LogSuccess($"{rsyaPrefix} Данные успешно получены");
+                _logger.LogSuccess($"{rsyaPrefix} Процесс завершен");
             }
         }
 
@@ -204,14 +204,14 @@ namespace C4S.Services.Implements
             return (sourceGameModel, gameIdForLogs);
         }
 
-        private (GameModelModifiableFields, GameStatisticModel) Projection(GameInfoModel incomingGameInfo)
+        private (GameModifiableFields, GameStatisticModel) Projection(GameInfoModel incomingGameInfo)
         {
-            var incomingGameModelFields = _mapper.Map<GameInfoModel, GameModelModifiableFields>(incomingGameInfo);
+            var incomingGameModifiableFields = _mapper.Map<GameInfoModel, GameModifiableFields>(incomingGameInfo);
             var incomingGameStatisticModel = _mapper.Map<GameInfoModel, GameStatisticModel>(incomingGameInfo);
 
             SetLinksForStatuses(incomingGameInfo, incomingGameStatisticModel);
 
-            return (incomingGameModelFields, incomingGameStatisticModel);
+            return (incomingGameModifiableFields, incomingGameStatisticModel);
         }
 
         /*TODO: Сделать поддержку статуса promoted после реализации сервиса парсинга с РСЯ*/
@@ -233,10 +233,10 @@ namespace C4S.Services.Implements
 
         private void UpdateGameModel(
             GameModel sourceGame,
-            GameModelModifiableFields incomingGameModelFields,
+            GameModifiableFields incomingGameModifiableFields,
             string gameIdForLogs)
         {
-            var hasChanges = sourceGame.HasChanges(incomingGameModelFields);
+            var hasChanges = sourceGame.HasChanges(incomingGameModifiableFields);
 
             if (hasChanges)
             {
@@ -246,8 +246,8 @@ namespace C4S.Services.Implements
             {
                 _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
                 sourceGame.Update(
-                    incomingGameModelFields.Name,
-                    incomingGameModelFields.PublicationDate);
+                    incomingGameModifiableFields.Name,
+                    incomingGameModifiableFields.PublicationDate);
             }
         }
     }
