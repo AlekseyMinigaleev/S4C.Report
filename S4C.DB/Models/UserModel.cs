@@ -52,6 +52,11 @@ namespace C4S.DB.Models
 
         private UserModel()
         { }
+
+        public void SetAuthorizationToken(string authorizationToken)
+        {
+            AuthorizationToken = authorizationToken;
+        }
     }
 
     /// <summary>
