@@ -37,8 +37,8 @@ namespace S4C.YandexGateway.DeveloperPage
                     RequestFormat.Long);
 
             var httpResponseMessage = await HttpUtils.SendRequestAsync(
-                _httpClientFactory,
                 createRequest,
+                _httpClientFactory,
                 cancellationToken);
             logger.LogSuccess($"Ответ от Яндекса успешно получен");
 
