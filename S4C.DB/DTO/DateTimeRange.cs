@@ -46,8 +46,8 @@ namespace C4S.DB.DTO
         public DateTimeRangeValidator()
         {
             RuleFor(x => x.StartDate.Date)
-                .LessThan(x => x.FinishDate.Date)
-                .WithMessage(x => $"значение StartDate:{x.StartDate} должно иметь значение, меньше чем FinishDate: {x.FinishDate}");
+                .LessThanOrEqualTo(x => x.FinishDate.Date)
+                .WithMessage(x => $"значение FinishDate:{x.FinishDate} должно иметь значение, больше чем StartDate: {x.StartDate}");
         }
     }
 }
