@@ -105,7 +105,6 @@ namespace C4S.Services.Implements
                 await EnrichGameInfoProcess(allIncomingGameData, games, authorizationToken);
                 _logger.LogSuccess($"{rsyaPrefix} Данные успешно получены");
             }
-
         }
 
         private string? GetAuthorizationToken()
@@ -176,12 +175,12 @@ namespace C4S.Services.Implements
                 var (sourceGameModel,
                     gameIdForLogs) = GetDataForProcess(sourceGameModels, incomingGameInfo);
 
-                var (incomingGameModel,
+                var (incomingGameModelFields,
                 incomingGameStatisticModel) = Projection(incomingGameInfo);
 
                 UpdateGameModel(
                     sourceGameModel,
-                    incomingGameModel,
+                    incomingGameModelFields,
                     gameIdForLogs);
 
                 _logger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики.");
@@ -205,17 +204,17 @@ namespace C4S.Services.Implements
             return (sourceGameModel, gameIdForLogs);
         }
 
-        private (GameModel, GameStatisticModel) Projection(GameInfoModel incomingGameInfo)
+        private (GameModelModifiableFields, GameStatisticModel) Projection(GameInfoModel incomingGameInfo)
         {
-            var incomingGameModel = _mapper.Map<GameInfoModel, GameModel>(incomingGameInfo);
+            var incomingGameModelFields = _mapper.Map<GameInfoModel, GameModelModifiableFields>(incomingGameInfo);
             var incomingGameStatisticModel = _mapper.Map<GameInfoModel, GameStatisticModel>(incomingGameInfo);
 
             SetLinksForStatuses(incomingGameInfo, incomingGameStatisticModel);
 
-            return (incomingGameModel, incomingGameStatisticModel);
+            return (incomingGameModelFields, incomingGameStatisticModel);
         }
 
-        /*TODO: Сделать поддержку статуса promoted псоле реализации сервиса парсинга с РСЯ*/
+        /*TODO: Сделать поддержку статуса promoted после реализации сервиса парсинга с РСЯ*/
 
         private void SetLinksForStatuses(
             GameInfoModel incomingGameInfo,
@@ -234,10 +233,10 @@ namespace C4S.Services.Implements
 
         private void UpdateGameModel(
             GameModel sourceGame,
-            GameModel incomingGame,
+            GameModelModifiableFields incomingGameModelFields,
             string gameIdForLogs)
         {
-            var hasChanges = sourceGame.HasChanges(incomingGame);
+            var hasChanges = sourceGame.HasChanges(incomingGameModelFields);
 
             if (hasChanges)
             {
@@ -247,8 +246,8 @@ namespace C4S.Services.Implements
             {
                 _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
                 sourceGame.Update(
-                    incomingGame.Name!,
-                    incomingGame.PublicationDate!.Value);
+                    incomingGameModelFields.Name,
+                    incomingGameModelFields.PublicationDate);
             }
         }
     }

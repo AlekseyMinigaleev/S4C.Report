@@ -77,20 +77,53 @@ namespace C4S.DB.Models
             PublicationDate = publicationDate;
         }
 
-        /// <summary>
-        /// Проверяет есть ли изменения у модели по сравнению с <paramref name="incomingGame"/>
-        /// </summary>
-        /// <param name="incomingGame">Игра с которой происходит сравнение</param>
-        /// <returns>
-        /// <see langword="true"/> если в модели есть изменения, иначе <see langword="false"/>
-        /// </returns>
-        public bool HasChanges(GameModel incomingGame)
+        /// <inheritdoc cref="GameModel.HasChanges(GameModel)"/>
+        /// <param name="incomingFields"> Поля с которым происходит сравнение</param>
+        public bool HasChanges(GameModelModifiableFields incomingFields)
         {
-            var hasChanges = Name == incomingGame.Name
-                && PublicationDate == incomingGame.PublicationDate;
+            var hasChanges = Name == incomingFields.Name
+                && PublicationDate == incomingFields.PublicationDate;
 
             return hasChanges;
         }
+
+        /// <summary>
+        /// Проверяет есть ли изменения у модели по сравнению с <paramref name="incomingGameModel"/>
+        /// </summary>
+        /// <param name="incomingGameModel">Игра с которой происходит сравнение</param>
+        /// <returns>
+        /// <see langword="true"/> если в модели есть изменения, иначе <see langword="false"/>
+        /// </returns>
+        public bool HasChanges(GameModel incomingGameModel)
+        {
+            var hasChanges = Name == incomingGameModel.Name
+                && PublicationDate == incomingGameModel.PublicationDate;
+
+            return hasChanges;
+        }
+    }
+
+    /// <summary>
+    /// Изменяемые поля модели <see cref="GameModel"/>
+    /// </summary>
+    public class GameModelModifiableFields
+    {
+        /// <inheritdoc cref="GameModel.Name"/>
+        public string Name { get; set; }
+
+        /// <inheritdoc cref="GameModel.PublicationDate"/>
+        public DateTime PublicationDate { get; set; }
+
+        public GameModelModifiableFields(
+            string name,
+            DateTime publicationDate)
+        {
+            Name = name;
+            PublicationDate = publicationDate;
+        }
+
+        private GameModelModifiableFields()
+        { }
     }
 
     /// <summary>
