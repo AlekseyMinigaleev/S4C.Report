@@ -12,13 +12,5 @@ namespace C4S.DB.Models.Hangfire
 
         [Display(Name = "Получение всех данных по играм")]
         SyncGameInfoAndGameCreateGameStatistic,
-
-        [Display(Name = "Создание/обновление excel файла")]
-        CreateOrUpdateExcelFile,
-
-        /*TODO: изменить нейминг после уточнения*/
-
-        [Display(Name = "Парсинг денег")]
-        ParseGameStatisticFromDENGI
     }
 }

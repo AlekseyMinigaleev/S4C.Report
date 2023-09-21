@@ -37,6 +37,8 @@ namespace S4C.YandexGateway.DeveloperPage.Models
         /// </summary>
         public int PlayersCount { get; set; }
 
+        public double? CashIncome { get; set; }
+
         /// <summary>
         /// Имена всех категорий, к которым относится игра
         /// </summary>
@@ -86,6 +88,7 @@ namespace S4C.YandexGateway.DeveloperPage.Models
         {
             CreateMap<GameInfoModel, GameModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AppId))
+                .ForMember(dest => dest.PageId, opt => opt.Ignore())
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.PublicationDate, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.FirstPublished).DateTime));
 
@@ -95,6 +98,7 @@ namespace S4C.YandexGateway.DeveloperPage.Models
                 .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
                 .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
                 .ForMember(dest => dest.Statuses, opt => opt.Ignore())
+                .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(src => src.CashIncome))
                 .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now));
         }
     }

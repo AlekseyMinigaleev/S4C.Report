@@ -19,6 +19,7 @@ namespace C4S.API.Extensions
                 options.UseSqlServer(connectionString));
 
             services.AddHangfire(configuration => configuration
+                .UseFilter(new AutomaticRetryAttribute { Attempts = 0 })
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
