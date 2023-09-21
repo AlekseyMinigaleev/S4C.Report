@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace C4S.DB.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
-    [Migration("20230905065434_add-UserModel-and-YandexGamesAccountModel")]
-    partial class addUserModelandYandexGamesAccountModel
+    [Migration("20230921112219_make-CashIncome-nullable")]
+    partial class makeCashIncomenullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,21 @@ namespace C4S.DB.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("C4S.DB.Models.GameGameStatusModel", b =>
+                {
+                    b.Property<Guid>("GameStatisticId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GameStatusId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("GameStatisticId", "GameStatusId");
+
+                    b.HasIndex("GameStatusId");
+
+                    b.ToTable("GameGameStatus", (string)null);
+                });
+
             modelBuilder.Entity("C4S.DB.Models.GameModel", b =>
                 {
                     b.Property<int>("Id")
@@ -33,15 +48,18 @@ namespace C4S.DB.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PageId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("PublicationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("YandexGamesAccountId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("YandexGamesAccountId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Game", (string)null);
                 });
@@ -52,17 +70,14 @@ namespace C4S.DB.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double?>("Evaluation")
+                    b.Property<double?>("CashIncome")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Evaluation")
                         .HasColumnType("float");
 
                     b.Property<int>("GameId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsNew")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPromoted")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime>("LastSynchroDate")
                         .HasColumnType("datetime2");
@@ -75,6 +90,21 @@ namespace C4S.DB.Migrations
                     b.HasIndex("GameId");
 
                     b.ToTable("GameStatistic", (string)null);
+                });
+
+            modelBuilder.Entity("C4S.DB.Models.GameStatusModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GameStatus", (string)null);
                 });
 
             modelBuilder.Entity("C4S.DB.Models.Hangfire.HangfireJobConfigurationModel", b =>
@@ -99,6 +129,13 @@ namespace C4S.DB.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AuthorizationToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeveloperPageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -112,41 +149,34 @@ namespace C4S.DB.Migrations
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("C4S.DB.Models.YandexGamesAccountModel", b =>
+            modelBuilder.Entity("C4S.DB.Models.GameGameStatusModel", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.HasOne("C4S.DB.Models.GameStatisticModel", "GameStatistic")
+                        .WithMany("GameGameStatus")
+                        .HasForeignKey("GameStatisticId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<string>("DeveloperPageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasOne("C4S.DB.Models.GameStatusModel", "GameStatus")
+                        .WithMany()
+                        .HasForeignKey("GameStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<string>("Login")
-                        .HasColumnType("nvarchar(max)");
+                    b.Navigation("GameStatistic");
 
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("YandexGamesAccount", (string)null);
+                    b.Navigation("GameStatus");
                 });
 
             modelBuilder.Entity("C4S.DB.Models.GameModel", b =>
                 {
-                    b.HasOne("C4S.DB.Models.YandexGamesAccountModel", "YandexGamesAccount")
+                    b.HasOne("C4S.DB.Models.UserModel", "User")
                         .WithMany("Games")
-                        .HasForeignKey("YandexGamesAccountId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("YandexGamesAccount");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("C4S.DB.Models.GameStatisticModel", b =>
@@ -160,28 +190,17 @@ namespace C4S.DB.Migrations
                     b.Navigation("Game");
                 });
 
-            modelBuilder.Entity("C4S.DB.Models.YandexGamesAccountModel", b =>
-                {
-                    b.HasOne("C4S.DB.Models.UserModel", "User")
-                        .WithMany("YandexGamesAccounts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("C4S.DB.Models.GameModel", b =>
                 {
                     b.Navigation("GameStatistics");
                 });
 
-            modelBuilder.Entity("C4S.DB.Models.UserModel", b =>
+            modelBuilder.Entity("C4S.DB.Models.GameStatisticModel", b =>
                 {
-                    b.Navigation("YandexGamesAccounts");
+                    b.Navigation("GameGameStatus");
                 });
 
-            modelBuilder.Entity("C4S.DB.Models.YandexGamesAccountModel", b =>
+            modelBuilder.Entity("C4S.DB.Models.UserModel", b =>
                 {
                     b.Navigation("Games");
                 });

@@ -1,5 +1,6 @@
 ﻿using AngleSharp;
 using Microsoft.Extensions.DependencyInjection;
+using S4C.YandexGateway.RSYA;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace S4C.YandexGateway.DeveloperPage.Extensions
@@ -19,6 +20,8 @@ namespace S4C.YandexGateway.DeveloperPage.Extensions
                 var browsingContext = BrowsingContext.New(config);
                 return browsingContext;
             });
+
+            services.AddTransient<IRsyaGateway, RsyaGateway>();
         }
     }
 }

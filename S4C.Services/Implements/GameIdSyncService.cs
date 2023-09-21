@@ -44,11 +44,13 @@ namespace C4S.Services.Implements
             {
                 finalLogMessage = $"{warningLogMessage}{e.Message}";
                 logLevel = LogLevel.Warning;
+                throw;
             }
             catch (Exception e)
             {
                 finalLogMessage = $"{errorLogMessage}{e.Message}";
                 logLevel = LogLevel.Error;
+                throw;
             }
             finally
             {
@@ -61,10 +63,8 @@ namespace C4S.Services.Implements
         {
             /*TODO: исправить полсе добавления авторизации*/
             var developerPageUrl = _dbContext.Users
-                .Include(x => x.YandexGamesAccounts)
-                .SelectMany(x => x.YandexGamesAccounts)
-                .Select(x => x.DeveloperPageUrl)
-                .First();
+                .First()
+                .DeveloperPageUrl;
 
             _logger.LogInformation($"Получение id всех игр.");
             var gameIds = await _developerPageParser
@@ -105,12 +105,10 @@ namespace C4S.Services.Implements
             {
                 /*TODO: исправить после добавления авторизации*/
                 _logger.LogInformation($"[{gameId}] id игры не содержится в базе данных.");
-                var yandexGamesAccount = _dbContext.Users
-                .Include(x => x.YandexGamesAccounts)
-                .SelectMany(x => x.YandexGamesAccounts)
+                var user = _dbContext.Users
                 .First();
 
-                var gameModel = new GameModel(gameId, yandexGamesAccount!);
+                var gameModel = new GameModel(gameId, user!);
 
                 await _dbContext.Games
                     .AddAsync(gameModel, cancellationToken);

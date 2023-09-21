@@ -11,9 +11,17 @@ namespace C4S.DB.Models
         /// PK
         /// </summary>
         /// <remarks>
-        /// Является дублированием id со страницы разработчика
+        /// Является дублированием appId со страницы разработчика
         /// </remarks>
         public int Id { get; private set; }
+
+        /// <summary>
+        /// Id страницы игры.
+        /// </summary>
+        /// <remarks>
+        /// Поле необходимое для  получения данных с РСЯ
+        /// </remarks>
+        public int? PageId { get; private set; }
 
         /// <summary>
         /// Название игры
@@ -26,14 +34,14 @@ namespace C4S.DB.Models
         public DateTime? PublicationDate { get; private set; }
 
         /// <summary>
-        /// Аккаунт Яндекс игр
+        /// Пользователь, которому принадлежит игра
         /// </summary>
-        public YandexGamesAccountModel YandexGamesAccount { get; private set; }
+        public UserModel User { get; private set; }
 
         /// <summary>
-        /// FK <see cref="YandexGamesAccount"/>
+        /// FK <see cref="UserModel"/>
         /// </summary>
-        public Guid YandexGamesAccountId { get; private set; }
+        public Guid UserId { get; private set; }
 
         /// <summary>
         /// Список записей статистики
@@ -45,14 +53,14 @@ namespace C4S.DB.Models
 
         public GameModel(
             int id,
-            YandexGamesAccountModel yandexGamesAccount,
+            UserModel user,
             string? name = default,
             DateTime? publicationDate = default,
             ISet<GameStatisticModel>? gameStatistics = default)
         {
             Id = id;
-            YandexGamesAccount = yandexGamesAccount;
-            YandexGamesAccountId = yandexGamesAccount.Id;
+            User = user;
+            UserId = user.Id;
             Name = name;
             PublicationDate = publicationDate;
             GameStatistics = gameStatistics;
@@ -69,20 +77,53 @@ namespace C4S.DB.Models
             PublicationDate = publicationDate;
         }
 
-        /// <summary>
-        /// Проверяет есть ли изменения у модели по сравнению с <paramref name="incomingGame"/>
-        /// </summary>
-        /// <param name="incomingGame">Игра с которой происходит сравнение</param>
-        /// <returns>
-        /// <see langword="true"/> если в модели есть изменения, иначе <see langword="false"/>
-        /// </returns>
-        public bool HasChanges(GameModel incomingGame)
+        /// <inheritdoc cref="GameModel.HasChanges(GameModel)"/>
+        /// <param name="incomingFields"> Поля с которым происходит сравнение</param>
+        public bool HasChanges(GameModifiableFields incomingFields)
         {
-            var hasChanges = Name == incomingGame.Name
-                && PublicationDate == incomingGame.PublicationDate;
+            var hasChanges = Name == incomingFields.Name
+                && PublicationDate == incomingFields.PublicationDate;
 
             return hasChanges;
         }
+
+        /// <summary>
+        /// Проверяет есть ли изменения у модели по сравнению с <paramref name="incomingGameModel"/>
+        /// </summary>
+        /// <param name="incomingGameModel">Игра с которой происходит сравнение</param>
+        /// <returns>
+        /// <see langword="true"/> если в модели есть изменения, иначе <see langword="false"/>
+        /// </returns>
+        public bool HasChanges(GameModel incomingGameModel)
+        {
+            var hasChanges = Name == incomingGameModel.Name
+                && PublicationDate == incomingGameModel.PublicationDate;
+
+            return hasChanges;
+        }
+    }
+
+    /// <summary>
+    /// Изменяемые поля модели <see cref="GameModel"/>
+    /// </summary>
+    public class GameModifiableFields
+    {
+        /// <inheritdoc cref="GameModel.Name"/>
+        public string Name { get; set; }
+
+        /// <inheritdoc cref="GameModel.PublicationDate"/>
+        public DateTime PublicationDate { get; set; }
+
+        public GameModifiableFields(
+            string name,
+            DateTime publicationDate)
+        {
+            Name = name;
+            PublicationDate = publicationDate;
+        }
+
+        private GameModifiableFields()
+        { }
     }
 
     /// <summary>

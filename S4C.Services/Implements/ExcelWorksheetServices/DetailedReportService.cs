@@ -45,7 +45,7 @@ namespace C4S.Services.Implements.ExcelFileServices
                 .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider);
 
             WriteData(gameViewModelQuery);
-         
+
             return Worksheet;
         }
 
@@ -194,6 +194,7 @@ namespace C4S.Services.Implements.ExcelFileServices
     public class GameViewModel
     {
         public string Name { get; set; }
+
         public GameStatisticViewModel[] GameStatistics { get; set; }
     }
 
@@ -207,7 +208,7 @@ namespace C4S.Services.Implements.ExcelFileServices
 
         public string Statuses { get; set; }
 
-        public decimal CashIncome { get; set; }
+        public string CashIncome { get; set; }
     }
 
     public class GameViewModelProfiler : Profile
@@ -223,7 +224,7 @@ namespace C4S.Services.Implements.ExcelFileServices
                 .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
                 .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(src => src.Evaluation))
                 .ForMember(dest => dest.Statuses, opt => opt.MapFrom(GameStatisticExpression.GetStatusesAsStringExpression))
-                .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(src => 0M));
+                .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(GameStatisticExpression.GetCashIncomeAsStringExpression));
         }
     }
 }

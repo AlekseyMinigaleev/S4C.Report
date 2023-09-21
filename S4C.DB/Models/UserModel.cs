@@ -22,15 +22,32 @@ namespace C4S.DB.Models
         #endregion на эти поля пока нет ограничений, поскольку не понятно в каком виде это должно быть
 
         /// <summary>
-        /// Список аккаунтов Яндекс игр
+        /// Ссылка на страницу разработчика
         /// </summary>
-        public ISet<YandexGamesAccountModel>? YandexGamesAccounts { get; private set; }
+        public string DeveloperPageUrl { get; private set; }
+
+        /// <summary>
+        /// Токен авторизации
+        /// </summary>
+        /// <remarks>
+        /// РСЯ
+        /// </remarks>
+        public string? AuthorizationToken { get; private set; }
+
+        /// <summary>
+        /// Список игр
+        /// </summary>
+        public ISet<GameModel>? Games { get; private set; }
 
         public UserModel(
-            ISet<YandexGamesAccountModel>? yandexGamesAccounts = default)
+            string developerPageUrl,
+            string? authorizationToken = default,
+            ISet<GameModel>? games = default)
         {
             Id = Guid.NewGuid();
-            YandexGamesAccounts = yandexGamesAccounts;
+            DeveloperPageUrl = developerPageUrl;
+            AuthorizationToken = authorizationToken;
+            Games = games;
         }
 
         private UserModel()

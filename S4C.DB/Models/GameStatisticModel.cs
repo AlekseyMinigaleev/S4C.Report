@@ -33,6 +33,11 @@ namespace C4S.DB.Models
         public int PlayersCount { get; private set; }
 
         /// <summary>
+        /// Доход
+        /// </summary>
+        public double?  CashIncome { get; private set; }
+
+        /// <summary>
         /// Дата последней синхронизации с Яндексом
         /// </summary>
         public DateTime LastSynchroDate { get; private set; }
@@ -104,5 +109,10 @@ namespace C4S.DB.Models
             gameStatistic.Statuses.Count() == 0
                 ? "-"
                 : string.Join(", ", gameStatistic);
+
+        public static readonly Expression<Func<GameStatisticModel, string>> GetCashIncomeAsStringExpression = (x) =>
+            x.CashIncome.HasValue
+                ? x.CashIncome.Value.ToString()
+                : "-";
     }   
 }

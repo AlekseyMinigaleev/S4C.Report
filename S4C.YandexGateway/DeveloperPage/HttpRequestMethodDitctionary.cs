@@ -8,7 +8,7 @@ using System.Text;
 namespace S4C.YandexGateway.DeveloperPage
 {
     /// <summary>
-    /// Словарь, содержащий все <see cref="HttpRequestMessage"/>, необходимые для получения данных
+    /// Словарь, содержащий все <see cref="HttpRequestMessage"/>, необходимые для получения данных по игре со страницы разработчика
     /// </summary>
     public static class HttpRequestMethodDitctionary
     {

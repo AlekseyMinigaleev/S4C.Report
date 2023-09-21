@@ -15,11 +15,6 @@ namespace C4S.DB
         public DbSet<UserModel> Users { get; set; }
 
         /// <summary>
-        /// Список аккаунтов Яндекс игр
-        /// </summary>
-        public DbSet<YandexGamesAccountModel> YandexGamesAccounts { get; set; }
-
-        /// <summary>
         /// Список игр
         /// </summary>
         public DbSet<GameModel> Games { get; set; }

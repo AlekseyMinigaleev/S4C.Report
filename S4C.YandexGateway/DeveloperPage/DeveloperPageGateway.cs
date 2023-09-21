@@ -1,8 +1,9 @@
-﻿using C4S.Helpers.Logger;
+﻿using C4S.Helpers.Extensions;
+using C4S.Helpers.Logger;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using S4C.Helpers;
 using S4C.YandexGateway.DeveloperPage.Enums;
-using S4C.YandexGateway.DeveloperPage.Exceptions;
 using S4C.YandexGateway.DeveloperPage.Models;
 
 namespace S4C.YandexGateway.DeveloperPage
@@ -29,11 +30,15 @@ namespace S4C.YandexGateway.DeveloperPage
             CancellationToken cancellationToken = default)
         {
             logger.LogInformation($"Составление запроса на сервер Яндекс");
-            var httpResponseMessage = await SendRequestAsync(() =>
-                HttpRequestMethodDitctionary.GetGamesInfo(
+            var createRequest = () =>
+            HttpRequestMethodDitctionary.GetGamesInfo(
                     _yandexGamesRequestUrl,
                     gameIds,
-                    RequestFormat.Long),
+                    RequestFormat.Long);
+
+            var httpResponseMessage = await HttpUtils.SendRequestAsync(
+                createRequest,
+                _httpClientFactory,
                 cancellationToken);
             logger.LogSuccess($"Ответ от Яндекса успешно получен");
 
@@ -46,36 +51,25 @@ namespace S4C.YandexGateway.DeveloperPage
             return gameInfoModel;
         }
 
-        private async Task<HttpResponseMessage> SendRequestAsync(
-            Func<HttpRequestMessage> createRequest,
-            CancellationToken cancellationToken = default)
-        {
-            var client = _httpClientFactory.CreateClient();
-
-            var request = createRequest();
-            var response = await client
-                .SendAsync(request, cancellationToken);
-            response.EnsureSuccessStatusCode();
-            return response;
-        }
-
         private async Task<GameInfoModel[]> DeserializeObjectsAsync(
             HttpResponseMessage httpResponseMessage,
             CancellationToken cancellationToken)
         {
             var jsonString = await httpResponseMessage.Content
                 .ReadAsStringAsync(cancellationToken);
-            var gamesJToken = GetGamesJToken(jsonString);
+
+            var jObject = JObject.Parse(jsonString);
+            var gamesJToken = jObject.GetValue<JArray>("games");
 
             var results = new GameInfoModel[gamesJToken.Count];
             for (int i = 0; i < gamesJToken.Count; i++)
             {
-                var title = GetValue<string>("title", gamesJToken[i], jsonString);
-                var appId = GetValue<int>("appID", gamesJToken[i], jsonString);
-                var firstPublished = GetValue<int>("firstPublished", gamesJToken[i], jsonString);
-                var rating = GetValue<double>("rating", gamesJToken[i], jsonString);
-                var playersCount = GetValue<int>("playersCount", gamesJToken[i], jsonString);
-                var categoriesNames = GetValue<string[]>("categoriesNames", gamesJToken[i], jsonString);
+                var title = gamesJToken[i].GetValue<string>("title");
+                var appId = gamesJToken[i].GetValue<int>("appID");
+                var firstPublished = gamesJToken[i].GetValue<int>("firstPublished");
+                var rating = gamesJToken[i].GetValue<double>("rating");
+                var playersCount = gamesJToken[i].GetValue<int>("playersCount");
+                var categoriesNames = gamesJToken[i].GetValue<string[]>("categoriesNames");
 
                 var gameInfo = new GameInfoModel(
                     title: title,
@@ -89,26 +83,6 @@ namespace S4C.YandexGateway.DeveloperPage
             }
 
             return results;
-        }
-
-        private static JArray GetGamesJToken(string jsonString)
-        {
-            var responseJObject = JObject.Parse(jsonString);
-            var gamesJToken = responseJObject["games"] as JArray
-                ?? throw new InvalidContractException(jsonString, "games");
-
-            return gamesJToken;
-        }
-
-        private static T GetValue<T>(string key, JToken jToken, string jsonString)
-        {
-            T value;
-            if (typeof(T).IsArray)
-                value = jToken[key]!.ToObject<T>()!;
-            else
-                value = jToken[key]!.Value<T>()!;
-            var result = value ?? throw new InvalidContractException(jsonString, key);
-            return result;
         }
     }
 }

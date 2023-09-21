@@ -216,8 +216,6 @@ namespace C4S.Services.Implements
             }
         }
 
-        /*TODO: если изменить имя в енамке, то изменения вступят в силу после пересоздания бд*/
-
         private void AddOrUpdateRecurringJob<T>(
             HangfireJobConfigurationModel jobConfig,
             Expression<Func<T, Task>> methodCall)

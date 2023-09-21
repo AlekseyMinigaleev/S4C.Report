@@ -38,6 +38,11 @@ namespace S4C.YandexGateway.DeveloperPage.Models
         public int PlayersCount { get; set; }
 
         /// <summary>
+        /// Доход игры
+        /// </summary>
+        public double? CashIncome { get; set; }
+
+        /// <summary>
         /// Имена всех категорий, к которым относится игра
         /// </summary>
         public string[] CategoriesNames { get; set; }
@@ -48,7 +53,8 @@ namespace S4C.YandexGateway.DeveloperPage.Models
             int firstPublished,
             double rating,
             int playersCount,
-            string[] categoriesNames)
+            string[] categoriesNames,
+            double? cashIncome = default)
         {
             AppId = appId;
             Title = title;
@@ -56,7 +62,11 @@ namespace S4C.YandexGateway.DeveloperPage.Models
             Rating = rating;
             PlayersCount = playersCount;
             CategoriesNames = categoriesNames;
+            CashIncome = cashIncome;
         }
+
+        private GameInfoModel()
+        { }
     }
 
     /// <summary>
@@ -84,8 +94,7 @@ namespace S4C.YandexGateway.DeveloperPage.Models
     {
         public GameModelProfiler()
         {
-            CreateMap<GameInfoModel, GameModel>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AppId))
+            CreateMap<GameInfoModel, GameModifiableFields>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.PublicationDate, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.FirstPublished).DateTime));
 
@@ -93,8 +102,8 @@ namespace S4C.YandexGateway.DeveloperPage.Models
                 .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.AppId))
                 .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(src => src.Rating))
                 .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
-                .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
                 .ForMember(dest => dest.Statuses, opt => opt.Ignore())
+                .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(src => src.CashIncome))
                 .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now));
         }
     }

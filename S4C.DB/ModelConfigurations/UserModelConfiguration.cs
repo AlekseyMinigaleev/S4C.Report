@@ -10,7 +10,7 @@ namespace C4S.DB.ModelConfigurations
         {
             builder.ToTable("User");
 
-            builder.HasMany(x => x.YandexGamesAccounts)
+            builder.HasMany(x => x.Games)
                 .WithOne(x => x.User)
                 .HasForeignKey(x => x.UserId);
         }
