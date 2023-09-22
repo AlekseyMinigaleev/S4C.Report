@@ -29,6 +29,22 @@
             dd.MM.yyyy
             </remarks>
         </member>
+        <member name="M:С4S.API.Features.Game.GameController.SetPageIdsAsync(С4S.API.Features.Game.Actions.SetPageIds.Command,System.Threading.CancellationToken)">
+            <summary>
+            Устанавливает PageId для игры. ОТСТУТСТВУЕТ ВАЛИДАЦИЯ НА УСТАНОВКУ PageId ИГРЕ, КОТОРОЙ ЭТОТ PageId НЕ ПРИНАДЛЕЖИТ.
+            </summary>
+        </member>
+        <member name="M:С4S.API.Features.Game.GameController.GetGamesAsync(System.Threading.CancellationToken)">
+            <summary>
+            Возвращает список всех игр
+            </summary>
+        </member>
+        <member name="M:С4S.API.Features.User.UserController.SetRsyaAuthorizationTokenAsync(С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command,System.Threading.CancellationToken)">
+            <summary>
+            Устанавливает токен авторизации.
+            https://yandex.ru/dev/partner-statistics/doc/ru/concepts/access
+            </summary>
+        </member>
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
             Добавляет все необходимые сервисы для хранилищ
