@@ -1,7 +1,6 @@
 ﻿using C4S.Helpers.ApiHeplers.Controllers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 using С4S.API.Features.User.Action;
 
 
@@ -12,8 +11,11 @@ namespace С4S.API.Features.User
         public UserController(IMediator mediator) : base(mediator)
         { }
 
-        [SwaggerOperation(Summary = "https://oauth.yandex.ru/authorize?response_type=token&client_id=0110c259e959451a8633d20e21540c06")]
-        [HttpPost("SetRsyaAuthorizationToken")]
+        /// <summary>
+        /// Устанавливает токен авторизации.
+        /// https://yandex.ru/dev/partner-statistics/doc/ru/concepts/access
+        /// </summary>
+        [HttpPut("SetRsyaAuthorizationToken")]
         public async Task<ActionResult> SetRsyaAuthorizationTokenAsync(
             [FromBody] SetRsyaAuthorizationToken.Command command,
             CancellationToken cancellationToken)

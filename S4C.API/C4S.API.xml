@@ -29,6 +29,7 @@
             dd.MM.yyyy
             </remarks>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:С4S.API.Features.User.UserController.SetRsyaAuthorizationTokenAsync(С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command,System.Threading.CancellationToken)" -->
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
             Добавляет все необходимые сервисы для хранилищ
