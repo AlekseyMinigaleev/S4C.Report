@@ -77,6 +77,12 @@ namespace C4S.DB.Models
             PublicationDate = publicationDate;
         }
 
+        /// <summary>
+        /// Устанавливает указанный <paramref name="pageId"/>
+        /// </summary>
+        /// <param name="pageId">Id страницы, необходимо для РСЯ</param>
+        public void SetPageId(int pageId) => PageId = pageId;
+
         /// <inheritdoc cref="GameModel.HasChanges(GameModel)"/>
         /// <param name="incomingFields"> Поля с которым происходит сравнение</param>
         public bool HasChanges(GameModifiableFields incomingFields)
