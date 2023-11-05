@@ -8,6 +8,9 @@ namespace С4S.API.Features.User.Action
     {
         public class Command : IRequest<bool>
         {
+            /// <summary>
+            /// Токен авторизации для апи /partner2.yandex.ru/api
+            /// </summary>
             public string AuthorizationToken { get; set; }
         }
 
@@ -27,6 +30,7 @@ namespace С4S.API.Features.User.Action
 
             public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
             {
+                /*TODO: сделать отдельный метод для валиадции*/
                 var httpRequestMethod = new HttpRequestMessage(HttpMethod.Get, Url);
                 httpRequestMethod.Headers.Add("Authorization", request.AuthorizationToken);
 
@@ -35,7 +39,7 @@ namespace С4S.API.Features.User.Action
 
                 var result = response.IsSuccessStatusCode;
 
-                if(result)
+                if (result)
                 {
                     /*TODO: Исправить после добавления авторизации*/
                     (await _dbContext.Users

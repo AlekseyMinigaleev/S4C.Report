@@ -21,6 +21,24 @@
             </remarks>
             <returns><inheritdoc cref="M:Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build"/></returns>
         </member>
+        <member name="P:С4S.API.Features.Authentication.Actions.Login.Query.Login">
+            <summary>
+            Логин пользователя
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Authentication.Actions.Login.Query.Password">
+            <summary>
+            Пароль пользователя
+            </summary>
+        </member>
+        <member name="M:С4S.API.Features.Authentication.AuthenticationController.Login(С4S.API.Features.Authentication.Actions.Login.Query,System.Threading.CancellationToken)">
+            <summary>
+            Осуществляет аутентификацию пользователя
+            </summary>
+            <returns>
+            Jwt-токен пользователя
+            </returns>
+        </member>
         <member name="M:С4S.API.Features.GameStatisticReport.GameStatisticReportController.GetGameStatisticReportAsync(System.String,System.String,FluentValidation.IValidator{C4S.DB.DTO.DateTimeRange},FluentValidation.IValidator{С4S.API.Features.GameStatisticReport.Actions.GetReportFileWithGameStatistics.Query},System.Threading.CancellationToken)">
             <summary>
             Возвращает готовый к скачиванию файл отчета игровой статистики.
@@ -39,10 +57,50 @@
             Возвращает список всех игр
             </summary>
         </member>
+        <member name="P:С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command.AuthorizationToken">
+            <summary>
+            Токен авторизации для апи /partner2.yandex.ru/api
+            </summary>
+        </member>
         <member name="M:С4S.API.Features.User.UserController.SetRsyaAuthorizationTokenAsync(С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command,System.Threading.CancellationToken)">
             <summary>
             Устанавливает токен авторизации.
             https://yandex.ru/dev/partner-statistics/doc/ru/concepts/access
+            </summary>
+        </member>
+        <member name="T:С4S.API.SettingsModels.JWTConfiguration">
+            <summary>
+            Конфигурация JWT токена
+            </summary>
+        </member>
+        <member name="P:С4S.API.SettingsModels.JWTConfiguration.SecurityKey">
+            <summary>
+            Секретный ключ
+            </summary>
+        </member>
+        <member name="P:С4S.API.SettingsModels.JWTConfiguration.Issuer">
+            <summary>
+            Издатель
+            </summary>
+        </member>
+        <member name="P:С4S.API.SettingsModels.JWTConfiguration.Audience">
+            <summary>
+            Аудитория для коотрой предназначен токен
+            </summary>
+        </member>
+        <member name="P:С4S.API.SettingsModels.JWTConfiguration.DurationInMinutes">
+            <summary>
+            Срок жизни токена
+            </summary>
+        </member>
+        <member name="M:С4S.API.SettingsModels.JWTConfiguration.GetSymmetricSecurityKey">
+            <summary>
+            Создает объект типа <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/>, по установленному <see cref="P:С4S.API.SettingsModels.JWTConfiguration.SecurityKey"/>
+            </summary>
+        </member>
+        <member name="F:С4S.API.SettingsModels.JWTConfiguration.AuthenticationType">
+            <summary>
+            Тип аутентификации
             </summary>
         </member>
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
