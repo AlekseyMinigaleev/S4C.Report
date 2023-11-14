@@ -21,23 +21,42 @@
             </remarks>
             <returns><inheritdoc cref="M:Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build"/></returns>
         </member>
-        <member name="P:С4S.API.Features.Authentication.Actions.Login.Query.Login">
+        <member name="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.Credentionals">
+            <inheritdoc cref="T:С4S.API.Features.Authentication.ViewModels.UserCredentionals"/>
+        </member>
+        <member name="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.DeveloperPageUrl">
             <summary>
-            Логин пользователя
+            ссылка на страницу разработчика
             </summary>
         </member>
-        <member name="P:С4S.API.Features.Authentication.Actions.Login.Query.Password">
-            <summary>
-            Пароль пользователя
-            </summary>
+        <member name="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.RsyaAuthorizationToken">
+            <inheritdoc cref="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.RsyaAuthorizationToken"/>
         </member>
-        <member name="M:С4S.API.Features.Authentication.AuthenticationController.Login(С4S.API.Features.Authentication.Actions.Login.Query,System.Threading.CancellationToken)">
+        <member name="P:С4S.API.Features.Authentication.Actions.Login.Query.UserCreditionals">
+            <inheritdoc cref="T:С4S.API.Features.Authentication.ViewModels.UserCredentionals"/>
+        </member>
+        <member name="M:С4S.API.Features.Authentication.AuthenticationController.Login(С4S.API.Features.Authentication.Actions.Login.Query,FluentValidation.IValidator{С4S.API.Features.Authentication.Actions.Login.Query},System.Threading.CancellationToken)">
             <summary>
             Осуществляет аутентификацию пользователя
             </summary>
             <returns>
             Jwt-токен пользователя
             </returns>
+        </member>
+        <member name="T:С4S.API.Features.Authentication.ViewModels.UserCredentionals">
+            <summary>
+            Представляет учетные данные пользователя
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Authentication.ViewModels.UserCredentionals.Login">
+            <summary>
+            Логин пользователя
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Authentication.ViewModels.UserCredentionals.Password">
+            <summary>
+            Пароль пользователя
+            </summary>
         </member>
         <member name="M:С4S.API.Features.GameStatisticReport.GameStatisticReportController.GetGameStatisticReportAsync(System.String,System.String,FluentValidation.IValidator{C4S.DB.DTO.DateTimeRange},FluentValidation.IValidator{С4S.API.Features.GameStatisticReport.Actions.GetReportFileWithGameStatistics.Query},System.Threading.CancellationToken)">
             <summary>
@@ -57,12 +76,15 @@
             Возвращает список всех игр
             </summary>
         </member>
-        <member name="P:С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command.AuthorizationToken">
+        <member name="P:С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command.RsyaAythorizationToken">
+            <inheritdoc cref="T:С4S.API.Features.User.Action.SetRsyaAuthorizationToken"/>
+        </member>
+        <member name="P:С4S.API.Features.User.Requests.RsyaAuthorizationToken.Token">
             <summary>
             Токен авторизации для апи /partner2.yandex.ru/api
             </summary>
         </member>
-        <member name="M:С4S.API.Features.User.UserController.SetRsyaAuthorizationTokenAsync(С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command,System.Threading.CancellationToken)">
+        <member name="M:С4S.API.Features.User.UserController.SetRsyaAuthorizationTokenAsync(С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command,FluentValidation.IValidator{С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command},System.Threading.CancellationToken)">
             <summary>
             Устанавливает токен авторизации.
             https://yandex.ru/dev/partner-statistics/doc/ru/concepts/access

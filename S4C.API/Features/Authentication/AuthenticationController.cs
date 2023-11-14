@@ -1,4 +1,5 @@
 ﻿using C4S.Helpers.ApiHeplers.Controllers;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,24 +18,38 @@ namespace С4S.API.Features.Authentication
         /// <returns>
         /// Jwt-токен пользователя
         /// </returns>
+        [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<ActionResult> Login(
             [FromBody] Login.Query query,
+            [FromServices] IValidator<Login.Query> validator,
             CancellationToken cancellationToken)
         {
+            await ValidateAndChangeModelStateAsync(validator, query, cancellationToken);
+
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);  
+
             var result = await Mediator.Send(query, cancellationToken);
 
-            return result is null
-                ? BadRequest("Введены неверные логин или пароль")
-                : Ok(result);
+            return Ok(result);
         }
 
-        [Authorize]
-        [HttpPost("SignUp")]
-        public async Task<ActionResult> SignUp(
+        [AllowAnonymous]
+        [HttpPost("CreateAccount")]
+        public async Task<ActionResult> CreateAccount(
+            [FromBody]CreateAccount.Query query,
+            [FromServices] IValidator<CreateAccount.Query> validator,
             CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await ValidateAndChangeModelStateAsync(validator, query, cancellationToken);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await Mediator.Send(query, cancellationToken);
+
+            return Ok("Аккаунт успешно создан");
         }
     }
 }

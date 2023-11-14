@@ -1,55 +1,45 @@
 ﻿using C4S.DB;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using С4S.API.Features.User.Requests;
 
 namespace С4S.API.Features.User.Action
 {
     public class SetRsyaAuthorizationToken
     {
-        public class Command : IRequest<bool>
+        public class Command : IRequest
         {
-            /// <summary>
-            /// Токен авторизации для апи /partner2.yandex.ru/api
-            /// </summary>
-            public string AuthorizationToken { get; set; }
+            /// <inheritdoc cref="SetRsyaAuthorizationToken"/>
+            public RsyaAuthorizationToken RsyaAythorizationToken { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, bool>
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator(IHttpClientFactory httpClientFactory)
+            {
+                RuleFor(x => x.RsyaAythorizationToken)
+                    .SetValidator(new RsyaAuthorizationTokenValidator(httpClientFactory));
+            }
+        }
+
+        public class Handler : IRequestHandler<Command>
         {
             private readonly ReportDbContext _dbContext;
-            private readonly IHttpClientFactory _httpClientFactory;
-            private const string Url = "https://partner2.yandex.ru/api/statistics2/tree.json?lang=ru";
 
-            public Handler(
-                ReportDbContext dbContext,
-                IHttpClientFactory httpClientFactory)
+            public Handler(ReportDbContext dbContext)
             {
                 _dbContext = dbContext;
-                _httpClientFactory = httpClientFactory;
             }
 
-            public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
+            public async Task Handle(Command request, CancellationToken cancellationToken)
             {
-                /*TODO: сделать отдельный метод для валиадции*/
-                var httpRequestMethod = new HttpRequestMessage(HttpMethod.Get, Url);
-                httpRequestMethod.Headers.Add("Authorization", request.AuthorizationToken);
+                /*TODO: Исправить после добавления авторизации*/
+                (await _dbContext.Users
+                .SingleAsync(cancellationToken))
+                .SetAuthorizationToken(request.RsyaAythorizationToken.Token);
 
-                using var httpClient = _httpClientFactory.CreateClient();
-                var response = await httpClient.SendAsync(httpRequestMethod, cancellationToken);
-
-                var result = response.IsSuccessStatusCode;
-
-                if (result)
-                {
-                    /*TODO: Исправить после добавления авторизации*/
-                    (await _dbContext.Users
-                    .SingleAsync(cancellationToken))
-                    .SetAuthorizationToken(request.AuthorizationToken);
-
-                    await _dbContext.SaveChangesAsync(cancellationToken);
-                }
-
-                return result;
+                await _dbContext.SaveChangesAsync(cancellationToken);
             }
         }
     }

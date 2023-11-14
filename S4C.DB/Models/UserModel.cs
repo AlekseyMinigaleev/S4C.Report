@@ -12,14 +12,15 @@ namespace C4S.DB.Models
         /// </summary>
         public Guid Id { get; private set; }
 
-        /*TODO:*/
-
-        #region на эти поля пока нет ограничений, поскольку не понятно в каком виде это должно быть
-
+        /// <summary>
+        /// Логин пользователя
+        /// </summary>
         public string Login { get; set; }
-        public string Password { get; set; }
 
-        #endregion на эти поля пока нет ограничений, поскольку не понятно в каком виде это должно быть
+        /// <summary>
+        /// Пароль пользователя
+        /// </summary>
+        public string Password { get; set; }
 
         /// <summary>
         /// Ссылка на страницу разработчика
@@ -40,6 +41,8 @@ namespace C4S.DB.Models
         public ISet<GameModel>? Games { get; private set; }
 
         public UserModel(
+            string login,
+            string password,
             string developerPageUrl,
             string? authorizationToken = default,
             ISet<GameModel>? games = default)
@@ -48,6 +51,8 @@ namespace C4S.DB.Models
             DeveloperPageUrl = developerPageUrl;
             AuthorizationToken = authorizationToken;
             Games = games;
+            Login = login;
+            Password = password;
         }
 
         private UserModel()

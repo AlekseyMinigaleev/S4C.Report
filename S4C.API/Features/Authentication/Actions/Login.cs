@@ -1,10 +1,13 @@
 ﻿using C4S.DB;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
+using С4S.API.Features.Authentication.ViewModels;
 using С4S.API.SettingsModels;
 
 namespace С4S.API.Features.Authentication.Actions
@@ -13,27 +16,38 @@ namespace С4S.API.Features.Authentication.Actions
     {
         public class Query : IRequest<string?>
         {
-            /// <summary>
-            /// Логин пользователя
-            /// </summary>
-            public string Login { get; set; }
+            /// <inheritdoc cref="UserCredentionals"/>
+            public UserCredentionals UserCreditionals { get; set; }
+        }
 
-            /// <summary>
-            /// Пароль пользователя
-            /// </summary>
-            public string Password { get; set; }
+        public class QueryValidator : AbstractValidator<Query>
+        {
+            public QueryValidator(ReportDbContext dbContext)
+            {
+                RuleFor(x => x.UserCreditionals)
+                .Cascade(CascadeMode.Stop)
+                .SetValidator(new UserCredentionalsValidator())
+                .MustAsync(async (query, cancellationToken) =>
+                {
+                    var user = await dbContext.Users
+                        .SingleOrDefaultAsync(
+                            x => x.Login.Equals(query.Login) && x.Password.Equals(query.Password),
+                            cancellationToken);
+
+                    return user is not null;
+                })
+                .WithErrorCode(HttpStatusCode.NotFound.ToString())
+                .WithMessage("Введены неверные логин или пароль");
+            }
         }
 
         private class Handler : IRequestHandler<Query, string?>
         {
-            private readonly ReportDbContext _dbContext;
             private readonly JWTConfiguration _jwt;
 
             public Handler(
-                ReportDbContext dbContext,
                 IOptions<JWTConfiguration> jwt)
             {
-                _dbContext = dbContext;
                 _jwt = jwt.Value;
             }
 
@@ -41,26 +55,9 @@ namespace С4S.API.Features.Authentication.Actions
                 Query query,
                 CancellationToken cancellationToken)
             {
-                var isValidQuery = await ValidateQueryAsync(query, cancellationToken);
-
-                if (!isValidQuery)
-                    return null;
-
-                var claimsPrincipal = CreateClaims(query.Login);
+                var claimsPrincipal = CreateClaims(query.UserCreditionals.Login);
                 var jwtToken = CreateJwtToken(claimsPrincipal.Claims);
                 return jwtToken;
-            }
-
-            private async Task<bool> ValidateQueryAsync(
-                Query query,
-                CancellationToken cancellationToken)
-            {
-                var user = await _dbContext.Users
-                   .SingleOrDefaultAsync(
-                       x => x.Login.Equals(query.Login) && x.Password.Equals(query.Password),
-                       cancellationToken);
-
-                return user is not null;
             }
 
             private static ClaimsPrincipal CreateClaims(string login)
