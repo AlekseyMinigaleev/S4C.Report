@@ -87,7 +87,7 @@ namespace С4S.API.Features.Authentication.Actions
                     login: request.Credentionals.Login,
                     password: request.Credentionals.Password,
                     developerPageUrl: request.DeveloperPageUrl,
-                    authorizationToken: request.RsyaAuthorizationToken?.Token);
+                    rsyaAuthorizationToken: request.RsyaAuthorizationToken?.Token);
 
                 await _dbContext.Users.AddAsync(user, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);

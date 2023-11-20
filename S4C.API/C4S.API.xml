@@ -66,7 +66,7 @@
             dd.MM.yyyy
             </remarks>
         </member>
-        <member name="M:С4S.API.Features.Game.GameController.SetPageIdsAsync(С4S.API.Features.Game.Actions.SetPageIds.Command,System.Threading.CancellationToken)">
+        <member name="M:С4S.API.Features.Game.GameController.SetPageIdsAsync(С4S.API.Features.Game.Actions.SetPageIds.Command,FluentValidation.IValidator{С4S.API.Features.Game.Actions.SetPageIds.Command},System.Threading.CancellationToken)">
             <summary>
             Устанавливает PageId для игры. ОТСТУТСТВУЕТ ВАЛИДАЦИЯ НА УСТАНОВКУ PageId ИГРЕ, КОТОРОЙ ЭТОТ PageId НЕ ПРИНАДЛЕЖИТ.
             </summary>

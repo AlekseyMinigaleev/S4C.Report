@@ -3,6 +3,7 @@ using Hangfire;
 using Hangfire.Console;
 using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 
 namespace C4S.API.Extensions
 {
@@ -31,6 +32,11 @@ namespace C4S.API.Extensions
                     QueuePollInterval = TimeSpan.FromHours(12)
                 })
                 .UseConsole());
+
+            services.AddHttpContextAccessor();
+            /*TODO: вроде не должно быть ошибок с nullReference проверил для неавторизоаванных пользователй ошибок нет*/
+            services.AddTransient<IPrincipal>(provider => 
+                provider.GetService<IHttpContextAccessor>().HttpContext.User);
 
             services.AddHangfireServer();
         }

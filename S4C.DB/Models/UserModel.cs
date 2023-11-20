@@ -33,7 +33,7 @@ namespace C4S.DB.Models
         /// <remarks>
         /// РСЯ
         /// </remarks>
-        public string? AuthorizationToken { get; private set; }
+        public string? RsyaAuthorizationToken { get; private set; }
 
         /// <summary>
         /// Список игр
@@ -44,12 +44,12 @@ namespace C4S.DB.Models
             string login,
             string password,
             string developerPageUrl,
-            string? authorizationToken = default,
+            string? rsyaAuthorizationToken = default,
             ISet<GameModel>? games = default)
         {
             Id = Guid.NewGuid();
             DeveloperPageUrl = developerPageUrl;
-            AuthorizationToken = authorizationToken;
+            RsyaAuthorizationToken = rsyaAuthorizationToken;
             Games = games;
             Login = login;
             Password = password;
@@ -58,9 +58,9 @@ namespace C4S.DB.Models
         private UserModel()
         { }
 
-        public void SetAuthorizationToken(string authorizationToken)
+        public void SetAuthorizationToken(string rsyaAuthorizationToken)
         {
-            AuthorizationToken = authorizationToken;
+            RsyaAuthorizationToken = rsyaAuthorizationToken;
         }
     }
 
