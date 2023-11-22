@@ -139,10 +139,6 @@ namespace C4S.DB.Migrations
                 "VALUES " +
                     "(NEWID(), 'new'), " +
                     "(NEWID(), 'promoted');");
-            migrationBuilder.Sql(
-                "insert into [User] (Id, [Login], [Password], DeveloperPageUrl)" +
-                "values" +
-                    "(NEWID(),'testS4CUser1','123','https://yandex.ru/games/developer?name=C4S.SHA')");
         }
 
         /// <inheritdoc />

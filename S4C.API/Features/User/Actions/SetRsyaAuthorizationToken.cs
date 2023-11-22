@@ -1,7 +1,9 @@
 ﻿using C4S.DB;
+using C4S.Helpers.Extensions;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 using С4S.API.Features.User.Requests;
 
 namespace С4S.API.Features.User.Action
@@ -26,18 +28,24 @@ namespace С4S.API.Features.User.Action
         public class Handler : IRequestHandler<Command>
         {
             private readonly ReportDbContext _dbContext;
+            private readonly IPrincipal _principal;
 
-            public Handler(ReportDbContext dbContext)
+            public Handler(
+                ReportDbContext dbContext,
+                IPrincipal principal)
             {
                 _dbContext = dbContext;
+                _principal = principal;
             }
 
             public async Task Handle(Command request, CancellationToken cancellationToken)
             {
-                /*TODO: Исправить после добавления авторизации*/
-                (await _dbContext.Users
-                .SingleAsync(cancellationToken))
-                .SetAuthorizationToken(request.RsyaAythorizationToken.Token);
+                var userid = _principal.GetUserId();
+
+                var user = await _dbContext.Users
+                    .SingleAsync(x => x.Id == userid, cancellationToken);
+
+                user.SetAuthorizationToken(request.RsyaAythorizationToken.Token);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }

@@ -12,6 +12,17 @@
             Подразумевает в момент выполнения наличие базы данных для Hangfire
             </remarks>
         </member>
+        <member name="T:С4S.API.Extensions.PrincipalExtension">
+            <summary>
+            Статический класс с методами-расширениями для интерфейса IPrincipal.
+            </summary>
+        </member>
+        <member name="M:С4S.API.Extensions.PrincipalExtension.GetUserRsyaAuthorizationToken(System.Security.Principal.IPrincipal)">
+            <summary>
+            Получает токен авторизации для РСЯ пользователя из объекта IPrincipal.
+            </summary>
+            <param name="principal">Объект IPrincipal, представляющий текущего пользователя.</param>
+        </member>
         <member name="M:С4S.API.Extensions.WebApplicationBuilderExtensions.BuildWithHangfireStorage(Microsoft.AspNetCore.Builder.WebApplicationBuilder,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
             <inheritdoc cref="M:Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build"/>
@@ -58,13 +69,72 @@
             Пароль пользователя
             </summary>
         </member>
-        <member name="M:С4S.API.Features.GameStatisticReport.GameStatisticReportController.GetGameStatisticReportAsync(System.String,System.String,FluentValidation.IValidator{C4S.DB.DTO.DateTimeRange},FluentValidation.IValidator{С4S.API.Features.GameStatisticReport.Actions.GetReportFileWithGameStatistics.Query},System.Threading.CancellationToken)">
+        <member name="M:С4S.API.Features.GameStatisticReport.GameStatisticReportController.GetGameStatisticReportAsync(System.String,System.String,FluentValidation.IValidator{С4S.API.Features.GameStatisticReport.Actions.GetReportFileWithGameStatistics.Query},System.Threading.CancellationToken)">
             <summary>
             Возвращает готовый к скачиванию файл отчета игровой статистики.
             </summary>
             <remarks>
             dd.MM.yyyy
             </remarks>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.GameId">
+            <summary>
+            Id игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.GameName">
+            <summary>
+            Навзание игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.PageId">
+            <summary>
+            Id страницы
+            </summary>
+            <remarks>
+            Поле для взаимодействия с РСЯ
+            </remarks>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.Body.GameId">
+            <summary>
+            Id игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.Body.GameName">
+            <summary>
+            Навзание игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.Body.PageId">
+            <summary>
+            Id страницы
+            </summary>
+            <remarks>
+            Поле для взаимодействия с РСЯ
+            </remarks>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.ViewModel.GameId">
+            <summary>
+            Id игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.ViewModel.GameName">
+            <summary>
+            Навзание игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.ViewModel.PageId">
+            <summary>
+            Id страницы
+            </summary>
+            <remarks>
+            Поле для взаимодействия с РСЯ
+            </remarks>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.ViewModel.IsSuccessfullySet">
+            <summary>
+            Флаг показывающий было ли установлено значение
+            </summary>
         </member>
         <member name="M:С4S.API.Features.Game.GameController.SetPageIdsAsync(С4S.API.Features.Game.Actions.SetPageIds.Command,FluentValidation.IValidator{С4S.API.Features.Game.Actions.SetPageIds.Command},System.Threading.CancellationToken)">
             <summary>

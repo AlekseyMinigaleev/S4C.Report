@@ -1,9 +1,11 @@
 ﻿using C4S.DB.DTO;
+using C4S.Helpers.Extensions;
 using C4S.Services.Extensions;
 using C4S.Services.Implements.ExcelFileServices;
 using C4S.Services.Interfaces;
 using FluentValidation;
 using MediatR;
+using System.Security.Principal;
 using С4S.API.Features.GameStatisticReport.ViewModels;
 
 namespace С4S.API.Features.GameStatisticReport.Actions
@@ -19,6 +21,9 @@ namespace С4S.API.Features.GameStatisticReport.Actions
         {
             public QueryValidator()
             {
+                RuleFor(x => x.DateRange)
+                    .SetValidator(new DateTimeRangeValidator());
+
                 RuleFor(x => x.DateRange.FinishDate)
                     .LessThan(x => x.DateRange.StartDate.AddYears(1))
                     .WithMessage(x => $"Нельзя выбрать период больше 1 года");
@@ -28,29 +33,32 @@ namespace С4S.API.Features.GameStatisticReport.Actions
         public class Handler : IRequestHandler<Query, FileViewModel>
         {
             private readonly DetailedReportService _detailedReportFileService;
+            private readonly IPrincipal _principal;
 
             private const string FileName = "S4C.Report.xlsx";
             private const string DetailedStatisticWorksheetName = "Detailed statistics";
             private const string MimeTypeForXLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
             public Handler(
-               IEnumerable<IExcelWorksheetService> excelFileServices)
+               IEnumerable<IExcelWorksheetService> excelFileServices,
+               IPrincipal principal)
             {
                 _detailedReportFileService = excelFileServices
                     .Resolve<DetailedReportService>();
+                _principal = principal;
             }
 
             public async Task<FileViewModel> Handle(Query request, CancellationToken cancellationToken)
             {
+                var userId = _principal.GetUserId();
+
                 using var excelPackage = _detailedReportFileService
-                    .AddWithNewPackage(DetailedStatisticWorksheetName, request.DateRange);
+                    .AddWithNewPackage(DetailedStatisticWorksheetName, request.DateRange, userId);
 
-                var fileBytes = await excelPackage.GetAsByteArrayAsync(cancellationToken);
+                var fileBytes = await excelPackage
+                    .GetAsByteArrayAsync(cancellationToken);
 
-                var file = new FileViewModel(
-                    fileBytes,
-                    FileName,
-                    MimeTypeForXLSX);
+                var file = new FileViewModel(fileBytes, FileName, MimeTypeForXLSX);
 
                 return file;
             }

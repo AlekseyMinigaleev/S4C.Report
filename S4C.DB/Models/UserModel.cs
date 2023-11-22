@@ -38,14 +38,14 @@ namespace C4S.DB.Models
         /// <summary>
         /// Список игр
         /// </summary>
-        public ISet<GameModel>? Games { get; private set; }
+        public ISet<GameModel> Games { get; private set; }
 
         public UserModel(
             string login,
             string password,
             string developerPageUrl,
-            string? rsyaAuthorizationToken = default,
-            ISet<GameModel>? games = default)
+            ISet<GameModel> games,
+            string? rsyaAuthorizationToken = default)
         {
             Id = Guid.NewGuid();
             DeveloperPageUrl = developerPageUrl;

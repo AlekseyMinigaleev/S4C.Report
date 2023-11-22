@@ -14,22 +14,26 @@ namespace C4S.Services.Interfaces
         /// <param name="package"><see cref="ExcelPackage"/>, в котором будет создан новый лист</param>
         /// <param name="dateTimeRange"> Период за который будет создан отчет</param>
         /// <param name="worksheetName">имя с которым будет создан новый лист</param>
+        /// <param name="userId">Id пользователя для которого будет составлен отчет</param>
         ///<exception cref="InvalidOperationException"/>
         public ExcelWorksheet Add(
             ExcelPackage package,
             string worksheetName,
-            DateTimeRange dateTimeRange);
+            DateTimeRange dateTimeRange,
+            Guid userId);
 
         /// <summary>
         /// Создает новый <see cref="ExcelPackage"/>, с данными за период <paramref name="dateTimeRange"/> и именем <paramref name="worksheetName"/>
         /// </summary>
         /// <param name="worksheetName"> имя с которым будет создан новый лист</param>
         /// <param name="dateTimeRange"> Период за который будет создан отчет</param>
+        /// <param name="userId">Id пользователя для которого будет составлен отчет</param>
         /// <returns>
         /// <see cref="ExcelPackage"/>[], представляющий содержимое excel файла с новым листом
         /// </returns>
         public ExcelPackage AddWithNewPackage(
             string worksheetName,
-            DateTimeRange dateTimeRange);
+            DateTimeRange dateTimeRange,
+            Guid userId);
     }
 }
