@@ -1,6 +1,5 @@
 ﻿using C4S.DB;
 using C4S.Helpers.Logger;
-using C4S.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace С4S.API.Extensions
@@ -18,25 +17,23 @@ namespace С4S.API.Extensions
             CancellationToken cancellationToken = default)
         {
             using var scope = app.Services.CreateScope();
-            var (logger, backGroundJobService, dbContext) = GetDependencies(scope);
+            var (logger, dbContext) = GetDependencies(scope);
 
             logger.LogInformation("Начало выполнения миграций: ");
-            dbContext.Database.Migrate();
+            await dbContext.Database.MigrateAsync(cancellationToken);
             logger.LogInformation("Все миграции успешно выполнены");
-
-            await backGroundJobService.AddMissingHangfirejobsAsync(logger, cancellationToken);
         }
 
-        private static (ConsoleLogger<Program>, IHangfireBackgroundJobService, ReportDbContext) GetDependencies(IServiceScope scope)
+        private static (ConsoleLogger<Program>, ReportDbContext) GetDependencies(IServiceScope scope)
         {
             var services = scope.ServiceProvider;
 
             var defaultLogger = services.GetRequiredService<ILogger<Program>>();
             var logger = new ConsoleLogger<Program>(defaultLogger);
-            var backGroundJobService = services.GetRequiredService<IHangfireBackgroundJobService>();
+
             var dbContext = services.GetRequiredService<ReportDbContext>();
 
-            return (logger, backGroundJobService, dbContext);
+            return (logger, dbContext);
         }
     }
 }

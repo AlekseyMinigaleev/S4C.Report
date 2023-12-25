@@ -1,4 +1,5 @@
-﻿using C4S.DB.Models.Hangfire;
+﻿using C4S.DB.Models;
+using C4S.DB.Models.Hangfire;
 using C4S.Helpers.Logger;
 
 namespace C4S.Services.Interfaces
@@ -15,6 +16,7 @@ namespace C4S.Services.Interfaces
         /// Работа метода включает в себя обновление таблицы <see cref="HangfireJobConfigurationModel"/>
         /// </remarks>
         public Task AddMissingHangfirejobsAsync(
+            UserModel user,
             BaseLogger logger,
             CancellationToken cancellationToken = default);
 

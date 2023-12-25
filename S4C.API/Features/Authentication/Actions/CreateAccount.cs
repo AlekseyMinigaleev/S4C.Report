@@ -1,6 +1,8 @@
 ﻿using AngleSharp;
 using C4S.DB;
 using C4S.DB.Models;
+using C4S.Helpers.Logger;
+using C4S.Services.Interfaces;
 using FluentValidation;
 using MediatR;
 using С4S.API.Features.Authentication.ViewModels;
@@ -75,10 +77,18 @@ namespace С4S.API.Features.Authentication.Actions
         public class Handler : IRequestHandler<Query>
         {
             private readonly ReportDbContext _dbContext;
+            private readonly IHangfireBackgroundJobService _hangfireBackgroundJobService;
+            private readonly ConsoleLogger<CreateAccount> _logger;
 
-            public Handler(ReportDbContext dbContext)
+            public Handler(
+                ReportDbContext dbContext,
+                IHangfireBackgroundJobService hangfireBackgroundJobService,
+                ILogger<CreateAccount> logger
+                )
             {
                 _dbContext = dbContext;
+                _hangfireBackgroundJobService = hangfireBackgroundJobService;
+                _logger = new ConsoleLogger<CreateAccount>(logger);
             }
 
             public async Task Handle(Query request, CancellationToken cancellationToken)
@@ -92,6 +102,9 @@ namespace С4S.API.Features.Authentication.Actions
 
                 await _dbContext.Users.AddAsync(user, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
+
+                await _hangfireBackgroundJobService
+                    .AddMissingHangfirejobsAsync(user, _logger, cancellationToken);
             }
         }
     }

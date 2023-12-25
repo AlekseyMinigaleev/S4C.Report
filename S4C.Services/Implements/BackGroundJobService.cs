@@ -1,4 +1,5 @@
 ﻿using C4S.DB;
+using C4S.DB.Models;
 using C4S.DB.Models.Hangfire;
 using C4S.Helpers.Extensions;
 using C4S.Helpers.Logger;
@@ -8,6 +9,7 @@ using Hangfire;
 using Hangfire.Storage;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Security.Principal;
 
 namespace C4S.Services.Implements
 {
@@ -15,10 +17,14 @@ namespace C4S.Services.Implements
     public class BackgroundJobService : IHangfireBackgroundJobService
     {
         private readonly ReportDbContext _dbContext;
+        private readonly IPrincipal _principal;
 
-        public BackgroundJobService(ReportDbContext dbContext)
+        public BackgroundJobService(
+            IPrincipal principal,
+            ReportDbContext dbContext)
         {
             _dbContext = dbContext;
+            _principal = principal;
         }
 
         /// <inheritdoc/>
@@ -32,23 +38,26 @@ namespace C4S.Services.Implements
 
             existenceJobConfig.Update(updatedJobConfig.CronExpression, updatedJobConfig.IsEnable);
 
-            AddOrUpdateRecurringJob(existenceJobConfig);
+            AddOrUpdateRecurringJob(existenceJobConfig, _principal.GetUserLogin());
 
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
         /// <inheritdoc/>
         public async Task AddMissingHangfirejobsAsync(
+            UserModel user,
             BaseLogger logger,
             CancellationToken cancellationToken = default)
         {
             var (existingJobConfigurations,
-                 allJobTypes) = await GetSourcesAsync(cancellationToken);
+                 allJobTypes) = await GetSourcesAsync(user.Id, cancellationToken);
+
             var localLogger = new AddMissingHangfireJobLogger(allJobTypes.Length, logger);
 
             localLogger.LogStart();
 
             var missingJobConfigList = GetAndProcessMissingJobConfigs(
+                    user,
                     allJobTypes,
                     existingJobConfigurations,
                     localLogger);
@@ -67,9 +76,7 @@ namespace C4S.Services.Implements
             CancellationToken cancellationToken)
         {
             logger.LogInformation($"Запущен процесс перезаписи всех джоб в hangfire базе данных");
-            var jobIds = Enum
-                .GetValues(typeof(HangfireJobType))
-                .Cast<HangfireJobType>()
+            var jobIds = GetAllJobTypes()
                 .Select(x => x.GetName())
                 .ToArray();
 
@@ -84,7 +91,7 @@ namespace C4S.Services.Implements
 
             var hangfireJobConfigurations = _dbContext.HangfireConfigurations;
             await hangfireJobConfigurations
-                .ForEachAsync(AddOrUpdateRecurringJob, cancellationToken);
+                .ForEachAsync(x => AddOrUpdateRecurringJob(x, _principal.GetUserLogin()), cancellationToken);
             logger.LogInformation($"Все джобы восстановлены");
 
             logger.LogSuccess($"Процесс успешно завершен, все джобы перезаписаны");
@@ -93,13 +100,13 @@ namespace C4S.Services.Implements
         #region AddMissingHangfirejobsAsync Helpers
 
         private List<HangfireJobConfigurationModel> GetAndProcessMissingJobConfigs(
-            HangfireJobType[] allJobTypes,
+            UserModel user,
+            HangfireJobType[] jobTypes,
             HangfireJobConfigurationModel[] existingJobConfigurations,
             AddMissingHangfireJobLogger localLogger)
         {
             var missingJobConfigList = new List<HangfireJobConfigurationModel>();
-
-            foreach (var processingJobType in allJobTypes)
+            foreach (var processingJobType in jobTypes)
             {
                 var jobConfigOfProcessingType = existingJobConfigurations
                     .SingleOrDefault(x => x.JobType == processingJobType);
@@ -107,9 +114,9 @@ namespace C4S.Services.Implements
                 var isMissingJobConfig = jobConfigOfProcessingType is null;
                 if (isMissingJobConfig)
                 {
-                    var missingJobConfig = CreateMissingJobConfig(processingJobType);
+                    var missingJobConfig = CreateMissingJobConfig(processingJobType, user);
                     missingJobConfigList.Add(missingJobConfig);
-                    AddOrUpdateRecurringJob(missingJobConfig);
+                    AddOrUpdateRecurringJob(missingJobConfig, user.Login);
                 }
 
                 localLogger.Log(isMissingJobConfig, processingJobType.GetName());
@@ -119,27 +126,30 @@ namespace C4S.Services.Implements
         }
 
         private async Task<(HangfireJobConfigurationModel[], HangfireJobType[])> GetSourcesAsync(
+            Guid userId,
             CancellationToken cancellationToken)
         {
             // до конца не понятно что лучше, загружать все данные в память пользователя, или множественные запросы.
             // в связи с небольшого количества джоб,  было принято решение загружать данные в память пользователя.
             var existenceJobConfigurations = await _dbContext.HangfireConfigurations
+                .Where(x => x.UserId == userId)
                 .ToArrayAsync(cancellationToken);
 
-            var jobTypes = Enum
-                .GetValues(typeof(HangfireJobType))
-                .Cast<HangfireJobType>()
+            var allJobs = GetAllJobTypes()
                 .ToArray();
 
-            return (existenceJobConfigurations, jobTypes);
+            return (existenceJobConfigurations, allJobs);
         }
 
-        private HangfireJobConfigurationModel CreateMissingJobConfig(HangfireJobType jobType)
+        private HangfireJobConfigurationModel CreateMissingJobConfig(
+            HangfireJobType jobType,
+            UserModel user)
         {
             var missingJobConfig = new HangfireJobConfigurationModel(
-                       jobType: jobType,
-                       cronExpression: HangfireJobConfigurationConstants.DefaultCronExpression,
-                       isEnable: HangfireJobConfigurationConstants.DefaultIsEnable);
+                    user: user,
+                    jobType: jobType,
+                    cronExpression: HangfireJobConfigurationConstants.DefaultCronExpression,
+                    isEnable: HangfireJobConfigurationConstants.DefaultIsEnable);
 
             return missingJobConfig;
         }
@@ -195,18 +205,31 @@ namespace C4S.Services.Implements
 
         #endregion AddMissingHangfirejobsAsync Helpers
 
-        private void AddOrUpdateRecurringJob(HangfireJobConfigurationModel jobConfig)
+        private IEnumerable<HangfireJobType> GetAllJobTypes()
+        {
+            var jobTypes = Enum
+                .GetValues(typeof(HangfireJobType))
+                .Cast<HangfireJobType>();
+
+            return jobTypes;
+        }
+
+        private void AddOrUpdateRecurringJob(
+            HangfireJobConfigurationModel jobConfig,
+            string userLogin)
         {
             switch (jobConfig.JobType)
             {
                 case HangfireJobType.ParseGameIdsFromDeveloperPage:
                     AddOrUpdateRecurringJob<IGameIdSyncService>(
+                        userLogin,
                         jobConfig,
                         (service) => service.SyncAllGameIdAsync(null, CancellationToken.None));
                     break;
 
                 case HangfireJobType.SyncGameInfoAndGameCreateGameStatistic:
                     AddOrUpdateRecurringJob<IGameDataService>(
+                        userLogin,
                         jobConfig,
                         (service) => service.SyncGameStatistics(null, CancellationToken.None));
                     break;
@@ -217,13 +240,14 @@ namespace C4S.Services.Implements
         }
 
         private void AddOrUpdateRecurringJob<T>(
+            string userLogin,
             HangfireJobConfigurationModel jobConfig,
             Expression<Func<T, Task>> methodCall)
         {
             try
             {
                 RecurringJob.AddOrUpdate(
-                    jobConfig.JobType.GetName(),
+                    jobConfig.JobType.GetName() + $" {userLogin}",
                     methodCall,
                     jobConfig.CronExpression ?? HangfireJobConfigurationConstants.DefaultCronExpression,
                     new RecurringJobOptions

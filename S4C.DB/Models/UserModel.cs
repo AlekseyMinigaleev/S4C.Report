@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using C4S.DB.Models.Hangfire;
+using System.Linq.Expressions;
 
 namespace C4S.DB.Models
 {
@@ -39,6 +40,11 @@ namespace C4S.DB.Models
         /// Список игр
         /// </summary>
         public ISet<GameModel> Games { get; private set; }
+
+        /// <summary>
+        /// Список конфигураций джоб
+        /// </summary>
+        public ISet<HangfireJobConfigurationModel> HangfireJobConfigurationModels { get; private set; }
 
         public UserModel(
             string login,
