@@ -115,7 +115,7 @@ namespace C4S.Services.Implements
                     .ThenInclude(x => x.GameStatistics)
                 .First();
 
-            var authorization = user.AuthorizationToken;
+            var authorization = user.RsyaAuthorizationToken;
             return authorization;
         }
 

@@ -4,6 +4,7 @@ using C4S.DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace C4S.DB.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
-    partial class ReportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231120110502_Update_AuthorizationToken_on_RsyaAythorizationToken")]
+    partial class Update_AuthorizationToken_on_RsyaAythorizationToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,12 +118,7 @@ namespace C4S.DB.Migrations
                     b.Property<bool>("IsEnable")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("JobType");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("HangfireJobConfiguration", (string)null);
                 });
@@ -192,17 +190,6 @@ namespace C4S.DB.Migrations
                     b.Navigation("Game");
                 });
 
-            modelBuilder.Entity("C4S.DB.Models.Hangfire.HangfireJobConfigurationModel", b =>
-                {
-                    b.HasOne("C4S.DB.Models.UserModel", "User")
-                        .WithMany("HangfireJobConfigurationModels")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("C4S.DB.Models.GameModel", b =>
                 {
                     b.Navigation("GameStatistics");
@@ -216,8 +203,6 @@ namespace C4S.DB.Migrations
             modelBuilder.Entity("C4S.DB.Models.UserModel", b =>
                 {
                     b.Navigation("Games");
-
-                    b.Navigation("HangfireJobConfigurationModels");
                 });
 #pragma warning restore 612, 618
         }

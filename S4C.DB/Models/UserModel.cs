@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using C4S.DB.Models.Hangfire;
+using System.Linq.Expressions;
 
 namespace C4S.DB.Models
 {
@@ -12,14 +13,15 @@ namespace C4S.DB.Models
         /// </summary>
         public Guid Id { get; private set; }
 
-        /*TODO:*/
-
-        #region на эти поля пока нет ограничений, поскольку не понятно в каком виде это должно быть
-
+        /// <summary>
+        /// Логин пользователя
+        /// </summary>
         public string Login { get; set; }
-        public string Password { get; set; }
 
-        #endregion на эти поля пока нет ограничений, поскольку не понятно в каком виде это должно быть
+        /// <summary>
+        /// Пароль пользователя
+        /// </summary>
+        public string Password { get; set; }
 
         /// <summary>
         /// Ссылка на страницу разработчика
@@ -32,30 +34,39 @@ namespace C4S.DB.Models
         /// <remarks>
         /// РСЯ
         /// </remarks>
-        public string? AuthorizationToken { get; private set; }
+        public string? RsyaAuthorizationToken { get; private set; }
 
         /// <summary>
         /// Список игр
         /// </summary>
-        public ISet<GameModel>? Games { get; private set; }
+        public ISet<GameModel> Games { get; private set; }
+
+        /// <summary>
+        /// Список конфигураций джоб
+        /// </summary>
+        public ISet<HangfireJobConfigurationModel> HangfireJobConfigurationModels { get; private set; }
 
         public UserModel(
+            string login,
+            string password,
             string developerPageUrl,
-            string? authorizationToken = default,
-            ISet<GameModel>? games = default)
+            ISet<GameModel> games,
+            string? rsyaAuthorizationToken = default)
         {
             Id = Guid.NewGuid();
             DeveloperPageUrl = developerPageUrl;
-            AuthorizationToken = authorizationToken;
+            RsyaAuthorizationToken = rsyaAuthorizationToken;
             Games = games;
+            Login = login;
+            Password = password;
         }
 
         private UserModel()
         { }
 
-        public void SetAuthorizationToken(string authorizationToken)
+        public void SetAuthorizationToken(string rsyaAuthorizationToken)
         {
-            AuthorizationToken = authorizationToken;
+            RsyaAuthorizationToken = rsyaAuthorizationToken;
         }
     }
 

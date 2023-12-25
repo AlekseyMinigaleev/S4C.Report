@@ -29,16 +29,22 @@ namespace C4S.Services.Implements.ExcelFileServices
             _mapper = mapper;
         }
 
+        /*TODO: 4 параметра, возможно стоит пересмотреть польносьтю интерфейс*/
+
         /// <inheritdoc/>
         public ExcelWorksheet Add(
             ExcelPackage package,
             string worksheetName,
-            DateTimeRange dateTimeRange)
+            DateTimeRange dateTimeRange,
+            Guid userId)
         {
             Worksheet = package.Workbook.Worksheets
               .Add(worksheetName);
 
-            var gameViewModelQuery = _dbContext.Games
+            var userGamesQuery = _dbContext.Games
+                .Where(x => x.UserId == userId);
+
+            var gameViewModelQuery = userGamesQuery
                 .Where(x => x.GameStatistics
                     .Any(gs => dateTimeRange.StartDate.Date <= gs.LastSynchroDate.Date
                          && dateTimeRange.FinishDate.Date >= gs.LastSynchroDate.Date))
@@ -52,10 +58,15 @@ namespace C4S.Services.Implements.ExcelFileServices
         /// <inheritdoc/>
         public ExcelPackage AddWithNewPackage(
             string worksheetName,
-            DateTimeRange dateTimeRange)
+            DateTimeRange dateTimeRange,
+            Guid userId)
         {
             var package = new ExcelPackage();
-            Add(package, worksheetName, dateTimeRange);
+            Add(
+                package: package,
+                worksheetName: worksheetName,
+                dateTimeRange: dateTimeRange,
+                userId: userId);
 
             return package;
         }

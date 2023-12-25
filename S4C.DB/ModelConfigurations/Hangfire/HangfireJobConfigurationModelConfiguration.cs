@@ -11,6 +11,10 @@ namespace C4S.DB.ModelConfigurations.Hangfire
             builder
                 .ToTable("HangfireJobConfiguration")
                 .HasKey(x => x.JobType);
+
+            builder.HasOne(x => x.User)
+                .WithMany(x => x.HangfireJobConfigurationModels)
+                .HasForeignKey(x => x.UserId);
         }
     }
 }

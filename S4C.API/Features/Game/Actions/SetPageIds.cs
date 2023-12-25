@@ -4,6 +4,9 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using S4C.YandexGateway.RSYA;
+using System.Net;
+using System.Security.Principal;
+using С4S.API.Extensions;
 
 namespace С4S.API.Features.Game.Actions
 {
@@ -18,21 +21,53 @@ namespace С4S.API.Features.Game.Actions
 
         public class Body
         {
+            /// <summary>
+            /// Id игры
+            /// </summary>
             public int GameId { get; set; }
 
+            /// <summary>
+            /// Навзание игры
+            /// </summary>
             public string GameName { get; set; }
 
+            /// <summary>
+            /// Id страницы
+            /// </summary>
+            /// <remarks>
+            /// Поле для взаимодействия с РСЯ
+            /// </remarks>
             public int? PageId { get; set; }
         }
 
-        public class CommandValidator : AbstractValidator<Body>
+        public class CommandValidator : AbstractValidator<Command>
         {
-            private readonly ReportDbContext _dbContext;
-
-            public CommandValidator(ReportDbContext dbContext)
+            public CommandValidator(
+                IPrincipal principal,
+                ReportDbContext dbContext)
             {
-                _dbContext = dbContext;
+                ClassLevelCascadeMode = CascadeMode.Stop;
 
+                RuleFor(x => x)
+                   .Must(x =>
+                   {
+                       var rsyaAuthorizationToken = principal.GetUserRsyaAuthorizationToken();
+                       return rsyaAuthorizationToken is not null;
+                   })
+                   .WithErrorCode(HttpStatusCode.Unauthorized.ToString())
+                   .WithMessage("Для использования возможности сбора статистики по прибыли игр, " +
+                    "необходимо укзаать токен авторизации РСЯ");
+
+                RuleForEach(x => x.Body)
+                    .SetValidator(new BodyValidator(dbContext));
+            }
+        }
+
+        public class BodyValidator : AbstractValidator<Body>
+        {
+            public BodyValidator(
+                ReportDbContext dbContext)
+            {
                 RuleFor(x => x.GameId)
                     .MustAsync(async (gameId, cancellationToken) =>
                     {
@@ -49,14 +84,30 @@ namespace С4S.API.Features.Game.Actions
         }
 
         /*TODO: исправить после добавления фронта*/
+
         public class ViewModel
         {
+            /// <summary>
+            /// Id игры
+            /// </summary>
             public int GameId { get; set; }
 
-            public int? PageId { get; set; }
-
+            /// <summary>
+            /// Навзание игры
+            /// </summary>
             public string GameName { get; set; }
 
+            /// <summary>
+            /// Id страницы
+            /// </summary>
+            /// <remarks>
+            /// Поле для взаимодействия с РСЯ
+            /// </remarks>
+            public int? PageId { get; set; }
+
+            /// <summary>
+            /// Флаг показывающий было ли установлено значение
+            /// </summary>
             public bool IsSuccessfullySet { get; set; }
         }
 
@@ -64,22 +115,23 @@ namespace С4S.API.Features.Game.Actions
         {
             private readonly ReportDbContext _dbContext;
             private readonly IRsyaGateway _rsyaGateway;
+            private readonly IPrincipal _principal;
 
             public Handler(
                 ReportDbContext dbContext,
-                IRsyaGateway rsyaGateway)
+                IRsyaGateway rsyaGateway,
+                IPrincipal principal)
             {
                 _dbContext = dbContext;
                 _rsyaGateway = rsyaGateway;
+                _principal = principal;
             }
 
-            public async Task<ViewModel[]> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<ViewModel[]> Handle(
+                Command request,
+                CancellationToken cancellationToken)
             {
-                /*TODO: исправить после добавления авторизации*/
-                var authorization = await _dbContext.Users
-                    .Select(x => x.AuthorizationToken)
-                    .SingleAsync(cancellationToken)
-                    ?? throw new Exception("Отсутствует токен авторизации");
+                var rsyaAuthorizationToken = _principal.GetUserRsyaAuthorizationToken();
 
                 var period = new DateTimeRange(DateTime.Now, DateTime.Now);
 
@@ -89,12 +141,13 @@ namespace С4S.API.Features.Game.Actions
                     bool isSuccessfullySet = false;
                     if (body.PageId.HasValue)
                     {
+                        /*TODO: возможно нужно при наличии result, записывать его в бд*/
                         var result = await _rsyaGateway
                             .GetAppCashIncomeAsync(
-                                body.PageId.Value,
-                                authorization,
-                                period,
-                                cancellationToken);
+                                pageId: body.PageId.Value,
+                                authorization: rsyaAuthorizationToken!,
+                                period: period,
+                                cancellationToken: cancellationToken);
 
                         isSuccessfullySet = result.HasValue;
 
@@ -117,8 +170,7 @@ namespace С4S.API.Features.Game.Actions
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return response
-                    .ToArray();
+                return response.ToArray();
             }
         }
     }

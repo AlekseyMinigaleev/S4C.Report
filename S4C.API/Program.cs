@@ -1,18 +1,26 @@
+using C4S.API.Extensions;
+using C4S.DB;
+using C4S.Helpers.ApiHeplers.Swagger;
+using C4S.Services.Extensions;
+using C4S.Services.Interfaces;
+using FluentValidation;
 using Hangfire;
 using MediatR;
-using FluentValidation;
-using C4S.Services.Extensions;
-using C4S.API.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using S4C.YandexGateway.DeveloperPage;
-using C4S.Helpers.ApiHeplers.Swagger;
 using System.Reflection;
 using Ñ4S.API.Extensions;
-using C4S.Services.Interfaces;
-using C4S.DB;
+using Ñ4S.API.SettingsModels;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
+var jwtSection = configuration
+    .GetSection("JWT");
+var jwtConfiguration = jwtSection
+    .Get<JWTConfiguration>() ?? throw new ArgumentNullException(nameof(JWTConfiguration));
 
 #region services
 services.AddHttpClient();
@@ -21,10 +29,31 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGen(options =>
 {
     options.IncludeXmlComments($"{AppContext.BaseDirectory}C4S.API.xml");
-    options.CustomSchemaIds(ShemaClassesIdsRenamer.Selector) ;
+    options.CustomSchemaIds(ShemaClassesIdsRenamer.Selector);
+
+    var jwtSecurityScheme = new OpenApiSecurityScheme
+    {
+        BearerFormat = "JWT",
+        Name = "JWT Authentication",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+    options.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
+    });
 });
 services.AddStorages(configuration);
-services.AddMediatR(cfg => 
+services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(typeof(Program).GetTypeInfo().Assembly));
 services.AddValidatorsFromAssemblyContaining<Program>();
 services.AddValidatorsFromAssemblyContaining<ReportDbContext>();
@@ -33,17 +62,40 @@ services.AddAutoMapper(
     typeof(IDeveloperPageGetaway),
     typeof(IGameDataService));
 services.AddServices(configuration);
-#endregion
+services.AddAuthorization();
+services.Configure<JWTConfiguration>(jwtSection);
+services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtConfiguration.Issuer,
+
+            ValidateAudience = true,
+            ValidAudience = jwtConfiguration.Audience,
+
+            ValidateLifetime = true,
+
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = jwtConfiguration.GetSymmetricSecurityKey(),
+        };
+    });
+#endregion services
 
 var app = builder.BuildWithHangfireStorage(configuration);
 
 #region middleware
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseSwagger();
 app.UseSwaggerUI();
+
 app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.MapControllers();
 
 await app.InitApplicationAsync();
-app.Run();
-#endregion
+await app.RunAsync();
+#endregion middleware

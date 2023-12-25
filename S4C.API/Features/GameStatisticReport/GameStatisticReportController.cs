@@ -2,6 +2,7 @@
 using C4S.Helpers.ApiHeplers.Controllers;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using С4S.API.Features.GameStatisticReport.Actions;
@@ -19,22 +20,22 @@ namespace С4S.API.Features.GameStatisticReport
         /// <remarks>
         /// dd.MM.yyyy
         /// </remarks>
+        [Authorize]
         [HttpGet("DownloadReport")]
         public async Task<ActionResult> GetGameStatisticReportAsync(
-            [FromQuery]string startDate,
-            [FromQuery]string finishDate,
-            [FromServices]IValidator<DateTimeRange> dateTimeRangeValidator,
+            [FromQuery] string startDate,
+            [FromQuery] string finishDate,
             [FromServices] IValidator<GetReportFileWithGameStatistics.Query> queryValidator,
             CancellationToken cancellationToken = default)
         {
             /*TODO: исправать после добавления фронта*/
             var dateTimeFormat = "dd.MM.yyyy";
             var dateTimeRange = new DateTimeRange(
-                startDate: DateTime.ParseExact(startDate,dateTimeFormat , CultureInfo.InvariantCulture),
+                startDate: DateTime.ParseExact(startDate, dateTimeFormat, CultureInfo.InvariantCulture),
                 finishDate: DateTime.ParseExact(finishDate, dateTimeFormat, CultureInfo.InvariantCulture));
-            await ValidateAndChangeModelStateAsync(dateTimeRangeValidator, dateTimeRange, cancellationToken);
 
-            var query = new GetReportFileWithGameStatistics.Query { DateRange = dateTimeRange};
+            var query = new GetReportFileWithGameStatistics.Query { DateRange = dateTimeRange };
+
             await ValidateAndChangeModelStateAsync(queryValidator, query, cancellationToken);
 
             if (!ModelState.IsValid)
@@ -42,7 +43,7 @@ namespace С4S.API.Features.GameStatisticReport
 
             var file = await Mediator.Send(query, cancellationToken);
 
-            return File(file.Bytes,file.MimeType,file.Name);
+            return File(file.Bytes, file.MimeType, file.Name);
         }
     }
 }

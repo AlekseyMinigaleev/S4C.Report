@@ -1,8 +1,9 @@
 ﻿using C4S.Helpers.ApiHeplers.Controllers;
+using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using С4S.API.Features.User.Action;
-
 
 namespace С4S.API.Features.User
 {
@@ -15,16 +16,21 @@ namespace С4S.API.Features.User
         /// Устанавливает токен авторизации.
         /// https://yandex.ru/dev/partner-statistics/doc/ru/concepts/access
         /// </summary>
+        [Authorize]
         [HttpPut("SetRsyaAuthorizationToken")]
         public async Task<ActionResult> SetRsyaAuthorizationTokenAsync(
             [FromBody] SetRsyaAuthorizationToken.Command command,
+            [FromServices] IValidator<SetRsyaAuthorizationToken.Command> validator,
             CancellationToken cancellationToken)
         {
-            var isSuccess = await Mediator.Send(command, cancellationToken);
+            await ValidateAndChangeModelStateAsync(validator, command, cancellationToken);
 
-            return isSuccess
-                ? Ok("Токен авторизации успешно установлен") 
-                : BadRequest("Указан некорректный токен авторизации");
+            if(!ModelState.IsValid)
+                return BadRequest("Указан некорректный токен авторизации");
+
+            await Mediator.Send(command, cancellationToken);
+
+            return Ok("Токен авторизации успешно установлен");
         }
     }
 }

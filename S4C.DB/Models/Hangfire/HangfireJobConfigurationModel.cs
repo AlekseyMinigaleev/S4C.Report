@@ -28,17 +28,31 @@ namespace C4S.DB.Models.Hangfire
         /// </summary>
         public bool IsEnable { get; private set; }
 
+        /// <summary>
+        /// FK <see cref="UserModel"/>
+        /// </summary>
+        public Guid UserId { get; private set; }
+
+        /// <summary>
+        /// Пользователь, которому принадлежит конфигурация
+        /// </summary>
+        public UserModel User { get; private set; }
+
         private HangfireJobConfigurationModel()
         { }
 
         public HangfireJobConfigurationModel(
             HangfireJobType jobType,
             string? cronExpression,
-            bool isEnable)
+            bool isEnable,
+            UserModel user)
         {
             JobType = jobType;
             CronExpression = cronExpression;
             SetIsEnable(isEnable);
+
+            User = user;
+            UserId = user.Id;
         }
 
         /// <summary>

@@ -12,6 +12,17 @@
             Подразумевает в момент выполнения наличие базы данных для Hangfire
             </remarks>
         </member>
+        <member name="T:С4S.API.Extensions.PrincipalExtension">
+            <summary>
+            Статический класс с методами-расширениями для интерфейса IPrincipal.
+            </summary>
+        </member>
+        <member name="M:С4S.API.Extensions.PrincipalExtension.GetUserRsyaAuthorizationToken(System.Security.Principal.IPrincipal)">
+            <summary>
+            Получает токен авторизации для РСЯ пользователя из объекта IPrincipal.
+            </summary>
+            <param name="principal">Объект IPrincipal, представляющий текущего пользователя.</param>
+        </member>
         <member name="M:С4S.API.Extensions.WebApplicationBuilderExtensions.BuildWithHangfireStorage(Microsoft.AspNetCore.Builder.WebApplicationBuilder,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
             <inheritdoc cref="M:Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build"/>
@@ -21,7 +32,44 @@
             </remarks>
             <returns><inheritdoc cref="M:Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build"/></returns>
         </member>
-        <member name="M:С4S.API.Features.GameStatisticReport.GameStatisticReportController.GetGameStatisticReportAsync(System.String,System.String,FluentValidation.IValidator{C4S.DB.DTO.DateTimeRange},FluentValidation.IValidator{С4S.API.Features.GameStatisticReport.Actions.GetReportFileWithGameStatistics.Query},System.Threading.CancellationToken)">
+        <member name="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.Credentionals">
+            <inheritdoc cref="T:С4S.API.Features.Authentication.ViewModels.UserCredentionals"/>
+        </member>
+        <member name="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.DeveloperPageUrl">
+            <summary>
+            ссылка на страницу разработчика
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.RsyaAuthorizationToken">
+            <inheritdoc cref="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.RsyaAuthorizationToken"/>
+        </member>
+        <member name="P:С4S.API.Features.Authentication.Actions.Login.Query.UserCreditionals">
+            <inheritdoc cref="T:С4S.API.Features.Authentication.ViewModels.UserCredentionals"/>
+        </member>
+        <member name="M:С4S.API.Features.Authentication.AuthenticationController.Login(С4S.API.Features.Authentication.Actions.Login.Query,FluentValidation.IValidator{С4S.API.Features.Authentication.Actions.Login.Query},System.Threading.CancellationToken)">
+            <summary>
+            Осуществляет аутентификацию пользователя
+            </summary>
+            <returns>
+            Jwt-токен пользователя
+            </returns>
+        </member>
+        <member name="T:С4S.API.Features.Authentication.ViewModels.UserCredentionals">
+            <summary>
+            Представляет учетные данные пользователя
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Authentication.ViewModels.UserCredentionals.Login">
+            <summary>
+            Логин пользователя
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Authentication.ViewModels.UserCredentionals.Password">
+            <summary>
+            Пароль пользователя
+            </summary>
+        </member>
+        <member name="M:С4S.API.Features.GameStatisticReport.GameStatisticReportController.GetGameStatisticReportAsync(System.String,System.String,FluentValidation.IValidator{С4S.API.Features.GameStatisticReport.Actions.GetReportFileWithGameStatistics.Query},System.Threading.CancellationToken)">
             <summary>
             Возвращает готовый к скачиванию файл отчета игровой статистики.
             </summary>
@@ -29,7 +77,66 @@
             dd.MM.yyyy
             </remarks>
         </member>
-        <member name="M:С4S.API.Features.Game.GameController.SetPageIdsAsync(С4S.API.Features.Game.Actions.SetPageIds.Command,System.Threading.CancellationToken)">
+        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.GameId">
+            <summary>
+            Id игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.GameName">
+            <summary>
+            Навзание игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.PageId">
+            <summary>
+            Id страницы
+            </summary>
+            <remarks>
+            Поле для взаимодействия с РСЯ
+            </remarks>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.Body.GameId">
+            <summary>
+            Id игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.Body.GameName">
+            <summary>
+            Навзание игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.Body.PageId">
+            <summary>
+            Id страницы
+            </summary>
+            <remarks>
+            Поле для взаимодействия с РСЯ
+            </remarks>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.ViewModel.GameId">
+            <summary>
+            Id игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.ViewModel.GameName">
+            <summary>
+            Навзание игры
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.ViewModel.PageId">
+            <summary>
+            Id страницы
+            </summary>
+            <remarks>
+            Поле для взаимодействия с РСЯ
+            </remarks>
+        </member>
+        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.ViewModel.IsSuccessfullySet">
+            <summary>
+            Флаг показывающий было ли установлено значение
+            </summary>
+        </member>
+        <member name="M:С4S.API.Features.Game.GameController.SetPageIdsAsync(С4S.API.Features.Game.Actions.SetPageIds.Command,FluentValidation.IValidator{С4S.API.Features.Game.Actions.SetPageIds.Command},System.Threading.CancellationToken)">
             <summary>
             Устанавливает PageId для игры. ОТСТУТСТВУЕТ ВАЛИДАЦИЯ НА УСТАНОВКУ PageId ИГРЕ, КОТОРОЙ ЭТОТ PageId НЕ ПРИНАДЛЕЖИТ.
             </summary>
@@ -39,10 +146,53 @@
             Возвращает список всех игр
             </summary>
         </member>
-        <member name="M:С4S.API.Features.User.UserController.SetRsyaAuthorizationTokenAsync(С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command,System.Threading.CancellationToken)">
+        <member name="P:С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command.RsyaAythorizationToken">
+            <inheritdoc cref="T:С4S.API.Features.User.Action.SetRsyaAuthorizationToken"/>
+        </member>
+        <member name="P:С4S.API.Features.User.Requests.RsyaAuthorizationToken.Token">
+            <summary>
+            Токен авторизации для апи /partner2.yandex.ru/api
+            </summary>
+        </member>
+        <member name="M:С4S.API.Features.User.UserController.SetRsyaAuthorizationTokenAsync(С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command,FluentValidation.IValidator{С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command},System.Threading.CancellationToken)">
             <summary>
             Устанавливает токен авторизации.
             https://yandex.ru/dev/partner-statistics/doc/ru/concepts/access
+            </summary>
+        </member>
+        <member name="T:С4S.API.SettingsModels.JWTConfiguration">
+            <summary>
+            Конфигурация JWT токена
+            </summary>
+        </member>
+        <member name="P:С4S.API.SettingsModels.JWTConfiguration.SecurityKey">
+            <summary>
+            Секретный ключ
+            </summary>
+        </member>
+        <member name="P:С4S.API.SettingsModels.JWTConfiguration.Issuer">
+            <summary>
+            Издатель
+            </summary>
+        </member>
+        <member name="P:С4S.API.SettingsModels.JWTConfiguration.Audience">
+            <summary>
+            Аудитория для коотрой предназначен токен
+            </summary>
+        </member>
+        <member name="P:С4S.API.SettingsModels.JWTConfiguration.DurationInMinutes">
+            <summary>
+            Срок жизни токена
+            </summary>
+        </member>
+        <member name="M:С4S.API.SettingsModels.JWTConfiguration.GetSymmetricSecurityKey">
+            <summary>
+            Создает объект типа <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/>, по установленному <see cref="P:С4S.API.SettingsModels.JWTConfiguration.SecurityKey"/>
+            </summary>
+        </member>
+        <member name="F:С4S.API.SettingsModels.JWTConfiguration.AuthenticationType">
+            <summary>
+            Тип аутентификации
             </summary>
         </member>
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
