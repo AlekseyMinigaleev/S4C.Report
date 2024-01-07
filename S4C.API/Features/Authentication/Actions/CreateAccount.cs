@@ -5,6 +5,7 @@ using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
 using FluentValidation;
 using MediatR;
+using System.Text.Json.Serialization;
 using С4S.API.Features.Authentication.ViewModels;
 using С4S.API.Features.User.Requests;
 
@@ -23,7 +24,15 @@ namespace С4S.API.Features.Authentication.Actions
             public string DeveloperPageUrl { get; set; }
 
             /// <inheritdoc cref="RsyaAuthorizationToken"/>
+            [JsonIgnore]
             public RsyaAuthorizationToken? RsyaAuthorizationToken { get; set; }
+
+            [JsonPropertyName("RsyaAuthorizationToken")]
+            public string RsyaAuthorizationTokenString
+            {
+                get { return RsyaAuthorizationToken?.Token; }
+                set { RsyaAuthorizationToken = new RsyaAuthorizationToken { Token = value }; }
+            }
         }
 
         public class QueryValidator : AbstractValidator<Query>
