@@ -99,7 +99,8 @@ namespace S4C.YandexGateway.DeveloperPage.Models
                 .ForMember(dest => dest.PublicationDate, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.FirstPublished).DateTime));
 
             CreateMap<GameInfoModel, GameStatisticModel>()
-                .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.AppId))
+                //.ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.I))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
                 .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(src => src.Rating))
                 .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
                 .ForMember(dest => dest.Statuses, opt => opt.Ignore())

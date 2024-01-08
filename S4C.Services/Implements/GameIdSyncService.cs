@@ -14,6 +14,7 @@ namespace C4S.Services.Implements
     {
         private readonly ReportDbContext _dbContext;
         private readonly IDeveloperPageParser _developerPageParser;
+        private UserModel _user;
         private BaseLogger _logger;
 
         public GameIdSyncService(
@@ -26,9 +27,11 @@ namespace C4S.Services.Implements
 
         /// <inheritdoc/>
         public async Task SyncAllGameIdAsync(
+            Guid userId,
             PerformContext hangfireContext,
             CancellationToken cancellationToken = default)
         {
+            _user = await _dbContext.Users.SingleAsync(x => x.Id == userId, cancellationToken);
             _logger = new HangfireLogger(hangfireContext);
 
             var finalLogMessage = "Процесс успешно завершен.";
@@ -61,9 +64,7 @@ namespace C4S.Services.Implements
         private async Task RunAsync(
             CancellationToken cancellationToken)
         {
-            /*TODO: исправить полсе добавления авторизации*/
-            var developerPageUrl = _dbContext.Users
-                .First()
+            var developerPageUrl = _user
                 .DeveloperPageUrl;
 
             _logger.LogInformation($"Получение id всех игр.");
@@ -95,20 +96,19 @@ namespace C4S.Services.Implements
             int gameId,
             CancellationToken cancellationToken)
         {
-            var existingGameIds = _dbContext.Games
-                .Select(x => x.Id);
+            var existingGameIdsQuery = _dbContext
+                .Games
+                .Where(x => x.UserId == _user.Id)
+                .Select(x => x.AppId);
 
-            var isExistingGame = await existingGameIds
+            var isExistingGame = await existingGameIdsQuery
                 .ContainsAsync(gameId, cancellationToken);
 
             if (!isExistingGame)
             {
-                /*TODO: исправить после добавления авторизации*/
                 _logger.LogInformation($"[{gameId}] id игры не содержится в базе данных.");
-                var user = _dbContext.Users
-                .First();
 
-                var gameModel = new GameModel(gameId, user!);
+                var gameModel = new GameModel(gameId, _user);
 
                 await _dbContext.Games
                     .AddAsync(gameModel, cancellationToken);

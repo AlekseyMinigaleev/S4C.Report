@@ -4,6 +4,11 @@ namespace С4S.API.Features.User.Requests
 {
     public class RsyaAuthorizationToken
     {
+        public RsyaAuthorizationToken(string token)
+        {
+            Token = token;
+        }
+
         /// <summary>
         /// Токен авторизации для апи /partner2.yandex.ru/api
         /// </summary>

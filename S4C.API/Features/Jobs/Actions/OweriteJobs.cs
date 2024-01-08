@@ -28,7 +28,8 @@ namespace С4S.API.Features.Jobs.Actions
                 Command request,
                 CancellationToken cancellationToken)
             {
-                await _hangfireBackgroundJobService.OweriteJobsAsyncs(_logger, cancellationToken);
+                /*TODO: пока не реализовано, нужно перезаписать учитывая, что джобы привязаны к пользователям.*/
+                //await _hangfireBackgroundJobService.OweriteJobsAsyncs(_logger, cancellationToken);
             }
         }
     }

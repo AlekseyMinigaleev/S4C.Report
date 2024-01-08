@@ -11,6 +11,7 @@ namespace C4S.Services.Interfaces
         ///  Выполняет процесс синхронизации id игр между базой данных и Яндексом.
         /// </summary>
         public Task SyncAllGameIdAsync(
+            Guid userId,
             PerformContext hangfireContext = null,
             CancellationToken cancellationToken = default);
     }
