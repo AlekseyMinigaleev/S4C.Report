@@ -28,10 +28,16 @@ namespace С4S.API.Features.Authentication.Actions
             public RsyaAuthorizationToken? RsyaAuthorizationToken { get; set; }
 
             [JsonPropertyName("RsyaAuthorizationToken")]
-            public string RsyaAuthorizationTokenString
+            public string? RsyaAuthorizationTokenString
             {
                 get { return RsyaAuthorizationToken?.Token; }
-                set { RsyaAuthorizationToken = new RsyaAuthorizationToken { Token = value }; }
+                set 
+                {
+                    if (RsyaAuthorizationTokenString is null)
+                        RsyaAuthorizationToken = null;
+                    else
+                        RsyaAuthorizationToken = new RsyaAuthorizationToken(RsyaAuthorizationTokenString);
+                }
             }
         }
 

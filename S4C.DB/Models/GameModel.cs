@@ -10,10 +10,12 @@ namespace C4S.DB.Models
         /// <summary>
         /// PK
         /// </summary>
+        public Guid Id { get; set; }
+
         /// <remarks>
-        /// Является дублированием appId со страницы разработчика
+        /// appId со страницы разработчика
         /// </remarks>
-        public int Id { get; private set; }
+        public int AppId { get; private set; }
 
         /// <summary>
         /// Id страницы игры.
@@ -52,13 +54,14 @@ namespace C4S.DB.Models
         { }
 
         public GameModel(
-            int id,
+            int appId,
             UserModel user,
             string? name = default,
             DateTime? publicationDate = default,
             ISet<GameStatisticModel>? gameStatistics = default)
         {
-            Id = id;
+            Id = Guid.NewGuid();
+            AppId = appId;
             User = user;
             UserId = user.Id;
             Name = name;

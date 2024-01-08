@@ -40,7 +40,7 @@ namespace С4S.API.Features.Game.Actions
             public ViewModelProfiler()
             {
                 CreateMap<GameModel, ViewModel>()
-                    .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.Id))
+                    .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.AppId))
                     .ForMember(dest => dest.PageId, opt => opt.MapFrom(src => src.PageId))
                     .ForMember(dest => dest.GameName, opt => opt.MapFrom(src => src.Name));
             }

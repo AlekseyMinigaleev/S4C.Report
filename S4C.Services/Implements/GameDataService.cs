@@ -6,9 +6,11 @@ using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using S4C.YandexGateway.DeveloperPage;
 using S4C.YandexGateway.DeveloperPage.Models;
 using S4C.YandexGateway.RSYA;
+using LogLevel = C4S.Helpers.Logger.LogLevel;
 
 namespace C4S.Services.Implements
 {
@@ -20,6 +22,7 @@ namespace C4S.Services.Implements
         private readonly IRsyaGateway _rsyaGateway;
         private readonly IMapper _mapper;
         private BaseLogger _logger;
+        private UserModel _user;
 
         public GameDataService(
             IDeveloperPageGetaway developerPageGetaway,
@@ -35,10 +38,12 @@ namespace C4S.Services.Implements
 
         /// <inheritdoc/>
         public async Task SyncGameStatistics(
+            Guid userId,
             PerformContext hangfireContext,
             CancellationToken cancellationToken)
         {
             _logger = new HangfireLogger(hangfireContext);
+            _user = await _dbContext.Users.SingleAsync(x => x.Id == userId, cancellationToken);
 
             var finalLogMessage = "Процесс успешно завершен.";
             var logErrorMessage = "Процесс завершен с ошибкой: ";
@@ -64,10 +69,11 @@ namespace C4S.Services.Implements
             CancellationToken cancellationToken)
         {
             var games = await _dbContext.Games
+                .Where(x => x.UserId == _user.Id)
                 .ToArrayAsync(cancellationToken);
 
             var gameIds = games
-                .Select(x => x.Id)
+                .Select(x => x.AppId)
                 .ToArray();
 
             var developerPagePrefix = "[Страница разработчика]";
@@ -109,13 +115,7 @@ namespace C4S.Services.Implements
 
         private string? GetAuthorizationToken()
         {
-            /*TODO: исправить после добавления авторизации*/
-            var user = _dbContext.Users
-                .Include(x => x.Games)
-                    .ThenInclude(x => x.GameStatistics)
-                .First();
-
-            var authorization = user.RsyaAuthorizationToken;
+            var authorization = _user.RsyaAuthorizationToken;
             return authorization;
         }
 
@@ -176,7 +176,7 @@ namespace C4S.Services.Implements
                     gameIdForLogs) = GetDataForProcess(sourceGameModels, incomingGameInfo);
 
                 var (incomingGameModelFields,
-                incomingGameStatisticModel) = Projection(incomingGameInfo);
+                incomingGameStatisticModel) = Projection(incomingGameInfo, sourceGameModel.Id);
 
                 UpdateGameModel(
                     sourceGameModel,
@@ -186,6 +186,8 @@ namespace C4S.Services.Implements
                 _logger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики.");
                 await _dbContext.GamesStatistics
                     .AddAsync(incomingGameStatisticModel, cancellationToken);
+
+                await _dbContext.SaveChangesAsync(cancellationToken); 
             }
         }
 
@@ -194,20 +196,22 @@ namespace C4S.Services.Implements
             GameInfoModel incomingGameInfo)
         {
             var sourceGameModel = sourceGameModels
-                .Single(x => x.Id == incomingGameInfo.AppId);
+                .Single(x => x.AppId == incomingGameInfo.AppId);
 
             var gameIdForLogs =
                 sourceGameModel.Name is null
-                    ? sourceGameModel.Id.ToString()
+                    ? sourceGameModel.AppId.ToString()
                     : sourceGameModel.Name;
 
             return (sourceGameModel, gameIdForLogs);
         }
 
-        private (GameModifiableFields, GameStatisticModel) Projection(GameInfoModel incomingGameInfo)
+        private (GameModifiableFields, GameStatisticModel) Projection(GameInfoModel incomingGameInfo, Guid sourceGameId)
         {
             var incomingGameModifiableFields = _mapper.Map<GameInfoModel, GameModifiableFields>(incomingGameInfo);
             var incomingGameStatisticModel = _mapper.Map<GameInfoModel, GameStatisticModel>(incomingGameInfo);
+
+            incomingGameStatisticModel.GameId = sourceGameId;
 
             SetLinksForStatuses(incomingGameInfo, incomingGameStatisticModel);
 

@@ -72,7 +72,7 @@ namespace С4S.API.Features.Game.Actions
                     .MustAsync(async (gameId, cancellationToken) =>
                     {
                         var result = await dbContext.Games
-                            .Select(x => x.Id)
+                            .Select(x => x.AppId)
                             .ContainsAsync(gameId, cancellationToken);
 
                         return result;
@@ -153,7 +153,7 @@ namespace С4S.API.Features.Game.Actions
 
                         if (isSuccessfullySet)
                             (await _dbContext.Games
-                                .SingleAsync(x => x.Id == body.GameId, cancellationToken))
+                                .SingleAsync(x => x.AppId == body.GameId, cancellationToken))
                                 .SetPageId(body.PageId.Value);
                     }
 

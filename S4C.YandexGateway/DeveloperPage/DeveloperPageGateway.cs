@@ -20,6 +20,7 @@ namespace S4C.YandexGateway.DeveloperPage
         {
             _httpClientFactory = httpClient;
             _yandexGamesRequestUrl = configuration["YandexGamesRequestUrl"]!;
+            /*TODO: ??????*/
             ArgumentException.ThrowIfNullOrEmpty("в файле appsetting.json не указана или указана неверно ссылка на запрос по Яндекс играм");
         }
 

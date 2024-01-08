@@ -14,6 +14,11 @@ namespace C4S.DB.Models.Hangfire
     public class HangfireJobConfigurationModel
     {
         /// <summary>
+        /// PK
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
         /// Тип джобы
         /// </summary>
         public HangfireJobType JobType { get; private set; }
@@ -42,11 +47,13 @@ namespace C4S.DB.Models.Hangfire
         { }
 
         public HangfireJobConfigurationModel(
+            Guid id,
             HangfireJobType jobType,
             string? cronExpression,
             bool isEnable,
             UserModel user)
         {
+            Id = id;
             JobType = jobType;
             CronExpression = cronExpression;
             SetIsEnable(isEnable);

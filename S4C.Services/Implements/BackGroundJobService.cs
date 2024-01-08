@@ -38,7 +38,7 @@ namespace C4S.Services.Implements
 
             existenceJobConfig.Update(updatedJobConfig.CronExpression, updatedJobConfig.IsEnable);
 
-            AddOrUpdateRecurringJob(existenceJobConfig, _principal.GetUserLogin());
+            AddOrUpdateRecurringJob(existenceJobConfig, _principal.GetUserLogin(), _principal.GetUserId());
 
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -75,26 +75,29 @@ namespace C4S.Services.Implements
             BaseLogger logger,
             CancellationToken cancellationToken)
         {
-            logger.LogInformation($"Запущен процесс перезаписи всех джоб в hangfire базе данных");
-            var jobIds = GetAllJobTypes()
-                .Select(x => x.GetName())
-                .ToArray();
+            /*TODO: пока не реализовано, нужно перезаписать учитывая, что джобы привязаны к пользователям.*/
+            //logger.LogInformation($"Запущен процесс перезаписи всех джоб в hangfire базе данных");
+            //var jobIds = GetAllJobTypes()
+            //    .Select(x => x.GetName())
+            //    .ToArray();
 
-            using var connection = JobStorage.Current.GetConnection();
-            var recurringJobs = connection
-                .GetRecurringJobs()
-                .Where(x => !jobIds.Contains(x.Id))
-                .ToList();
+            //using var connection = JobStorage.Current.GetConnection();
+            //var recurringJobs = connection
+            //    .GetRecurringJobs()
+            //    .Where(x => !jobIds.Contains(x.Id))
+            //    .ToList();
 
-            recurringJobs.ForEach(x => RecurringJob.RemoveIfExists(x.Id));
-            logger.LogInformation($"Все джобы удалены");
+            //recurringJobs.ForEach(x => RecurringJob.RemoveIfExists(x.Id));
+            //logger.LogInformation($"Все джобы удалены");
 
-            var hangfireJobConfigurations = _dbContext.HangfireConfigurations;
-            await hangfireJobConfigurations
-                .ForEachAsync(x => AddOrUpdateRecurringJob(x, _principal.GetUserLogin()), cancellationToken);
-            logger.LogInformation($"Все джобы восстановлены");
+            //var hangfireJobConfigurations = _dbContext.HangfireConfigurations;
+            //await hangfireJobConfigurations
+            //    .ForEachAsync(x => AddOrUpdateRecurringJob(x, _principal.GetUserLogin()), cancellationToken);
+            //logger.LogInformation($"Все джобы восстановлены");
 
-            logger.LogSuccess($"Процесс успешно завершен, все джобы перезаписаны");
+            //logger.LogSuccess($"Процесс успешно завершен, все джобы перезаписаны");
+
+            throw new NotImplementedException();
         }
 
         #region AddMissingHangfirejobsAsync Helpers
@@ -116,7 +119,7 @@ namespace C4S.Services.Implements
                 {
                     var missingJobConfig = CreateMissingJobConfig(processingJobType, user);
                     missingJobConfigList.Add(missingJobConfig);
-                    AddOrUpdateRecurringJob(missingJobConfig, user.Login);
+                    AddOrUpdateRecurringJob(missingJobConfig, user.Login, user.Id);
                 }
 
                 localLogger.Log(isMissingJobConfig, processingJobType.GetName());
@@ -146,6 +149,7 @@ namespace C4S.Services.Implements
             UserModel user)
         {
             var missingJobConfig = new HangfireJobConfigurationModel(
+                    id: Guid.NewGuid(),
                     user: user,
                     jobType: jobType,
                     cronExpression: HangfireJobConfigurationConstants.DefaultCronExpression,
@@ -216,7 +220,8 @@ namespace C4S.Services.Implements
 
         private void AddOrUpdateRecurringJob(
             HangfireJobConfigurationModel jobConfig,
-            string userLogin)
+            string userLogin,
+            Guid userId)
         {
             switch (jobConfig.JobType)
             {
@@ -224,14 +229,14 @@ namespace C4S.Services.Implements
                     AddOrUpdateRecurringJob<IGameIdSyncService>(
                         userLogin,
                         jobConfig,
-                        (service) => service.SyncAllGameIdAsync(null, CancellationToken.None));
+                        (service) => service.SyncAllGameIdAsync(userId, null, CancellationToken.None));
                     break;
 
                 case HangfireJobType.SyncGameInfoAndGameCreateGameStatistic:
                     AddOrUpdateRecurringJob<IGameDataService>(
                         userLogin,
                         jobConfig,
-                        (service) => service.SyncGameStatistics(null, CancellationToken.None));
+                        (service) => service.SyncGameStatistics(userId,null, CancellationToken.None));
                     break;
 
                 default:
@@ -247,7 +252,7 @@ namespace C4S.Services.Implements
             try
             {
                 RecurringJob.AddOrUpdate(
-                    jobConfig.JobType.GetName() + $" {userLogin}",
+                     $"{userLogin} {jobConfig.JobType.GetName()}",
                     methodCall,
                     jobConfig.CronExpression ?? HangfireJobConfigurationConstants.DefaultCronExpression,
                     new RecurringJobOptions

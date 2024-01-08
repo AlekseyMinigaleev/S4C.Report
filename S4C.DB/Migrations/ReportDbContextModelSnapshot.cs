@@ -39,7 +39,11 @@ namespace C4S.DB.Migrations
 
             modelBuilder.Entity("C4S.DB.Models.GameModel", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AppId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -73,8 +77,8 @@ namespace C4S.DB.Migrations
                     b.Property<double>("Evaluation")
                         .HasColumnType("float");
 
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("LastSynchroDate")
                         .HasColumnType("datetime2");
@@ -106,8 +110,9 @@ namespace C4S.DB.Migrations
 
             modelBuilder.Entity("C4S.DB.Models.Hangfire.HangfireJobConfigurationModel", b =>
                 {
-                    b.Property<int>("JobType")
-                        .HasColumnType("int");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CronExpression")
                         .HasColumnType("nvarchar(max)");
@@ -115,10 +120,13 @@ namespace C4S.DB.Migrations
                     b.Property<bool>("IsEnable")
                         .HasColumnType("bit");
 
+                    b.Property<int>("JobType")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("JobType");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 

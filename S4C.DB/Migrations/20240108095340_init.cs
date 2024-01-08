@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace C4S.DB.Migrations
 {
     /// <inheritdoc />
-    public partial class initialcreate : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,19 +24,6 @@ namespace C4S.DB.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "HangfireJobConfiguration",
-                columns: table => new
-                {
-                    JobType = table.Column<int>(type: "int", nullable: false),
-                    CronExpression = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsEnable = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_HangfireJobConfiguration", x => x.JobType);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
@@ -44,7 +31,7 @@ namespace C4S.DB.Migrations
                     Login = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DeveloperPageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AuthorizationToken = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    RsyaAuthorizationToken = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -55,7 +42,8 @@ namespace C4S.DB.Migrations
                 name: "Game",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AppId = table.Column<int>(type: "int", nullable: false),
                     PageId = table.Column<int>(type: "int", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PublicationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -73,22 +61,43 @@ namespace C4S.DB.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "HangfireJobConfiguration",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    JobType = table.Column<int>(type: "int", nullable: false),
+                    CronExpression = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsEnable = table.Column<bool>(type: "bit", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HangfireJobConfiguration", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HangfireJobConfiguration_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GameStatistic",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GameId = table.Column<int>(type: "int", nullable: false),
+                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Evaluation = table.Column<double>(type: "float", nullable: false),
                     PlayersCount = table.Column<int>(type: "int", nullable: false),
-                    CashIncome = table.Column<double>(type: "float", nullable: false),
+                    CashIncome = table.Column<double>(type: "float", nullable: true),
                     LastSynchroDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GameStatistic", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GameStatistic_Game_GameId",
-                        column: x => x.GameId,
+                        name: "FK_GameStatistic_Game_Id",
+                        column: x => x.Id,
                         principalTable: "Game",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -129,9 +138,9 @@ namespace C4S.DB.Migrations
                 column: "GameStatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameStatistic_GameId",
-                table: "GameStatistic",
-                column: "GameId");
+                name: "IX_HangfireJobConfiguration_UserId",
+                table: "HangfireJobConfiguration",
+                column: "UserId");
 
             /*TODO: Заменить на нормальный инициализатор*/
             migrationBuilder.Sql(

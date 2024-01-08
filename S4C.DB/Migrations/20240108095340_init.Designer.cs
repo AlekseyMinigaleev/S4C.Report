@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace C4S.DB.Migrations
 {
     [DbContext(typeof(ReportDbContext))]
-    [Migration("20230921112219_make-CashIncome-nullable")]
-    partial class makeCashIncomenullable
+    [Migration("20240108095340_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,7 +42,11 @@ namespace C4S.DB.Migrations
 
             modelBuilder.Entity("C4S.DB.Models.GameModel", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AppId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -67,7 +71,6 @@ namespace C4S.DB.Migrations
             modelBuilder.Entity("C4S.DB.Models.GameStatisticModel", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double?>("CashIncome")
@@ -76,8 +79,8 @@ namespace C4S.DB.Migrations
                     b.Property<double>("Evaluation")
                         .HasColumnType("float");
 
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("LastSynchroDate")
                         .HasColumnType("datetime2");
@@ -86,8 +89,6 @@ namespace C4S.DB.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GameId");
 
                     b.ToTable("GameStatistic", (string)null);
                 });
@@ -109,8 +110,9 @@ namespace C4S.DB.Migrations
 
             modelBuilder.Entity("C4S.DB.Models.Hangfire.HangfireJobConfigurationModel", b =>
                 {
-                    b.Property<int>("JobType")
-                        .HasColumnType("int");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CronExpression")
                         .HasColumnType("nvarchar(max)");
@@ -118,7 +120,15 @@ namespace C4S.DB.Migrations
                     b.Property<bool>("IsEnable")
                         .HasColumnType("bit");
 
-                    b.HasKey("JobType");
+                    b.Property<int>("JobType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("HangfireJobConfiguration", (string)null);
                 });
@@ -128,9 +138,6 @@ namespace C4S.DB.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AuthorizationToken")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeveloperPageUrl")
                         .IsRequired()
@@ -142,6 +149,9 @@ namespace C4S.DB.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RsyaAuthorizationToken")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -183,11 +193,22 @@ namespace C4S.DB.Migrations
                 {
                     b.HasOne("C4S.DB.Models.GameModel", "Game")
                         .WithMany("GameStatistics")
-                        .HasForeignKey("GameId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("C4S.DB.Models.Hangfire.HangfireJobConfigurationModel", b =>
+                {
+                    b.HasOne("C4S.DB.Models.UserModel", "User")
+                        .WithMany("HangfireJobConfigurationModels")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("C4S.DB.Models.GameModel", b =>
@@ -203,6 +224,8 @@ namespace C4S.DB.Migrations
             modelBuilder.Entity("C4S.DB.Models.UserModel", b =>
                 {
                     b.Navigation("Games");
+
+                    b.Navigation("HangfireJobConfigurationModels");
                 });
 #pragma warning restore 612, 618
         }

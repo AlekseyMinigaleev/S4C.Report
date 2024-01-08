@@ -20,7 +20,7 @@ namespace C4S.DB.Models
         /// <summary>
         /// FK <see cref="GameModel"/>
         /// </summary>
-        public int GameId { get; private set; }
+        public Guid GameId { get; set; }
 
         /// <summary>
         /// Оценка игры
