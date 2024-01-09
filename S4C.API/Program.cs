@@ -7,6 +7,7 @@ using FluentValidation;
 using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using S4C.YandexGateway.DeveloperPage;
@@ -81,6 +82,8 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = jwtConfiguration.GetSymmetricSecurityKey(),
         };
     });
+
+builder.Services.AddCors();
 #endregion services
 
 var app = builder.BuildWithHangfireStorage(configuration);
@@ -95,6 +98,7 @@ app.UseSwaggerUI();
 app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.MapControllers();
+app.UseCors(options => options.WithOrigins("*").AllowAnyMethod().AllowAnyHeader());
 
 await app.InitApplicationAsync();
 await app.RunAsync();
