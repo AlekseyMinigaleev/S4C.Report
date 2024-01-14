@@ -154,6 +154,11 @@
             Токен авторизации для апи /partner2.yandex.ru/api
             </summary>
         </member>
+        <member name="M:С4S.API.Features.User.UserController.GetUserAsync(System.Threading.CancellationToken)">
+            <summary>
+            Возвращает данные о пользователе, отображаемые в профиле.
+            </summary>
+        </member>
         <member name="M:С4S.API.Features.User.UserController.SetRsyaAuthorizationTokenAsync(С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command,FluentValidation.IValidator{С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command},System.Threading.CancellationToken)">
             <summary>
             Устанавливает токен авторизации.
