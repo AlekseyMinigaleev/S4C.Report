@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using System.Text.RegularExpressions;
 
 namespace С4S.API.Features.User.Requests
 {
@@ -22,6 +23,10 @@ namespace С4S.API.Features.User.Requests
             RuleFor(x => x.Token)
                 .MustAsync(async (authorizationToken, cancellationToken) =>
                     {
+                        var validPattern = new Regex("^[a-zA-Z0-9_]+$");
+                        if (!validPattern.IsMatch(authorizationToken))
+                            return false;
+
                         var testUrl = "https://partner2.yandex.ru/api/statistics2/tree.json?lang=ru";
 
                         var httpRequestMethod = new HttpRequestMessage(HttpMethod.Get, testUrl);
@@ -32,7 +37,8 @@ namespace С4S.API.Features.User.Requests
 
                         return response.IsSuccessStatusCode;
                     })
-                .WithMessage("Указан неверный токен авторизации для апи /partner2.yandex.ru/api");
+                .WithMessage("Указан неверный токен авторизации для апи /partner2.yandex.ru/api")
+                .WithErrorCode($"rsyaAuthorizationToken");
         }
-    }
+    }   
 }

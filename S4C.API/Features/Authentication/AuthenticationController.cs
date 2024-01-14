@@ -36,15 +36,12 @@ namespace С4S.API.Features.Authentication
         }
 
         [AllowAnonymous]
-        [HttpPost("CreateAccount")]
+        [HttpPost("createAccount")]
         public async Task<ActionResult> CreateAccount(
             [FromBody]CreateAccount.Query query,
             [FromServices] IValidator<CreateAccount.Query> validator,
             CancellationToken cancellationToken)
         {
-
-            var a = query.RsyaAuthorizationTokenString;
-
             await ValidateAndChangeModelStateAsync(validator, query, cancellationToken);
 
             if (!ModelState.IsValid)
