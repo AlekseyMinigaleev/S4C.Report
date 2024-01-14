@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using С4S.API.Features.User.Action;
+using С4S.API.Features.User.Actions;
 
 namespace С4S.API.Features.User
 {
@@ -13,11 +14,25 @@ namespace С4S.API.Features.User
         { }
 
         /// <summary>
+        /// Возвращает данные о пользователе, отображаемые в профиле.
+        /// </summary>
+        [Authorize]
+        [HttpGet("getUser")]
+        public async Task<ActionResult> GetUserAsync(CancellationToken cancellationToken)
+        {
+            var query = new GetUser.Query();
+
+            var result = await Mediator.Send(query, cancellationToken);
+
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Устанавливает токен авторизации.
         /// https://yandex.ru/dev/partner-statistics/doc/ru/concepts/access
         /// </summary>
         [Authorize]
-        [HttpPut("SetRsyaAuthorizationToken")]
+        [HttpPut("setRsyaAuthorizationToken")]
         public async Task<ActionResult> SetRsyaAuthorizationTokenAsync(
             [FromBody] SetRsyaAuthorizationToken.Command command,
             [FromServices] IValidator<SetRsyaAuthorizationToken.Command> validator,
@@ -25,7 +40,7 @@ namespace С4S.API.Features.User
         {
             await ValidateAndChangeModelStateAsync(validator, command, cancellationToken);
 
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest("Указан некорректный токен авторизации");
 
             await Mediator.Send(command, cancellationToken);
