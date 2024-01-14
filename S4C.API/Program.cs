@@ -82,7 +82,6 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = jwtConfiguration.GetSymmetricSecurityKey(),
         };
     });
-
 builder.Services.AddCors();
 #endregion services
 
@@ -98,7 +97,7 @@ app.UseSwaggerUI();
 app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.MapControllers();
-app.UseCors(options => options.WithOrigins("*").AllowAnyMethod().AllowAnyHeader());
+app.UseCors(options => options.WithOrigins("http://localhost:3000", "http://localhost:5041/swagger").AllowAnyMethod().AllowAnyHeader());
 
 await app.InitApplicationAsync();
 await app.RunAsync();
