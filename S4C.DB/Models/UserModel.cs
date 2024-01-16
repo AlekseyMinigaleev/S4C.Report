@@ -36,6 +36,18 @@ namespace C4S.DB.Models
         /// </remarks>
         public string? RsyaAuthorizationToken { get; private set; }
 
+        /*todo: вынести в отдельный класс*/
+
+        /// <summary>
+        /// Токен обновления
+        /// </summary>
+        public string? RefreshToken { get; private set; }
+
+        /// <summary>
+        /// Время жизни токена обновления
+        /// </summary>
+        public DateTime RefreshTokenExpiry { get; private set; }
+
         /// <summary>
         /// Список игр
         /// </summary>
@@ -51,7 +63,8 @@ namespace C4S.DB.Models
             string password,
             string developerPageUrl,
             ISet<GameModel> games,
-            string? rsyaAuthorizationToken = default)
+            string? rsyaAuthorizationToken = default,
+            string? refreshToken = null)
         {
             Id = Guid.NewGuid();
             DeveloperPageUrl = developerPageUrl;
@@ -59,6 +72,8 @@ namespace C4S.DB.Models
             Games = games;
             Login = login;
             Password = password;
+            RefreshToken = refreshToken;
+            RefreshTokenExpiry = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified);
         }
 
         private UserModel()
@@ -67,6 +82,17 @@ namespace C4S.DB.Models
         public void SetAuthorizationToken(string rsyaAuthorizationToken)
         {
             RsyaAuthorizationToken = rsyaAuthorizationToken;
+        }
+
+        public void ClearRefreshToken()
+        {
+            RefreshToken = null;
+        }
+
+        public void SetRefreshToken(string token, DateTime expiryTime)
+        {
+            RefreshToken = token;
+            RefreshTokenExpiry = expiryTime;
         }
     }
 
