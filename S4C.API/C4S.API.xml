@@ -54,6 +54,36 @@
             Jwt-токен пользователя
             </returns>
         </member>
+        <member name="M:С4S.API.Features.Authentication.AuthenticationController.CreateAccount(С4S.API.Features.Authentication.Actions.CreateAccount.Query,FluentValidation.IValidator{С4S.API.Features.Authentication.Actions.CreateAccount.Query},System.Threading.CancellationToken)">
+            <summary>
+            Создает новую учетную запись
+            </summary>
+        </member>
+        <member name="M:С4S.API.Features.Authentication.AuthenticationController.DeleteRefreshToken(System.Threading.CancellationToken)">
+            <summary>
+            Выполняет удаление токена обновления.
+            </summary>
+        </member>
+        <member name="M:С4S.API.Features.Authentication.AuthenticationController.RefreshAccessToken(С4S.API.Features.Authentication.Actions.RefreshAccessToken.Command,System.Threading.CancellationToken)">
+            <summary>
+            Выполняет обновление то
+            </summary>
+        </member>
+        <member name="T:С4S.API.Features.Authentication.Models.AuthorizationTokens">
+            <summary>
+            бъект для хранения токенов авторизации.
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Authentication.Models.AuthorizationTokens.AccessToken">
+            <summary>
+            Токен доступа
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.Authentication.Models.AuthorizationTokens.RefreshToken">
+            <summary>
+            Токен обновления
+            </summary>
+        </member>
         <member name="T:С4S.API.Features.Authentication.ViewModels.UserCredentionals">
             <summary>
             Представляет учетные данные пользователя
@@ -190,15 +220,21 @@
             Срок жизни токена
             </summary>
         </member>
+        <member name="F:С4S.API.SettingsModels.JWTConfiguration.AuthenticationType">
+            <summary>
+            Тип аутентификации
+            </summary>
+        </member>
         <member name="M:С4S.API.SettingsModels.JWTConfiguration.GetSymmetricSecurityKey">
             <summary>
             Создает объект типа <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/>, по установленному <see cref="P:С4S.API.SettingsModels.JWTConfiguration.SecurityKey"/>
             </summary>
         </member>
-        <member name="F:С4S.API.SettingsModels.JWTConfiguration.AuthenticationType">
+        <member name="M:С4S.API.SettingsModels.JWTConfiguration.CreateJwtToken(System.Collections.Generic.IEnumerable{System.Security.Claims.Claim})">
             <summary>
-            Тип аутентификации
+            Создает JWT-токен на основе предоставленных утверждений (claims).
             </summary>
+            <returns>Строка, представляющая собой JWT-токен.</returns>
         </member>
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
