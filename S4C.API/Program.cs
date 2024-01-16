@@ -7,7 +7,6 @@ using FluentValidation;
 using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using S4C.YandexGateway.DeveloperPage;
@@ -97,8 +96,13 @@ app.UseSwaggerUI();
 app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.MapControllers();
-app.UseCors(options => options.WithOrigins("http://localhost:3000", "http://localhost:5041/swagger").AllowAnyMethod().AllowAnyHeader());
+app.UseCors(options => options
+    .WithOrigins("http://localhost:3000", "http://localhost:5041/swagger")
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials());
 
 await app.InitApplicationAsync();
 await app.RunAsync();
 #endregion middleware
+    
