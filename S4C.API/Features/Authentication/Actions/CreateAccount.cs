@@ -27,16 +27,16 @@ namespace С4S.API.Features.Authentication.Actions
             [JsonIgnore]
             public RsyaAuthorizationToken? RsyaAuthorizationToken { get; set; }
 
-            [JsonPropertyName("RsyaAuthorizationToken")]
+            [JsonPropertyName("rsyaAuthorizationToken")]
             public string? RsyaAuthorizationTokenString
             {
                 get { return RsyaAuthorizationToken?.Token; }
                 set 
                 {
-                    if (RsyaAuthorizationTokenString is null)
+                    if (string.IsNullOrWhiteSpace(value))
                         RsyaAuthorizationToken = null;
                     else
-                        RsyaAuthorizationToken = new RsyaAuthorizationToken(RsyaAuthorizationTokenString);
+                        RsyaAuthorizationToken = new RsyaAuthorizationToken(value);
                 }
             }
         }
@@ -60,7 +60,8 @@ namespace С4S.API.Features.Authentication.Actions
 
                         return user is null;
                     })
-                    .WithMessage("Пользователь с указанным логином уже существует");
+                    .WithMessage("Пользователь с указанным логином уже существует")
+                    .WithErrorCode("login");
 
                 RuleFor(x => x.DeveloperPageUrl)
                     .Must(developerPageUrl =>
@@ -68,6 +69,7 @@ namespace С4S.API.Features.Authentication.Actions
                         var isValid = developerPageUrl
                             .StartsWith("https://yandex.ru/games/developer?name=");
 
+                        /*TODO: хранить валидные ссылки в отдельной таблице, и сначала пытаться найти в этой таблице, только потом делать запрос, не парсить а запрос*/
                         if (!isValid)
                             return isValid;
 
@@ -79,7 +81,8 @@ namespace С4S.API.Features.Authentication.Actions
 
                         return isValid;
                     })
-                    .WithMessage("Указана не корректная ссылка на страницу разработчика");
+                    .WithMessage("Указана не корректная ссылка на страницу разработчика")
+                    .WithErrorCode("developerPageUrl");
 
                 When(x => x.RsyaAuthorizationToken != null, () =>
                 {
