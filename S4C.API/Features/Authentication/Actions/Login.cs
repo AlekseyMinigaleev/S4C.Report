@@ -4,10 +4,10 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using С4S.API.Features.Authentication.Models;
 using С4S.API.Features.Authentication.ViewModels;
 using С4S.API.SettingsModels;
 
@@ -15,7 +15,7 @@ namespace С4S.API.Features.Authentication.Actions
 {
     public class Login
     {
-        public class Query : IRequest<string?>
+        public class Query : IRequest<AuthorizationTokens>
         {
             /// <inheritdoc cref="UserCredentionals"/>
             public UserCredentionals UserCreditionals { get; set; }
@@ -42,7 +42,7 @@ namespace С4S.API.Features.Authentication.Actions
             }
         }
 
-        private class Handler : IRequestHandler<Query, string?>
+        private class Handler : IRequestHandler<Query, AuthorizationTokens>
         {
             private readonly JWTConfiguration _jwt;
             private readonly ReportDbContext _dbContext;
@@ -55,7 +55,7 @@ namespace С4S.API.Features.Authentication.Actions
                 _dbContext = dbContext;
             }
 
-            public async Task<string?> Handle(
+            public async Task<AuthorizationTokens> Handle(
                 Query query,
                 CancellationToken cancellationToken)
             {
@@ -65,8 +65,20 @@ namespace С4S.API.Features.Authentication.Actions
                         cancellationToken);
 
                 var claimsPrincipal = CreateClaimsPrincipal(user);
-                var jwtToken = CreateJwtToken(claimsPrincipal.Claims);
-                return jwtToken;
+
+                var response = new AuthorizationTokens
+                {
+                    AccessToken = _jwt.CreateJwtToken(claimsPrincipal.Claims),
+                    RefreshToken = CreateRefreshToken(),
+                };
+
+                user.SetRefreshToken(
+                    response.RefreshToken,
+                    DateTime.Now.AddMinutes(_jwt.DurationInMinutes));
+
+                await _dbContext.SaveChangesAsync(cancellationToken);
+
+                return response;
             }
 
             private static ClaimsPrincipal CreateClaimsPrincipal(UserModel user)
@@ -94,18 +106,17 @@ namespace С4S.API.Features.Authentication.Actions
                 return claims;
             }
 
-            private string CreateJwtToken(IEnumerable<Claim> claims)
+            private string CreateRefreshToken()
             {
-                var jwt = new JwtSecurityToken(
-                        issuer: _jwt.Issuer,
-                        audience: _jwt.Audience,
-                        expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(_jwt.DurationInMinutes)),
-                        signingCredentials: new SigningCredentials(
-                            _jwt.GetSymmetricSecurityKey(),
-                            SecurityAlgorithms.HmacSha256),
-                        claims: claims);
+                var randomNumbers = new byte[64];
 
-                return new JwtSecurityTokenHandler().WriteToken(jwt);
+                using var generator = RandomNumberGenerator.Create();
+
+                generator.GetBytes(randomNumbers);
+
+                var result = Convert.ToBase64String(randomNumbers);
+
+                return result;
             }
         }
     }
