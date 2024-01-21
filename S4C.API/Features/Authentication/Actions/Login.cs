@@ -66,9 +66,7 @@ namespace С4S.API.Features.Authentication.Actions
                     RefreshToken = _jwtService.CreateJwtToken(user, _jwtService.RefreshTokenExpiry),
                 };
 
-                user.SetRefreshToken(
-                    response.RefreshToken,
-                    _jwtService.RefreshTokenExpiry);
+                user.SetRefreshToken(response.RefreshToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 

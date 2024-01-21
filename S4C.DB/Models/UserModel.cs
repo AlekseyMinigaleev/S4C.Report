@@ -36,17 +36,10 @@ namespace C4S.DB.Models
         /// </remarks>
         public string? RsyaAuthorizationToken { get; private set; }
 
-        /*todo: вынести в отдельный класс*/
-
         /// <summary>
         /// Токен обновления
         /// </summary>
         public string? RefreshToken { get; private set; }
-
-        /// <summary>
-        /// Время жизни токена обновления
-        /// </summary>
-        public DateTime RefreshTokenExpiry { get; private set; }
 
         /// <summary>
         /// Список игр
@@ -73,26 +66,33 @@ namespace C4S.DB.Models
             Login = login;
             Password = password;
             RefreshToken = refreshToken;
-            RefreshTokenExpiry = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified);
         }
 
         private UserModel()
         { }
 
+        /// <summary>
+        /// Устанавливает токен авторизации
+        /// </summary>
         public void SetAuthorizationToken(string rsyaAuthorizationToken)
         {
             RsyaAuthorizationToken = rsyaAuthorizationToken;
         }
 
+        /// <summary>
+        /// Устанавливает токен обновления
+        /// </summary>
+        public void SetRefreshToken(string token)
+        {
+            RefreshToken = token;
+        }
+
+        /// <summary>
+        /// Удаляет токен обновления
+        /// </summary>
         public void ClearRefreshToken()
         {
             RefreshToken = null;
-        }
-
-        public void SetRefreshToken(string token, DateTime expiryTime)
-        {
-            RefreshToken = token;
-            RefreshTokenExpiry = expiryTime;
         }
     }
 

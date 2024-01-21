@@ -38,12 +38,7 @@ namespace С4S.API.Features.Authentication
                 result.RefreshToken,
                 new CookieOptions { HttpOnly = true });
 
-            Response.Cookies.Append(
-                nameof(result.AccessToken),
-                result.AccessToken,
-                new CookieOptions { HttpOnly = true });
-
-            return Ok(new { AccessToken = result.AccessToken });
+            return Ok(new NewRecord(result.AccessToken));
         }
 
         /// <summary>
@@ -89,31 +84,23 @@ namespace С4S.API.Features.Authentication
             CancellationToken cancellationToken)
         {
             var refreshToken = Request.Cookies[nameof(AuthorizationTokens.RefreshToken)];
-            var accessToken = Request.Cookies[nameof(AuthorizationTokens.AccessToken)];
 
-            if (refreshToken is null || accessToken is null)
+            if (refreshToken is null)
                 return Unauthorized();
 
             var command = new RefreshAccessToken.Command
             {
-                AuthorizationTokens = new AuthorizationTokens
-                {
-                    AccessToken = accessToken,
-                    RefreshToken = refreshToken,
-                }
+                RefreshToken = refreshToken,
             };
 
-            var response = await Mediator.Send(command, cancellationToken);
+            var accessToken = await Mediator.Send(command, cancellationToken);
 
-            if (response is null)
+            if (accessToken is null)
                 return Unauthorized();
 
-            Response.Cookies.Append(
-                nameof(response.AccessToken),
-                response.AccessToken,
-                new CookieOptions { HttpOnly = true });
-
-            return Ok(response);
+            return Ok(new { AccessToken = accessToken});
         }
     }
+
+    internal record NewRecord(string AccessToken);
 }
