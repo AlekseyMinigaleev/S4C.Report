@@ -1,11 +1,10 @@
 ﻿using C4S.DB;
+using C4S.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using С4S.API.Features.Authentication.Models;
-using С4S.API.SettingsModels;
 
 namespace С4S.API.Features.Authentication.Actions
 {
@@ -19,14 +18,14 @@ namespace С4S.API.Features.Authentication.Actions
         public class Handler : IRequestHandler<Command, AuthorizationTokens>
         {
             private readonly ReportDbContext _dbContext;
-            private readonly JWTConfiguration _jwt;
+            private readonly IJwtService _jwtService;
 
             public Handler(
                 ReportDbContext dbContext,
-                IOptions<JWTConfiguration> jwt)
+                IJwtService jwtService)
             {
                 _dbContext = dbContext;
-                _jwt = jwt.Value;
+                _jwtService = jwtService;
             }
 
             public async Task<AuthorizationTokens?> Handle(Command request, CancellationToken cancellationToken)
@@ -36,9 +35,9 @@ namespace С4S.API.Features.Authentication.Actions
 
                 var validation = new TokenValidationParameters()
                 {
-                    ValidIssuer = _jwt.Issuer,
-                    ValidAudience = _jwt.Audience,
-                    IssuerSigningKey = _jwt.GetSymmetricSecurityKey(),
+                    ValidIssuer = _jwtService.JwtConfig.Issuer,
+                    ValidAudience = _jwtService.JwtConfig.Audience,
+                    IssuerSigningKey = _jwtService.SymmetricSecurityKey,
                     ValidateLifetime = false,
                 };
 
@@ -58,7 +57,7 @@ namespace С4S.API.Features.Authentication.Actions
                     || user.RefreshTokenExpiry < DateTime.Now)
                     return null;
 
-                accessToken = _jwt.CreateJwtToken(principal.Claims);
+                accessToken = _jwtService.CreateJwtToken(user, _jwtService.AccessTokenExpiry);
 
                 return new AuthorizationTokens
                 {

@@ -1,7 +1,9 @@
 using C4S.API.Extensions;
 using C4S.DB;
+using C4S.DB.ConfigurationModels;
 using C4S.Helpers.ApiHeplers.Swagger;
 using C4S.Services.Extensions;
+using C4S.Services.Implements;
 using C4S.Services.Interfaces;
 using FluentValidation;
 using Hangfire;
@@ -12,20 +14,21 @@ using Microsoft.OpenApi.Models;
 using S4C.YandexGateway.DeveloperPage;
 using System.Reflection;
 using Ñ4S.API.Extensions;
-using Ñ4S.API.SettingsModels;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 var jwtSection = configuration
-    .GetSection("JWT");
+    .GetSection("JwtConfiguration");
 var jwtConfiguration = jwtSection
-    .Get<JWTConfiguration>() ?? throw new ArgumentNullException(nameof(JWTConfiguration));
+    .Get<JwtConfiguration>() ?? throw new ArgumentNullException(nameof(JwtConfiguration));
+var jwtService = new JwtServise(jwtConfiguration);
 
 #region services
 services.AddHttpClient();
 services.AddControllers();
 services.AddEndpointsApiExplorer();
+
 services.AddSwaggerGen(options =>
 {
     options.IncludeXmlComments($"{AppContext.BaseDirectory}C4S.API.xml");
@@ -52,7 +55,9 @@ services.AddSwaggerGen(options =>
         { jwtSecurityScheme, Array.Empty<string>() }
     });
 });
+
 services.AddStorages(configuration);
+
 services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(typeof(Program).GetTypeInfo().Assembly));
 services.AddValidatorsFromAssemblyContaining<Program>();
@@ -61,9 +66,10 @@ services.AddAutoMapper(
     typeof(Program),
     typeof(IDeveloperPageGetaway),
     typeof(IGameDataService));
+
 services.AddServices(configuration);
+
 services.AddAuthorization();
-services.Configure<JWTConfiguration>(jwtSection);
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -78,15 +84,24 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
 
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = jwtConfiguration.GetSymmetricSecurityKey(),
+            IssuerSigningKey = jwtService.SymmetricSecurityKey,
         };
     });
+
+services.Configure<JwtConfiguration>(jwtSection);
+
 builder.Services.AddCors();
 #endregion services
 
 var app = builder.BuildWithHangfireStorage(configuration);
 
 #region middleware
+app.UseCors(options => options
+    .WithOrigins("http://localhost:3000", "http://localhost:5041/swagger")
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials());
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -96,11 +111,6 @@ app.UseSwaggerUI();
 app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.MapControllers();
-app.UseCors(options => options
-    .WithOrigins("http://localhost:3000", "http://localhost:5041/swagger")
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials());
 
 await app.InitApplicationAsync();
 await app.RunAsync();

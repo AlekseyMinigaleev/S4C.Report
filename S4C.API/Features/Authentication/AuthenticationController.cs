@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using С4S.API.Features.Authentication.Actions;
+using С4S.API.Features.Authentication.Models;
 
 namespace С4S.API.Features.Authentication
 {
@@ -32,7 +33,17 @@ namespace С4S.API.Features.Authentication
 
             var result = await Mediator.Send(query, cancellationToken);
 
-            return Ok(result);
+            Response.Cookies.Append(
+                nameof(result.RefreshToken),
+                result.RefreshToken,
+                new CookieOptions { HttpOnly = true });
+
+            Response.Cookies.Append(
+                nameof(result.AccessToken),
+                result.AccessToken,
+                new CookieOptions { HttpOnly = true });
+
+            return Ok(new { AccessToken = result.AccessToken });
         }
 
         /// <summary>
@@ -73,15 +84,34 @@ namespace С4S.API.Features.Authentication
         /// Выполняет обновление то
         /// </summary>
         [AllowAnonymous]
-        [HttpPost("refresh")]
+        [HttpGet("refresh")]
         public async Task<ActionResult> RefreshAccessToken(
-            [FromBody] RefreshAccessToken.Command command,
             CancellationToken cancellationToken)
         {
+            var refreshToken = Request.Cookies[nameof(AuthorizationTokens.RefreshToken)];
+            var accessToken = Request.Cookies[nameof(AuthorizationTokens.AccessToken)];
+
+            if (refreshToken is null || accessToken is null)
+                return Unauthorized();
+
+            var command = new RefreshAccessToken.Command
+            {
+                AuthorizationTokens = new AuthorizationTokens
+                {
+                    AccessToken = accessToken,
+                    RefreshToken = refreshToken,
+                }
+            };
+
             var response = await Mediator.Send(command, cancellationToken);
 
             if (response is null)
                 return Unauthorized();
+
+            Response.Cookies.Append(
+                nameof(response.AccessToken),
+                response.AccessToken,
+                new CookieOptions { HttpOnly = true });
 
             return Ok(response);
         }
