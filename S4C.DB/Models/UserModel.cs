@@ -82,7 +82,7 @@ namespace C4S.DB.Models
         /// <summary>
         /// Устанавливает токен обновления
         /// </summary>
-        public void SetRefreshToken(string token)
+        public void SetRefreshToken(string? token)
         {
             RefreshToken = token;
         }

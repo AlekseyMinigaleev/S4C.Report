@@ -34,11 +34,11 @@ namespace С4S.API.Features.Authentication
             var result = await Mediator.Send(query, cancellationToken);
 
             Response.Cookies.Append(
-                nameof(result.RefreshToken),
+                nameof(AuthorizationTokens.RefreshToken),
                 result.RefreshToken,
                 new CookieOptions { HttpOnly = true });
 
-            return Ok(new NewRecord(result.AccessToken));
+            return Ok(new { result.AccessToken });
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace С4S.API.Features.Authentication
         }
 
         /// <summary>
-        /// Выполняет обновление то
+        /// Выполняет обновление токена доступа
         /// </summary>
         [AllowAnonymous]
         [HttpGet("refresh")]
@@ -98,9 +98,25 @@ namespace С4S.API.Features.Authentication
             if (accessToken is null)
                 return Unauthorized();
 
-            return Ok(new { AccessToken = accessToken});
+            return Ok(new { AccessToken = accessToken });
+        }
+
+        /// <summary>
+        /// Выполняет выход из аккаунта
+        /// </summary>
+        [Authorize]
+        [HttpGet("logout")]
+        public async Task<ActionResult> LogoutAsync(CancellationToken cancellationToken)
+        {
+            var command = new Logout.Command();
+
+            await Mediator.Send(command, cancellationToken);
+
+            Response.Cookies.Delete(
+               nameof(AuthorizationTokens.RefreshToken),
+               new CookieOptions { HttpOnly = true });
+
+            return Ok();
         }
     }
-
-    internal record NewRecord(string AccessToken);
 }
