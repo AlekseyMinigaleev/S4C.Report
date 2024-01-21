@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using С4S.API.Features.Authentication.Actions;
+using С4S.API.Features.Authentication.Models;
 
 namespace С4S.API.Features.Authentication
 {
@@ -32,7 +33,12 @@ namespace С4S.API.Features.Authentication
 
             var result = await Mediator.Send(query, cancellationToken);
 
-            return Ok(result);
+            Response.Cookies.Append(
+                nameof(AuthorizationTokens.RefreshToken),
+                result.RefreshToken,
+                new CookieOptions { HttpOnly = true });
+
+            return Ok(new { result.AccessToken });
         }
 
         /// <summary>
@@ -70,20 +76,47 @@ namespace С4S.API.Features.Authentication
         }
 
         /// <summary>
-        /// Выполняет обновление то
+        /// Выполняет обновление токена доступа
         /// </summary>
         [AllowAnonymous]
-        [HttpPost("refresh")]
+        [HttpGet("refresh")]
         public async Task<ActionResult> RefreshAccessToken(
-            [FromBody] RefreshAccessToken.Command command,
             CancellationToken cancellationToken)
         {
-            var response = await Mediator.Send(command, cancellationToken);
+            var refreshToken = Request.Cookies[nameof(AuthorizationTokens.RefreshToken)];
 
-            if (response is null)
+            if (refreshToken is null)
                 return Unauthorized();
 
-            return Ok(response);
+            var command = new RefreshAccessToken.Command
+            {
+                RefreshToken = refreshToken,
+            };
+
+            var accessToken = await Mediator.Send(command, cancellationToken);
+
+            if (accessToken is null)
+                return Unauthorized();
+
+            return Ok(new { AccessToken = accessToken });
+        }
+
+        /// <summary>
+        /// Выполняет выход из аккаунта
+        /// </summary>
+        [Authorize]
+        [HttpGet("logout")]
+        public async Task<ActionResult> LogoutAsync(CancellationToken cancellationToken)
+        {
+            var command = new Logout.Command();
+
+            await Mediator.Send(command, cancellationToken);
+
+            Response.Cookies.Delete(
+               nameof(AuthorizationTokens.RefreshToken),
+               new CookieOptions { HttpOnly = true });
+
+            return Ok();
         }
     }
 }

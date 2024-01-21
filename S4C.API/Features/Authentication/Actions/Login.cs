@@ -1,15 +1,11 @@
 ﻿using C4S.DB;
-using C4S.DB.Models;
+using C4S.Services.Interfaces;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System.Net;
-using System.Security.Claims;
-using System.Security.Cryptography;
 using С4S.API.Features.Authentication.Models;
 using С4S.API.Features.Authentication.ViewModels;
-using С4S.API.SettingsModels;
 
 namespace С4S.API.Features.Authentication.Actions
 {
@@ -44,14 +40,14 @@ namespace С4S.API.Features.Authentication.Actions
 
         private class Handler : IRequestHandler<Query, AuthorizationTokens>
         {
-            private readonly JWTConfiguration _jwt;
+            private readonly IJwtService _jwtService;
             private readonly ReportDbContext _dbContext;
 
             public Handler(
                 ReportDbContext dbContext,
-                IOptions<JWTConfiguration> jwt)
+                IJwtService jwtService)
             {
-                _jwt = jwt.Value;
+                _jwtService = jwtService;
                 _dbContext = dbContext;
             }
 
@@ -64,59 +60,17 @@ namespace С4S.API.Features.Authentication.Actions
                         x => x.Login.Equals(query.UserCreditionals.Login),
                         cancellationToken);
 
-                var claimsPrincipal = CreateClaimsPrincipal(user);
-
                 var response = new AuthorizationTokens
                 {
-                    AccessToken = _jwt.CreateJwtToken(claimsPrincipal.Claims),
-                    RefreshToken = CreateRefreshToken(),
+                    AccessToken = _jwtService.CreateJwtToken(user, _jwtService.AccessTokenExpiry),
+                    RefreshToken = _jwtService.CreateJwtToken(user, _jwtService.RefreshTokenExpiry),
                 };
 
-                user.SetRefreshToken(
-                    response.RefreshToken,
-                    DateTime.Now.AddMinutes(_jwt.DurationInMinutes));
+                user.SetRefreshToken(response.RefreshToken);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 return response;
-            }
-
-            private static ClaimsPrincipal CreateClaimsPrincipal(UserModel user)
-            {
-                var claims = CreateClaims(user);
-                var claimsIdentity = new ClaimsIdentity(claims, JWTConfiguration.AuthenticationType);
-                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-                return claimsPrincipal;
-            }
-
-            private static List<Claim> CreateClaims(UserModel user)
-            {
-                var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, user.Login),
-                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    };
-
-                if (user.RsyaAuthorizationToken is not null)
-                    claims.Add(
-                        new Claim(nameof(user.RsyaAuthorizationToken),
-                        user.RsyaAuthorizationToken));
-
-                return claims;
-            }
-
-            private string CreateRefreshToken()
-            {
-                var randomNumbers = new byte[64];
-
-                using var generator = RandomNumberGenerator.Create();
-
-                generator.GetBytes(randomNumbers);
-
-                var result = Convert.ToBase64String(randomNumbers);
-
-                return result;
             }
         }
     }
