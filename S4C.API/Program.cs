@@ -93,6 +93,11 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 services.Configure<JwtConfiguration>(jwtSection);
 
 builder.Services.AddCors();
+
+services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Expiration = TimeSpan.FromDays(90);
+});
 #endregion services
 
 var app = builder.BuildWithHangfireStorage(configuration);
