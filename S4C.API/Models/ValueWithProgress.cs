@@ -16,11 +16,11 @@
         /// </summary>
         public T LastProgressValue { get; set; }
 
-        /// <param name="actualvalue">Актуальное значение.</param>
+        /// <param name="actualValue">Актуальное значение.</param>
         /// <param name="lastProgressValue">Последнее добавленное значение к актуальному значению.</param>
-        public ValueWithProgress(T actualvalue, T lastProgressValue)
+        public ValueWithProgress(T actualValue, T lastProgressValue)
         {
-            ActualValue = actualvalue;
+            ActualValue = actualValue;
             LastProgressValue = lastProgressValue;
         }
 

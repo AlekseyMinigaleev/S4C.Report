@@ -238,7 +238,7 @@
             </summary>
         </member>
         <member name="M:С4S.API.Models.ValueWithProgress`1.#ctor(`0,`0)">
-            <param name="actualvalue">Актуальное значение.</param>
+            <param name="actualValue">Актуальное значение.</param>
             <param name="lastProgressValue">Последнее добавленное значение к актуальному значению.</param>
         </member>
         <member name="M:С4S.API.Models.ValueWithProgress`1.CompareTo(С4S.API.Models.ValueWithProgress{`0})">
