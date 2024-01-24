@@ -10,7 +10,7 @@ namespace С4S.API.Extensions
         /// <param name="paginate">параметры пагинации</param>
         public static IQueryable<T> Paginate<T>(this IQueryable<T> source, Paginate paginate) =>
             source
-                .Skip((paginate.PageNunber - 1) * paginate.ItemsPerPage)
+                .Skip((paginate.PageNumber - 1) * paginate.ItemsPerPage)
                 .Take(paginate.ItemsPerPage);
     }
 }

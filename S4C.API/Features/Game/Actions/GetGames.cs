@@ -30,6 +30,7 @@ namespace С4S.API.Features.Game.Actions
 
             public int PlayersCount { get; set; }
 
+            /*TODO: Добавить Расчет этого поля. Текущее количество игроков - количество игроков на момент прошлой синхронизации*/
             public int PlayersGrowth { get; set; }
 
             public double Evaluation { get; set; }

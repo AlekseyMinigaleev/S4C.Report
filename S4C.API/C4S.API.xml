@@ -25,10 +25,9 @@
         </member>
         <member name="M:С4S.API.Extensions.QueryableExtensions.Paginate``1(System.Linq.IQueryable{``0},С4S.API.Models.Paginate)">
             <summary>
-            
+            Выполняет пагинацию для <typeparamref name="IQueryable"/> коллекции.
             </summary>
-            <param name="paginate"></param>
-            <returns></returns>
+            <param name="paginate">параметры пагинации</param>
         </member>
         <member name="M:С4S.API.Extensions.WebApplicationBuilderExtensions.BuildWithHangfireStorage(Microsoft.AspNetCore.Builder.WebApplicationBuilder,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
@@ -183,7 +182,7 @@
             Устанавливает PageId для игры. ОТСТУТСТВУЕТ ВАЛИДАЦИЯ НА УСТАНОВКУ PageId ИГРЕ, КОТОРОЙ ЭТОТ PageId НЕ ПРИНАДЛЕЖИТ.
             </summary>
         </member>
-        <member name="M:С4S.API.Features.Game.GameController.GetGamesPageIdAsync(System.Threading.CancellationToken)">
+        <member name="M:С4S.API.Features.Game.GameController.GetGamesAsync(С4S.API.Features.Game.Actions.GetGames.Query,System.Threading.CancellationToken)">
             <summary>
             Возвращает список всех игр
             </summary>
@@ -205,6 +204,21 @@
             <summary>
             Устанавливает токен авторизации.
             https://yandex.ru/dev/partner-statistics/doc/ru/concepts/access
+            </summary>
+        </member>
+        <member name="T:С4S.API.Models.Paginate">
+            <summary>
+            Параметры для пагинации
+            </summary>
+        </member>
+        <member name="P:С4S.API.Models.Paginate.ItemsPerPage">
+            <summary>
+            Количество элементов на странице
+            </summary>
+        </member>
+        <member name="P:С4S.API.Models.Paginate.PageNumber">
+            <summary>
+            номер страницы
             </summary>
         </member>
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
