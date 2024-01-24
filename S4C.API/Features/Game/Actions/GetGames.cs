@@ -3,7 +3,6 @@ using C4S.DB.Models;
 using C4S.Helpers.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Security.Principal;
 using С4S.API.Extensions;
 using С4S.API.Models;
@@ -26,9 +25,9 @@ namespace С4S.API.Features.Game.Actions
 
         public class GameViewModel
         {
-            public string Name { get; set; }
+            public string? Name { get; set; }
 
-            public DateTime PublicationDate { get; set; }
+            public DateTime? PublicationDate { get; set; }
 
             public double Evaluation { get; set; }
 
@@ -60,30 +59,28 @@ namespace С4S.API.Features.Game.Actions
                     .Where(x => x.UserId == userId)
                     /*TODO: дать возможность пользователю сортировать значения*/
                     .OrderByDescending(x => x.GameStatistics.Sum(game => game.PlayersCount))
-                        .ThenByDescending(x => x.GameStatistics.Sum(game => game.CashIncome));
-
-                var games = await gamesQuery
-                    .Select(game => new GameViewModel
+                        .ThenByDescending(x => x.GameStatistics.Sum(game => game.CashIncome))
+                    .Select(x => new GameViewModel
                     {
-                        Name = game.Name!,
-
-                        PublicationDate = game.PublicationDate!.Value,
+                        Name = x.Name,
+                        PublicationDate = x.PublicationDate,
 
                         PlayersCountWithProgress = new ValueWithProgress<int>(
-                            game.GetPlayersCountActualValue(),
-                            game.GetPlayersCountLastProgressValue()),
+                            x.GetPlayersCountActualValue(),
+                            x.GetPlayersCountLastProgressValue()
+                            ),
 
-                        CashIncomeWithProgress = game.GameStatistics
-                            .All(x => x.CashIncome == null)
-                                ? null
-                                : new ValueWithProgress<double?>(
-                                    game.GetCashIncomeActualValue(),
-                                    game.GetCashIncomeLastProgressValue()),
+                        CashIncomeWithProgress = x.GameStatistics
+                            .Any(gs => gs.CashIncome.HasValue)
+                                ? new ValueWithProgress<double?>(
+                                    x.GetCashIncomeActualValue(),
+                                    x.GetCashIncomeLastProgressValue())
+                                : null,
 
-                        Evaluation = game.GameStatistics
-                            .GetLastSynchronizationStatistic().Evaluation,
-                    })
+                        Evaluation = x.GameStatistics.GetLastSynchronizationStatistic().Evaluation
+                    });
 
+                var games = await gamesQuery
                     .Paginate(request.Paginate)
                     .ToArrayAsync(cancellationToken);
 
@@ -100,8 +97,6 @@ namespace С4S.API.Features.Game.Actions
             }
         }
     }
-
-
 
     /// <summary>
     /// Содержит методы-расширения для работы с моделью игры <see cref="GameModel"/>.
