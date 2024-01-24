@@ -222,10 +222,10 @@
             </summary>
         </member>
         <member name="T:С4S.API.Models.ValueWithProgress`1">
-             <summary>
-            
-             </summary>
-             <typeparam name="T"></typeparam>
+            <summary>
+            модель значения с прогрессом для сравнения.
+            </summary>
+            <typeparam name="T">Тип значения.</typeparam>
         </member>
         <member name="P:С4S.API.Models.ValueWithProgress`1.ActualValue">
             <summary>
@@ -234,8 +234,12 @@
         </member>
         <member name="P:С4S.API.Models.ValueWithProgress`1.LastProgressValue">
             <summary>
-            последнее добавленное значение к актуальному значению
+            Последнее добавленное значение к актуальному значению
             </summary>
+        </member>
+        <member name="M:С4S.API.Models.ValueWithProgress`1.#ctor(`0,`0)">
+            <param name="actualvalue">Актуальное значение.</param>
+            <param name="lastProgressValue">Последнее добавленное значение к актуальному значению.</param>
         </member>
         <member name="M:С4S.API.Models.ValueWithProgress`1.CompareTo(С4S.API.Models.ValueWithProgress{`0})">
             <summary>

@@ -30,9 +30,9 @@ namespace С4S.API.Features.Game.Actions
 
             public double Evaluation { get; set; }
 
-            public ValueWithProgress<int> PlayersCount { get; set; }
+            public ValueWithProgress<int> PlayersCountWithProgress { get; set; }
 
-            public ValueWithProgress<double?>? CashIncome { get; set; }
+            public ValueWithProgress<double?>? CashIncomeWithProgress { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, ViewModel>
@@ -53,10 +53,13 @@ namespace С4S.API.Features.Game.Actions
                 CancellationToken cancellationToken)
             {
                 var userId = _principal.GetUserId();
+
                 var gamesQuery = _dbContext.Games
+                    .Include(x => x.GameStatistics)
                     .Where(x => x.UserId == userId)
-                    .OrderByDescending(x => x.GameStatistics.Sum(gs => gs.PlayersCount))
-                        .ThenByDescending(x => x.GameStatistics.Sum(gs => gs.CashIncome));
+                    /*TODO: дать возможность пользователю сортировать значения*/
+                    .OrderByDescending(x => x.GameStatistics.Sum(game => game.PlayersCount))
+                        .ThenByDescending(x => x.GameStatistics.Sum(game => game.CashIncome));
 
                 var games = await gamesQuery
                     .Select(game => new GameViewModel
@@ -65,12 +68,24 @@ namespace С4S.API.Features.Game.Actions
 
                         PublicationDate = game.PublicationDate!.Value,
 
-                        PlayersCount = new ValueWithProgress<int>(
+                        PlayersCountWithProgress = new ValueWithProgress<int>(
                             game.GameStatistics
-                                .First().PlayersCount,
-                                0 /*TODO: добавить расчет*/),
+                                .OrderByDescending(x => x.LastSynchroDate)
+                                .First()
+                                .PlayersCount,
 
-                        CashIncome = game.GameStatistics
+                            game.GameStatistics
+                                .OrderByDescending(x => x.LastSynchroDate)
+                                .First()
+                                .PlayersCount -
+                            game.GameStatistics
+                                .OrderByDescending(x => x.LastSynchroDate)
+                                .Take(2)
+                                .Last()
+                                .PlayersCount),
+
+                        CashIncomeWithProgress =
+                            game.GameStatistics
                             .All(x => x.CashIncome == null)
                                 ? null
                                 : new ValueWithProgress<double?>(
