@@ -23,6 +23,13 @@
             </summary>
             <param name="principal">Объект IPrincipal, представляющий текущего пользователя.</param>
         </member>
+        <member name="M:С4S.API.Extensions.QueryableExtensions.Paginate``1(System.Linq.IQueryable{``0},С4S.API.Models.Paginate)">
+            <summary>
+            
+            </summary>
+            <param name="paginate"></param>
+            <returns></returns>
+        </member>
         <member name="M:С4S.API.Extensions.WebApplicationBuilderExtensions.BuildWithHangfireStorage(Microsoft.AspNetCore.Builder.WebApplicationBuilder,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
             <inheritdoc cref="M:Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build"/>
@@ -112,17 +119,17 @@
             dd.MM.yyyy
             </remarks>
         </member>
-        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.GameId">
+        <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.GameId">
             <summary>
             Id игры
             </summary>
         </member>
-        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.GameName">
+        <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.GameName">
             <summary>
             Навзание игры
             </summary>
         </member>
-        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.PageId">
+        <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.PageId">
             <summary>
             Id страницы
             </summary>
@@ -176,7 +183,7 @@
             Устанавливает PageId для игры. ОТСТУТСТВУЕТ ВАЛИДАЦИЯ НА УСТАНОВКУ PageId ИГРЕ, КОТОРОЙ ЭТОТ PageId НЕ ПРИНАДЛЕЖИТ.
             </summary>
         </member>
-        <member name="M:С4S.API.Features.Game.GameController.GetGamesAsync(System.Threading.CancellationToken)">
+        <member name="M:С4S.API.Features.Game.GameController.GetGamesPageIdAsync(System.Threading.CancellationToken)">
             <summary>
             Возвращает список всех игр
             </summary>

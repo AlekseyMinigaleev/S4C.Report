@@ -1,77 +1,96 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using C4S.DB;
-using C4S.DB.Models;
+﻿using C4S.DB;
 using C4S.Helpers.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Principal;
+using С4S.API.Extensions;
+using С4S.API.Models;
 
 namespace С4S.API.Features.Game.Actions
 {
     public class GetGames
     {
-        public class Query : IRequest<ViewModel[]>
-        { }
+        public class Query : IRequest<ViewModel>
+        {
+            public Paginate Paginate { get; set; }
+        }
 
         public class ViewModel
         {
-            /// <summary>
-            /// Id игры
-            /// </summary>
-            public int GameId { get; set; }
+            public GameViewModel[] Games { get; set; }
 
-            /// <summary>
-            /// Навзание игры
-            /// </summary>
-            public string GameName { get; set; }
-
-            /// <summary>
-            /// Id страницы
-            /// </summary>
-            /// <remarks>
-            /// Поле для взаимодействия с РСЯ
-            /// </remarks>
-            public int? PageId { get; set; }
+            public int TotalGamesCount { get; set; }
         }
 
-        public class ViewModelProfiler : Profile
+        public class GameViewModel
         {
-            public ViewModelProfiler()
-            {
-                CreateMap<GameModel, ViewModel>()
-                    .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.AppId))
-                    .ForMember(dest => dest.PageId, opt => opt.MapFrom(src => src.PageId))
-                    .ForMember(dest => dest.GameName, opt => opt.MapFrom(src => src.Name));
-            }
+            public string Name { get; set; }
+
+            public DateTime PublicationDate { get; set; }
+
+            public int PlayersCount { get; set; }
+
+            public int PlayersGrowth { get; set; }
+
+            public double Evaluation { get; set; }
+
+            public double? CashIncome { get; set; }
+
+            public double? CashIncomeGrowth { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, ViewModel[]>
+        public class Handler : IRequestHandler<Query, ViewModel>
         {
             private readonly ReportDbContext _dbContext;
-            private readonly IMapper _mapper;
             private readonly IPrincipal _principal;
 
             public Handler(
-                IPrincipal principal,
                 ReportDbContext dbContext,
-                IMapper mapper)
+                IPrincipal principal)
             {
                 _dbContext = dbContext;
-                _mapper = mapper;
                 _principal = principal;
             }
 
-            public async Task<ViewModel[]> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<ViewModel> Handle(
+                Query request,
+                CancellationToken cancellationToken)
             {
                 var userId = _principal.GetUserId();
 
-                var result = await _dbContext.Games
-                    .Where(x => x.UserId == userId)
-                    .ProjectTo<ViewModel>(_mapper.ConfigurationProvider)
+                var gamesQuery = _dbContext.Games
+                    .Where(x => x.UserId == userId);
+
+                var games = await gamesQuery
+                    .Select(game => new GameViewModel
+                    {
+                        Name = game.Name!,
+
+                        PublicationDate = game.PublicationDate!.Value,
+
+                        PlayersCount = game.GameStatistics.First().PlayersCount,
+
+                        Evaluation = game.GameStatistics.First().Evaluation,
+
+                        CashIncome = game.GameStatistics.Sum(s => s.CashIncome),
+
+                        CashIncomeGrowth = game.GameStatistics.First().CashIncome,
+                    })
+                    .OrderByDescending(x => x.PlayersCount)
+                        .ThenByDescending(x => x.CashIncome)
+                    .Paginate(request.Paginate)
                     .ToArrayAsync(cancellationToken);
 
-                return result;
+                var totalGamesCount = await gamesQuery
+                  .CountAsync(cancellationToken);
+
+                var response = new ViewModel
+                {
+                    Games = games,
+                    TotalGamesCount = totalGamesCount,
+                };
+
+                return response;
             }
         }
     }

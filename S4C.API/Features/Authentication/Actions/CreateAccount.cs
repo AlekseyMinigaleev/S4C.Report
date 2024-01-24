@@ -31,7 +31,7 @@ namespace С4S.API.Features.Authentication.Actions
             public string? RsyaAuthorizationTokenString
             {
                 get { return RsyaAuthorizationToken?.Token; }
-                set 
+                set
                 {
                     if (string.IsNullOrWhiteSpace(value))
                         RsyaAuthorizationToken = null;
