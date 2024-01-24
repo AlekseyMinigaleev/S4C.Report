@@ -28,16 +28,11 @@ namespace С4S.API.Features.Game.Actions
 
             public DateTime PublicationDate { get; set; }
 
-            public int PlayersCount { get; set; }
-
-            /*TODO: Добавить Расчет этого поля. Текущее количество игроков - количество игроков на момент прошлой синхронизации*/
-            public int PlayersGrowth { get; set; }
-
             public double Evaluation { get; set; }
 
-            public double? CashIncome { get; set; }
+            public ValueWithProgress<int> PlayersCount { get; set; }
 
-            public double? CashIncomeGrowth { get; set; }
+            public ValueWithProgress<double?>? CashIncome { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, ViewModel>
@@ -58,9 +53,10 @@ namespace С4S.API.Features.Game.Actions
                 CancellationToken cancellationToken)
             {
                 var userId = _principal.GetUserId();
-
                 var gamesQuery = _dbContext.Games
-                    .Where(x => x.UserId == userId);
+                    .Where(x => x.UserId == userId)
+                    .OrderByDescending(x => x.GameStatistics.Sum(gs => gs.PlayersCount))
+                        .ThenByDescending(x => x.GameStatistics.Sum(gs => gs.CashIncome));
 
                 var games = await gamesQuery
                     .Select(game => new GameViewModel
@@ -69,16 +65,24 @@ namespace С4S.API.Features.Game.Actions
 
                         PublicationDate = game.PublicationDate!.Value,
 
-                        PlayersCount = game.GameStatistics.First().PlayersCount,
+                        PlayersCount = new ValueWithProgress<int>(
+                            game.GameStatistics
+                                .First().PlayersCount,
+                                0 /*TODO: добавить расчет*/),
+
+                        CashIncome = game.GameStatistics
+                            .All(x => x.CashIncome == null)
+                                ? null
+                                : new ValueWithProgress<double?>(
+                                    game.GameStatistics
+                                        .Select(x => x.CashIncome)
+                                        .Sum()!.Value,
+
+                                    game.GameStatistics
+                                        .First().CashIncome),
 
                         Evaluation = game.GameStatistics.First().Evaluation,
-
-                        CashIncome = game.GameStatistics.Sum(s => s.CashIncome),
-
-                        CashIncomeGrowth = game.GameStatistics.First().CashIncome,
                     })
-                    .OrderByDescending(x => x.PlayersCount)
-                        .ThenByDescending(x => x.CashIncome)
                     .Paginate(request.Paginate)
                     .ToArrayAsync(cancellationToken);
 

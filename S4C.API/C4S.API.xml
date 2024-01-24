@@ -221,6 +221,27 @@
             номер страницы
             </summary>
         </member>
+        <member name="T:С4S.API.Models.ValueWithProgress`1">
+             <summary>
+            
+             </summary>
+             <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:С4S.API.Models.ValueWithProgress`1.ActualValue">
+            <summary>
+            Актуальное значение
+            </summary>
+        </member>
+        <member name="P:С4S.API.Models.ValueWithProgress`1.LastProgressValue">
+            <summary>
+            последнее добавленное значение к актуальному значению
+            </summary>
+        </member>
+        <member name="M:С4S.API.Models.ValueWithProgress`1.CompareTo(С4S.API.Models.ValueWithProgress{`0})">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
             Добавляет все необходимые сервисы для хранилищ
