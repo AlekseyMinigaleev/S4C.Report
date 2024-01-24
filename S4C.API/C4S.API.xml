@@ -118,53 +118,6 @@
             dd.MM.yyyy
             </remarks>
         </member>
-        <member name="T:С4S.API.Features.Game.Actions.Extensions">
-            <summary>
-            Содержит методы-расширения для работы с моделью игры <see cref="T:C4S.DB.Models.GameModel"/>.
-            </summary>
-        </member>
-        <member name="M:С4S.API.Features.Game.Actions.Extensions.GetPlayersCountActualValue(C4S.DB.Models.GameModel)">
-            <summary>
-            Получает актуальное значение количества игроков.
-            </summary>
-            <param name="source">Исходная модель игры.</param>
-            <returns>Актуальное значение количества игроков.</returns>
-        </member>
-        <member name="M:С4S.API.Features.Game.Actions.Extensions.GetPlayersCountLastProgressValue(C4S.DB.Models.GameModel)">
-            <summary>
-            Получает последнее добавленное значение к актуальному количеству игроков.
-            </summary>
-            <param name="source">Исходная модель игры.</param>
-            <returns>Значение, представляющее изменение количества игроков с предпоследней синхронизации.</returns>
-        </member>
-        <member name="M:С4S.API.Features.Game.Actions.Extensions.GetCashIncomeActualValue(C4S.DB.Models.GameModel)">
-            <summary>
-            Получает актуальное значение дохода.
-            </summary>
-            <param name="source">Исходная модель игры.</param>
-            <returns>Актуальное значение дохода.</returns>
-        </member>
-        <member name="M:С4S.API.Features.Game.Actions.Extensions.GetCashIncomeLastProgressValue(C4S.DB.Models.GameModel)">
-            <summary>
-            Получает последнее добавленное значение к актуальному доходу.
-            </summary>
-            <param name="source">Исходная модель игры.</param>
-            <returns>Значение, представляющее изменение дохода с предпоследней синхронизации.</returns>
-        </member>
-        <member name="M:С4S.API.Features.Game.Actions.Extensions.GetLastSynchronizationStatistic(System.Collections.Generic.ISet{C4S.DB.Models.GameStatisticModel})">
-            <summary>
-            Получает последнюю статистику синхронизации игры.
-            </summary>
-            <param name="source">Множество статистик игры.</param>
-            <returns>Последняя статистика синхронизации.</returns>
-        </member>
-        <member name="M:С4S.API.Features.Game.Actions.Extensions.GetBeforeLastSynchronizationStatistic(System.Collections.Generic.ISet{C4S.DB.Models.GameStatisticModel})">
-            <summary>
-            Получает статистику синхронизации перед последней.
-            </summary>
-            <param name="source">Множество статистик игры.</param>
-            <returns>Статистика синхронизации перед последней.</returns>
-        </member>
         <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.GameId">
             <summary>
             Id игры
