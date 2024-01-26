@@ -1,4 +1,4 @@
-﻿using C4S.DB.ConfigurationModels;
+﻿using C4S.Common.ConfigurationModels;
 using C4S.DB.Models;
 using C4S.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;

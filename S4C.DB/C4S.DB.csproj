@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\C4S.Common\C4S.Common.csproj" />
     <ProjectReference Include="..\C4S.Helpers\C4S.Helpers.csproj" />
   </ItemGroup>
 

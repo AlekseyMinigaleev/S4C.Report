@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using C4S.Common.Models;
 using C4S.DB;
 using C4S.DB.Expressions;
 using C4S.DB.Models;
@@ -14,12 +15,12 @@ namespace С4S.API.Features.Game.Actions
 {
     public class GetGames
     {
-        public class Query : IRequest<ViewModel>
+        public class Query : IRequest<Response>
         {
             public Paginate Paginate { get; set; }
         }
 
-        public class ViewModel
+        public class Response
         {
             public GameViewModel[] Games { get; set; }
 
@@ -44,13 +45,13 @@ namespace С4S.API.Features.Game.Actions
             public GameViewModelProfiler()
             {
                 CreateMap<GameModel, GameViewModel>()
-                    .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(GameExpressions.GetLastSynchronizedEvaluation))
-                    .ForMember(dest => dest.PlayersCountWithProgress, opt => opt.MapFrom(GameExpressions.GetPlayersCountWithProgress))
-                    .ForMember(dest => dest.CashIncomeWithProgress, opt => opt.MapFrom(GameExpressions.GetCashIncomeWithProgress));
+                    .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(GameExpressions.LastSynchronizedEvaluationExpression))
+                    .ForMember(dest => dest.PlayersCountWithProgress, opt => opt.MapFrom(GameExpressions.PlayersCountWithProgressExpression))
+                    .ForMember(dest => dest.CashIncomeWithProgress, opt => opt.MapFrom(GameExpressions.CashIncomeWithProgressExpression));
             }
         }
 
-        public class Handler : IRequestHandler<Query, ViewModel>
+        public class Handler : IRequestHandler<Query, Response>
         {
             private readonly ReportDbContext _dbContext;
             private readonly IPrincipal _principal;
@@ -66,7 +67,7 @@ namespace С4S.API.Features.Game.Actions
                 _mapper = mapper;
             }
 
-            public async Task<ViewModel> Handle(
+            public async Task<Response> Handle(
                 Query request,
                 CancellationToken cancellationToken)
             {
@@ -86,7 +87,7 @@ namespace С4S.API.Features.Game.Actions
                 var totalGamesCount = await gamesQuery
                   .CountAsync(cancellationToken);
 
-                var response = new ViewModel
+                var response = new Response
                 {
                     Games = games,
                     TotalGamesCount = totalGamesCount,

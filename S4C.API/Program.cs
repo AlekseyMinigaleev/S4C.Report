@@ -1,6 +1,6 @@
 using C4S.API.Extensions;
+using C4S.Common.ConfigurationModels;
 using C4S.DB;
-using C4S.DB.ConfigurationModels;
 using C4S.Helpers.ApiHeplers.Swagger;
 using C4S.Services.Extensions;
 using C4S.Services.Implements;

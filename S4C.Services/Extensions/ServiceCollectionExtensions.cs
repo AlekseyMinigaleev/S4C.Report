@@ -1,4 +1,4 @@
-﻿using C4S.DB.ConfigurationModels;
+﻿using C4S.Common.ConfigurationModels;
 using C4S.Services.Implements;
 using C4S.Services.Implements.ExcelFileServices;
 using C4S.Services.Interfaces;

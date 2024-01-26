@@ -2,6 +2,9 @@
 
 namespace C4S.DB.Extensions
 {
+    /// <summary>
+    /// Справочник методов расширения для <see cref="GameModel"/>
+    /// </summary>
     public static class GameExtensions
     {
         /// <summary>

@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
+using C4S.Common.Models;
 using C4S.DB;
-using C4S.DB.DTO;
 using C4S.DB.Models;
 using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using S4C.YandexGateway.DeveloperPage;
 using S4C.YandexGateway.DeveloperPage.Models;
 using S4C.YandexGateway.RSYA;

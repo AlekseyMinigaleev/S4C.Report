@@ -1,4 +1,4 @@
-﻿namespace C4S.DB.ConfigurationModels
+﻿namespace C4S.Common.ConfigurationModels
 {
     /// <summary>
     /// Конфигурация JWT токена

@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 
-namespace C4S.DB.DTO
+namespace C4S.Common.Models
 {
     /// <summary>
     /// Временной интервал
