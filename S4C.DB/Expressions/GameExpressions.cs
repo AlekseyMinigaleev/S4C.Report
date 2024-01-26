@@ -1,5 +1,30 @@
-﻿namespace С4S.API.Models
+﻿using C4S.DB.Extensions;
+using C4S.DB.Models;
+using System.Linq.Expressions;
+
+namespace C4S.DB.Expressions
 {
+    /// <summary>
+    /// Справочник <see cref="Expression"/> для <see cref="GameModel"/>
+    /// </summary>
+    public static class GameExpressions
+    {
+        public static Expression<Func<GameModel, double>> GetLastSynchronizedEvaluation => (GameModel game) =>
+            game.GameStatistics.GetLastSynchronizationStatistic().Evaluation;
+
+        public static Expression<Func<GameModel, ValueWithProgress<int>>> GetPlayersCountWithProgress => (GameModel game) =>
+            new ValueWithProgress<int>(
+                game.GetPlayersCountActualValue(),
+                game.GetPlayersCountLastProgressValue());
+
+        public static Expression<Func<GameModel, ValueWithProgress<double?>?>> GetCashIncomeWithProgress => (GameModel game) =>
+            game.GameStatistics.Any(gs => gs.CashIncome.HasValue)
+                ? new ValueWithProgress<double?>(
+                    game.GetCashIncomeActualValue(),
+                    game.GetCashIncomeLastProgressValue())
+                : null;
+    }
+
     /// <summary>
     /// модель значения с прогрессом для сравнения.
     /// </summary>

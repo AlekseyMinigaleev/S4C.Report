@@ -221,31 +221,6 @@
             номер страницы
             </summary>
         </member>
-        <member name="T:С4S.API.Models.ValueWithProgress`1">
-            <summary>
-            модель значения с прогрессом для сравнения.
-            </summary>
-            <typeparam name="T">Тип значения.</typeparam>
-        </member>
-        <member name="P:С4S.API.Models.ValueWithProgress`1.ActualValue">
-            <summary>
-            Актуальное значение
-            </summary>
-        </member>
-        <member name="P:С4S.API.Models.ValueWithProgress`1.LastProgressValue">
-            <summary>
-            Последнее добавленное значение к актуальному значению
-            </summary>
-        </member>
-        <member name="M:С4S.API.Models.ValueWithProgress`1.#ctor(`0,`0)">
-            <param name="actualValue">Актуальное значение.</param>
-            <param name="lastProgressValue">Последнее добавленное значение к актуальному значению.</param>
-        </member>
-        <member name="M:С4S.API.Models.ValueWithProgress`1.CompareTo(С4S.API.Models.ValueWithProgress{`0})">
-            <summary>
-            <inheritdoc/>
-            </summary>
-        </member>
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
             Добавляет все необходимые сервисы для хранилищ

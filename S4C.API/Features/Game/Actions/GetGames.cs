@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using C4S.DB;
+using C4S.DB.Expressions;
 using C4S.DB.Models;
 using C4S.Helpers.Extensions;
 using MediatR;
@@ -42,18 +43,10 @@ namespace С4S.API.Features.Game.Actions
         {
             public GameViewModelProfiler()
             {
-                /*TODO: Разбить на спеки*/
                 CreateMap<GameModel, GameViewModel>()
-                    .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(src => src.GameStatistics.GetLastSynchronizationStatistic().Evaluation))
-                    .ForMember(dest => dest.PlayersCountWithProgress, opt => opt.MapFrom(src => new ValueWithProgress<int>(
-                        src.GetPlayersCountActualValue(),
-                        src.GetPlayersCountLastProgressValue())))
-                    .ForMember(dest => dest.CashIncomeWithProgress, opt => opt.MapFrom(src =>
-                        src.GameStatistics.Any(gs => gs.CashIncome.HasValue)
-                            ? new ValueWithProgress<double?>(
-                                src.GetCashIncomeActualValue(),
-                                src.GetCashIncomeLastProgressValue())
-                            : null));
+                    .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(GameExpressions.GetLastSynchronizedEvaluation))
+                    .ForMember(dest => dest.PlayersCountWithProgress, opt => opt.MapFrom(GameExpressions.GetPlayersCountWithProgress))
+                    .ForMember(dest => dest.CashIncomeWithProgress, opt => opt.MapFrom(GameExpressions.GetCashIncomeWithProgress));
             }
         }
 
