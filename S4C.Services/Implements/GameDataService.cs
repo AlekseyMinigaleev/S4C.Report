@@ -100,7 +100,7 @@ namespace C4S.Services.Implements
             GameModel[] games)
         {
             _logger.LogInformation($"{rsyaPrefix} Начат процесс получения данных");
-            var authorizationToken = GetAuthorizationToken();
+            var authorizationToken = _user.RsyaAuthorizationToken;
             if (authorizationToken is null)
             {
                 _logger.LogWarning($"Отсутствует токен авторизации для РСЯ, процесс пропущен.");
@@ -110,12 +110,6 @@ namespace C4S.Services.Implements
                 await EnrichGameInfoProcess(allIncomingGameData, games, authorizationToken);
                 _logger.LogSuccess($"{rsyaPrefix} Процесс завершен");
             }
-        }
-
-        private string? GetAuthorizationToken()
-        {
-            var authorization = _user.RsyaAuthorizationToken;
-            return authorization;
         }
 
         private async Task EnrichGameInfoProcess(
@@ -159,7 +153,13 @@ namespace C4S.Services.Implements
                     ? lastGameStatistic.LastSynchroDate.Date
                     : lastGameStatistic.LastSynchroDate.AddDays(1);
 
-            var period = new DateTimeRange(startDate, DateTime.Now);
+            var endDate = DateTime.Now;
+
+            /*TODO: Не убирать, нужно для выполнения ручной синхронизацией*/
+            //var startDate =  new DateTime(2024, 1, 25);
+            //var endDate = new DateTime(2024, 1, 25);
+
+            var period = new DateTimeRange(startDate, endDate);
 
             return period;
         }
@@ -186,7 +186,7 @@ namespace C4S.Services.Implements
                 await _dbContext.GamesStatistics
                     .AddAsync(incomingGameStatisticModel, cancellationToken);
 
-                await _dbContext.SaveChangesAsync(cancellationToken); 
+                await _dbContext.SaveChangesAsync(cancellationToken);
             }
         }
 

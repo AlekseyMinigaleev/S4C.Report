@@ -105,7 +105,10 @@ namespace S4C.YandexGateway.DeveloperPage.Models
                 .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
                 .ForMember(dest => dest.Statuses, opt => opt.Ignore())
                 .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(src => src.CashIncome))
-                .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now));
+                .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now))
+                /*TODO: Не убирать, нужно для выполнения ручной синхронизацией*/
+                //.ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => new DateTime(2024, 1, 25)))
+                ;
         }
     }
 }
