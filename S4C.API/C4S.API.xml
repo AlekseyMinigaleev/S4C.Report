@@ -221,6 +221,42 @@
             номер страницы
             </summary>
         </member>
+        <member name="T:С4S.API.Models.Sort">
+            <summary>
+            Параметры для сортировки
+            </summary>
+        </member>
+        <member name="P:С4S.API.Models.Sort.FieldName">
+            <summary>
+            Имя поля по которому будет применять сортировка
+            </summary>
+        </member>
+        <member name="P:С4S.API.Models.Sort.SortType">
+            <summary>
+            тип сортировки
+            </summary>
+        </member>
+        <member name="M:С4S.API.Models.Sort.GetSortExpression">
+            <summary>
+            Возвращает строку для применения сортировки
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:С4S.API.Models.SortType">
+            <summary>
+            тип сортировки
+            </summary>
+        </member>
+        <member name="F:С4S.API.Models.SortType.Ascending">
+            <summary>
+            По возрастанию
+            </summary>
+        </member>
+        <member name="F:С4S.API.Models.SortType.Descending">
+            <summary>
+            По убыванию
+            </summary>
+        </member>
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
             Добавляет все необходимые сервисы для хранилищ

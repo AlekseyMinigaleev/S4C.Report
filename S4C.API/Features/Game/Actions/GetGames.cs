@@ -7,6 +7,7 @@ using C4S.DB.Models;
 using C4S.Helpers.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 using System.Security.Principal;
 using С4S.API.Extensions;
 using С4S.API.Models;
@@ -18,6 +19,8 @@ namespace С4S.API.Features.Game.Actions
         public class Query : IRequest<Response>
         {
             public Paginate Paginate { get; set; }
+
+            public Sort Sort { get; set; }
         }
 
         public class Response
@@ -73,24 +76,29 @@ namespace С4S.API.Features.Game.Actions
             {
                 var userId = _principal.GetUserId();
 
-                var gamesQuery = _dbContext.Games
+                /*
+                 * TODO: Оптимизация запроса
+                 * Не получается сортировать после проеции, если данные не материализованны.
+                 * Сложно реализовать сортировку до проекции, возможно нужно полностью переделать Extension методы, которые исопльзуются в Expression
+                 * Пока вижу только 1 вариант решения, в таблице Game хранить актуальные данные оценки, прибыл.
+                 * Из за сроков не сиправил сразу.
+                 */
+
+                var games = await _dbContext.Games
                     .Where(x => x.UserId == userId)
-                    /*TODO: дать возможность пользователю сортировать значения*/
-                    .OrderByDescending(x => x.GameStatistics.Sum(game => game.PlayersCount))
-                        .ThenByDescending(x => x.GameStatistics.Sum(game => game.CashIncome))
-                    .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider);
+                    .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider)
+                    .ToArrayAsync(cancellationToken); 
 
-                var games = await gamesQuery
+                var sortedGames = games
+                    .AsQueryable()
+                    .OrderBy(request.Sort.GetSortExpression())
                     .Paginate(request.Paginate)
-                    .ToArrayAsync(cancellationToken);
-
-                var totalGamesCount = await gamesQuery
-                  .CountAsync(cancellationToken);
+                    .ToArray();
 
                 var response = new Response
                 {
-                    Games = games,
-                    TotalGamesCount = totalGamesCount,
+                    Games = sortedGames,
+                    TotalGamesCount = games.Length
                 };
 
                 return response;
