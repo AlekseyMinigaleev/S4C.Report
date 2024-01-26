@@ -12,8 +12,7 @@ using С4S.API.Extensions;
 using С4S.API.Models;
 
 namespace С4S.API.Features.Game.Actions
-{   
-    /*JOPA*/
+{
     public class GetGames
     {
         public class Query : IRequest<Response>
