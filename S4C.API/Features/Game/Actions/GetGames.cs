@@ -9,7 +9,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Security.Principal;
-using С4S.API.Models;
 
 namespace С4S.API.Features.Game.Actions
 {
@@ -17,7 +16,6 @@ namespace С4S.API.Features.Game.Actions
     {
         public class Query : IRequest<IEnumerable<GameViewModel>>
         {
-            public Sort Sort { get; set; }
         }
 
         public class GameViewModel
@@ -66,14 +64,10 @@ namespace С4S.API.Features.Game.Actions
             {
                 var userId = _principal.GetUserId();
 
-                /*TODO: лучше делать сортировку на стороне клиента, сделал на сервере т.к. не смогу реализовать на клиенте*/
-                var games = (await _dbContext.Games
+                var games = await _dbContext.Games
                     .Where(x => x.UserId == userId)
                     .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider)
-                    .ToArrayAsync(cancellationToken))
-                    .AsQueryable()
-                    .OrderBy(request.Sort.GetSortExpression())
-                    .ToArray();
+                    .ToArrayAsync(cancellationToken);
 
                 return games;
             }

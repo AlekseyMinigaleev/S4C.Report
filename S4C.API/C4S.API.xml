@@ -182,7 +182,7 @@
             Устанавливает PageId для игры. ОТСТУТСТВУЕТ ВАЛИДАЦИЯ НА УСТАНОВКУ PageId ИГРЕ, КОТОРОЙ ЭТОТ PageId НЕ ПРИНАДЛЕЖИТ.
             </summary>
         </member>
-        <member name="M:С4S.API.Features.Game.GameController.GetGamesAsync(С4S.API.Features.Game.Actions.GetGames.Query,System.Threading.CancellationToken)">
+        <member name="M:С4S.API.Features.Game.GameController.GetGamesAsync(System.Threading.CancellationToken)">
             <summary>
             Возвращает список всех игр
             </summary>
