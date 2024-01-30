@@ -14,24 +14,26 @@ namespace C4S.DB.Expressions
         /// Выражение для получения акутальной на данный момент оценки игры.
         /// </summary>
         public static Expression<Func<GameModel, double>> LastSynchronizedEvaluationExpression => (GameModel game) =>
-            game.GameStatistics.GetLastSynchronizationStatistic().Evaluation;
+            game.GameStatistics.GetLastSynchronizationStatistic()!.Evaluation;
 
         /// <summary>
         /// Выражение для получения количества игроков с прогрессом.
         /// </summary>
-        public static Expression<Func<GameModel, ValueWithProgress<int>>> PlayersCountWithProgressExpression => (GameModel game) =>
-            new ValueWithProgress<int>(
+        public static Expression<Func<GameModel, ValueWithProgress<int?>?>> PlayersCountWithProgressExpression => (GameModel game) =>
+            game.User.RsyaAuthorizationToken != null /*TODO: DRY вовзможно можно как то вынести этот код*/
+            ? new ValueWithProgress<int?>(
                 game.GetPlayersCountActualValue(),
-                game.GetPlayersCountLastProgressValue());
+                game.GetPlayersCountLastProgressValue())
+            : null;
 
         /// <summary>
         /// Выражение для получения дохода с прогрессом.
         /// </summary>
         public static Expression<Func<GameModel, ValueWithProgress<double?>?>> CashIncomeWithProgressExpression => (GameModel game) =>
-            game.GameStatistics.Any(gs => gs.CashIncome.HasValue)
-                ? new ValueWithProgress<double?>(
-                    game.GetCashIncomeActualValue(),
-                    game.GetCashIncomeLastProgressValue())
-                : null;
+           game.User.RsyaAuthorizationToken != null /*TODO: DRY вовзможно можно как то вынести этот код*/
+            ? new ValueWithProgress<double?>(
+                game.GetCashIncomeActualValue(),
+                game.GetCashIncomeLastProgressValue())
+            : null;
     }
 }

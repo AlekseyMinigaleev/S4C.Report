@@ -9,25 +9,15 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Security.Principal;
-using С4S.API.Extensions;
 using С4S.API.Models;
 
 namespace С4S.API.Features.Game.Actions
 {
     public class GetGames
     {
-        public class Query : IRequest<Response>
+        public class Query : IRequest<IEnumerable<GameViewModel>>
         {
-            public Paginate Paginate { get; set; }
-
             public Sort Sort { get; set; }
-        }
-
-        public class Response
-        {
-            public GameViewModel[] Games { get; set; }
-
-            public int TotalGamesCount { get; set; }
         }
 
         public class GameViewModel
@@ -38,7 +28,7 @@ namespace С4S.API.Features.Game.Actions
 
             public double Evaluation { get; set; }
 
-            public ValueWithProgress<int> PlayersCountWithProgress { get; set; }
+            public ValueWithProgress<int?>? PlayersCountWithProgress { get; set; }
 
             public ValueWithProgress<double?>? CashIncomeWithProgress { get; set; }
         }
@@ -54,7 +44,7 @@ namespace С4S.API.Features.Game.Actions
             }
         }
 
-        public class Handler : IRequestHandler<Query, Response>
+        public class Handler : IRequestHandler<Query, IEnumerable<GameViewModel>>
         {
             private readonly ReportDbContext _dbContext;
             private readonly IPrincipal _principal;
@@ -70,38 +60,22 @@ namespace С4S.API.Features.Game.Actions
                 _mapper = mapper;
             }
 
-            public async Task<Response> Handle(
+            public async Task<IEnumerable<GameViewModel>> Handle(
                 Query request,
                 CancellationToken cancellationToken)
             {
                 var userId = _principal.GetUserId();
 
-                /*
-                 * TODO: Оптимизация запроса
-                 * Не получается сортировать после проеции, если данные не материализованны.
-                 * Сложно реализовать сортировку до проекции, возможно нужно полностью переделать Extension методы, которые исопльзуются в Expression
-                 * Пока вижу только 1 вариант решения, в таблице Game хранить актуальные данные оценки, прибыл.
-                 * Из за сроков не сиправил сразу.
-                 */
-
-                var games = await _dbContext.Games
+                /*TODO: лучше делать сортировку на стороне клиента, сделал на сервере т.к. не смогу реализовать на клиенте*/
+                var games = (await _dbContext.Games
                     .Where(x => x.UserId == userId)
                     .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider)
-                    .ToArrayAsync(cancellationToken); 
-
-                var sortedGames = games
+                    .ToArrayAsync(cancellationToken))
                     .AsQueryable()
                     .OrderBy(request.Sort.GetSortExpression())
-                    .Paginate(request.Paginate)
                     .ToArray();
 
-                var response = new Response
-                {
-                    Games = sortedGames,
-                    TotalGamesCount = games.Length
-                };
-
-                return response;
+                return games;
             }
         }
     }
