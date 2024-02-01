@@ -24,16 +24,28 @@ namespace С4S.API.Features.Game.Actions
 
             public TotalViewModel Total => new()
             {
-                PlayersCount = Games.Sum(x => x.PlayersCount?.ValueWithProgress?.ActualValue),
-                CashIncome = Games.Sum(x => x.CashIncome?.ValueWithProgress?.ActualValue)
+                PlayersCount = Games.Sum(x => x.PlayersCount.ValueWithProgress.ActualValue),
+                CashIncome = Games.Sum(x => x.CashIncome.ValueWithProgress?.ActualValue)
             };
         }
 
         public class TotalViewModel
         {
-            public int? PlayersCount { get; set; }
+            public int PlayersCount { get; set; }
 
             public double? CashIncome { get; set; }
+        }
+
+        public class CashIncomeViewModel
+        {
+            public ValueWithProgress<double?>? ValueWithProgress { get; set; }
+            public double? Percentage { get; set; }
+        }
+
+        public class PlayersCountViewModel
+        {
+            public ValueWithProgress<int> ValueWithProgress { get; set; }
+            public double Percentage { get; set; }
         }
 
         public class GameViewModel
@@ -44,23 +56,9 @@ namespace С4S.API.Features.Game.Actions
 
             public double Evaluation { get; set; }
 
-            public PlayersCountViewModel PlayersCount { get; set; }
-
             public CashIncomeViewModel CashIncome { get; set; }
-        }
 
-        public class PlayersCountViewModel
-        {
-            public ValueWithProgress<int?>? ValueWithProgress { get; set; }
-
-            public double? Percentage { get; set; }
-        }
-
-        public class CashIncomeViewModel
-        {
-            public ValueWithProgress<double?>? ValueWithProgress { get; set; }
-
-            public double? Percentage { get; set; }
+            public PlayersCountViewModel PlayersCount { get; set; }
         }
 
         public class GameViewModelProfiler : Profile
@@ -69,17 +67,16 @@ namespace С4S.API.Features.Game.Actions
             {
                 CreateMap<GameModel, GameViewModel>()
                     .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(GameExpressions.LastSynchronizedEvaluationExpression))
-                    .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src))
                     .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(src => src))
-                    ;
+                    .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src));
 
                 CreateMap<GameModel, PlayersCountViewModel>()
-                    .ForMember(dest => dest.ValueWithProgress, opt => opt.MapFrom(GameExpressions.PlayersCountWithProgressExpression))
-                    .ForMember(dest => dest.Percentage, opt => opt.MapFrom(src => 0D));
+                      .ForMember(dest => dest.ValueWithProgress, opt => opt.MapFrom(GameExpressions.PlayersCountWithProgressExpression))
+                      .ForMember(dest => dest.Percentage, opt => opt.Ignore());
 
                 CreateMap<GameModel, CashIncomeViewModel>()
-                    .ForMember(dest => dest.ValueWithProgress, opt => opt.MapFrom(GameExpressions.CashIncomeWithProgressExpression))
-                    .ForMember(dest => dest.Percentage, opt => opt.MapFrom(src => 0D));
+                  .ForMember(dest => dest.ValueWithProgress, opt => opt.MapFrom(GameExpressions.CashIncomeWithProgressExpression))
+                  .ForMember(dest => dest.Percentage, opt => opt.Ignore());
             }
         }
 
@@ -115,31 +112,43 @@ namespace С4S.API.Features.Game.Actions
                     Games = games,
                 };
 
-                foreach (var game in response.Games)
-                {
-                    if (game.PlayersCount.ValueWithProgress is null)
-                        game.PlayersCount.Percentage = null;
-                    else
-                    {
-                        var acutal = (double)game.PlayersCount.ValueWithProgress.ActualValue!;
-                        var a1 = (acutal / response.Total.PlayersCount);
-                        var a2 = a1 * 100;
-
-                        game.PlayersCount.Percentage = a2;
-                    }
-
-                    if (game.CashIncome.ValueWithProgress is null)
-                        game.CashIncome.Percentage = null;
-                    else
-                    {
-                        var a1 = (game.CashIncome.ValueWithProgress.ActualValue / response.Total.CashIncome);
-                        var a2 = a1 * 100;
-
-                        game.CashIncome.Percentage = a2;
-                    }
-                }
+                EnrichResponseWithPercentage(response);
 
                 return response;
+            }
+
+            private static void EnrichResponseWithPercentage(ResponseViewModel response)
+            {
+                foreach (var game in response.Games)
+                {
+                    var playersCountActualValue = game.PlayersCount.ValueWithProgress.ActualValue;
+                    var totalPlayersCont = response.Total.PlayersCount;
+
+                    game.PlayersCount.Percentage = CaluculatePersentage(
+                        playersCountActualValue,
+                        totalPlayersCont);
+
+                    if (game.CashIncome.ValueWithProgress is not null
+                        && game.CashIncome.ValueWithProgress.ActualValue is not null)
+                    {
+                        game.CashIncome.Percentage = CaluculatePersentage(
+                            game.CashIncome.ValueWithProgress.ActualValue.Value,
+                            response.Total.CashIncome!.Value);
+                    }
+                }
+            }
+
+            private static double CaluculatePersentage<T>(T value, T total)
+                where T : IConvertible
+            {
+                var a = Convert.ToDouble(value);
+                var b = Convert.ToDouble(total);
+
+                double percentage = (a / b) * 100;
+
+                var roundedPercetage = Math.Round(percentage, 2);
+
+                return roundedPercetage;
             }
         }
     }

@@ -19,18 +19,16 @@ namespace C4S.DB.Expressions
         /// <summary>
         /// Выражение для получения количества игроков с прогрессом.
         /// </summary>
-        public static Expression<Func<GameModel, ValueWithProgress<int?>?>> PlayersCountWithProgressExpression => (GameModel game) =>
-            game.User.RsyaAuthorizationToken != null /*TODO: DRY вовзможно можно как то вынести этот код*/
-            ? new ValueWithProgress<int?>(
+        public static Expression<Func<GameModel, ValueWithProgress<int>>> PlayersCountWithProgressExpression => (GameModel game) =>
+            new ValueWithProgress<int>(
                 game.GetPlayersCountActualValue(),
-                game.GetPlayersCountLastProgressValue())
-            : null;
+                game.GetPlayersCountLastProgressValue());
 
         /// <summary>
         /// Выражение для получения дохода с прогрессом.
         /// </summary>
         public static Expression<Func<GameModel, ValueWithProgress<double?>?>> CashIncomeWithProgressExpression => (GameModel game) =>
-           game.User.RsyaAuthorizationToken != null /*TODO: DRY вовзможно можно как то вынести этот код*/
+           game.User.RsyaAuthorizationToken != null
             ? new ValueWithProgress<double?>(
                 game.GetCashIncomeActualValue(),
                 game.GetCashIncomeLastProgressValue())
