@@ -94,6 +94,17 @@ namespace C4S.DB.Models
         {
             RefreshToken = null;
         }
+
+        /// <summary>
+        /// Возвращает имя разрботчика из <see cref="DeveloperPageUrl"/>
+        /// </summary>
+        /// <returns></returns>
+        public string GetDeveloperName()
+        {
+            var developerName = DeveloperPageUrl[(DeveloperPageUrl.IndexOf('=') + 1)..];
+
+            return developerName;
+        }
     }
 
     /// <summary>

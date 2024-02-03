@@ -35,10 +35,10 @@ namespace С4S.API.Features.Authentication
 
             Response.Cookies.Append(
                 nameof(AuthorizationTokens.RefreshToken),
-                result.RefreshToken,
+                result.AuthorizationTokens.RefreshToken,
                 new CookieOptions { HttpOnly = true });
 
-            return Ok(new { result.AccessToken });
+            return Ok(result);
         }
 
         /// <summary>
