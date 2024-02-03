@@ -1,4 +1,4 @@
-﻿using C4S.DB.DTO;
+﻿using C4S.Common.Models;
 using Moq;
 using Moq.Protected;
 using S4C.YandexGateway.RSYA;

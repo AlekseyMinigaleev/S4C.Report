@@ -1,4 +1,4 @@
-﻿using C4S.DB.ConfigurationModels;
+﻿using C4S.Common.ConfigurationModels;
 using C4S.DB.Models;
 using Microsoft.IdentityModel.Tokens;
 
@@ -20,7 +20,7 @@ namespace C4S.Services.Interfaces
         public DateTime RefreshTokenExpiry { get; }
 
         /// <summary>
-        /// Создает объект типа <see cref="Microsoft.IdentityModel.Tokens.SecurityKey"/>, по установленному <see cref="SecurityKey"/>
+        /// Создает объект типа <see cref="SecurityKey"/>, по установленному <see cref="SecurityKey"/>
         /// </summary>
         public SecurityKey SymmetricSecurityKey { get; }
 

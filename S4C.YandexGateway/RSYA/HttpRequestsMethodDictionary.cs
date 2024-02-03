@@ -1,4 +1,4 @@
-﻿using C4S.DB.DTO;
+﻿using C4S.Common.Models;
 
 namespace S4C.YandexGateway.RSYA
 {

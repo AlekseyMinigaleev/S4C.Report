@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace C4S.DB.Models
+﻿namespace C4S.DB.Models
 {
     /// <summary>
     /// Таблица игры
@@ -134,10 +132,4 @@ namespace C4S.DB.Models
         private GameModifiableFields()
         { }
     }
-
-    /// <summary>
-    /// Справочник <see cref="Expression"/> для <see cref="GameModel"/>
-    /// </summary>
-    public static class GameExpressions
-    { }
 }

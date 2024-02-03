@@ -1,4 +1,4 @@
-﻿using C4S.DB.DTO;
+﻿using C4S.Common.Models;
 using OfficeOpenXml;
 
 namespace C4S.Services.Interfaces

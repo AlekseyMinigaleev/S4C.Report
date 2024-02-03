@@ -23,6 +23,12 @@
             </summary>
             <param name="principal">Объект IPrincipal, представляющий текущего пользователя.</param>
         </member>
+        <member name="M:С4S.API.Extensions.QueryableExtensions.Paginate``1(System.Linq.IQueryable{``0},С4S.API.Models.Paginate)">
+            <summary>
+            Выполняет пагинацию для <typeparamref name="IQueryable"/> коллекции.
+            </summary>
+            <param name="paginate">параметры пагинации</param>
+        </member>
         <member name="M:С4S.API.Extensions.WebApplicationBuilderExtensions.BuildWithHangfireStorage(Microsoft.AspNetCore.Builder.WebApplicationBuilder,Microsoft.Extensions.Configuration.ConfigurationManager)">
             <summary>
             <inheritdoc cref="M:Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build"/>
@@ -112,17 +118,17 @@
             dd.MM.yyyy
             </remarks>
         </member>
-        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.GameId">
+        <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.GameId">
             <summary>
             Id игры
             </summary>
         </member>
-        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.GameName">
+        <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.GameName">
             <summary>
             Навзание игры
             </summary>
         </member>
-        <member name="P:С4S.API.Features.Game.Actions.GetGames.ViewModel.PageId">
+        <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.PageId">
             <summary>
             Id страницы
             </summary>
@@ -198,6 +204,57 @@
             <summary>
             Устанавливает токен авторизации.
             https://yandex.ru/dev/partner-statistics/doc/ru/concepts/access
+            </summary>
+        </member>
+        <member name="T:С4S.API.Models.Paginate">
+            <summary>
+            Параметры для пагинации
+            </summary>
+        </member>
+        <member name="P:С4S.API.Models.Paginate.ItemsPerPage">
+            <summary>
+            Количество элементов на странице
+            </summary>
+        </member>
+        <member name="P:С4S.API.Models.Paginate.PageNumber">
+            <summary>
+            номер страницы
+            </summary>
+        </member>
+        <member name="T:С4S.API.Models.Sort">
+            <summary>
+            Параметры для сортировки
+            </summary>
+        </member>
+        <member name="P:С4S.API.Models.Sort.FieldName">
+            <summary>
+            Имя поля по которому будет применять сортировка
+            </summary>
+        </member>
+        <member name="P:С4S.API.Models.Sort.SortType">
+            <summary>
+            тип сортировки
+            </summary>
+        </member>
+        <member name="M:С4S.API.Models.Sort.GetSortExpression">
+            <summary>
+            Возвращает строку для применения сортировки
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:С4S.API.Models.SortType">
+            <summary>
+            тип сортировки
+            </summary>
+        </member>
+        <member name="F:С4S.API.Models.SortType.Ascending">
+            <summary>
+            По возрастанию
+            </summary>
+        </member>
+        <member name="F:С4S.API.Models.SortType.Descending">
+            <summary>
+            По убыванию
             </summary>
         </member>
         <member name="M:C4S.API.Extensions.ServiceCollectionExtensions.AddStorages(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.ConfigurationManager)">

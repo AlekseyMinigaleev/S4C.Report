@@ -1,4 +1,4 @@
-﻿using C4S.DB.DTO;
+﻿using C4S.Common.Models;
 using C4S.Helpers.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

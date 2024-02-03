@@ -1,5 +1,5 @@
-﻿using C4S.DB;
-using C4S.DB.DTO;
+﻿using C4S.Common.Models;
+using C4S.DB;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
