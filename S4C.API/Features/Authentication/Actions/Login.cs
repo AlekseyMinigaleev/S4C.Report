@@ -11,10 +11,17 @@ namespace С4S.API.Features.Authentication.Actions
 {
     public class Login
     {
-        public class Query : IRequest<AuthorizationTokens>
+        public class Query : IRequest<ResponseViewModel>
         {
             /// <inheritdoc cref="UserCredentionals"/>
             public UserCredentionals UserCreditionals { get; set; }
+        }
+
+        public class ResponseViewModel
+        {
+            public AuthorizationTokens AuthorizationTokens { get; set; }
+
+            public string DeveloperName { get; set; }
         }
 
         public class QueryValidator : AbstractValidator<Query>
@@ -38,7 +45,7 @@ namespace С4S.API.Features.Authentication.Actions
             }
         }
 
-        private class Handler : IRequestHandler<Query, AuthorizationTokens>
+        private class Handler : IRequestHandler<Query, ResponseViewModel>
         {
             private readonly IJwtService _jwtService;
             private readonly ReportDbContext _dbContext;
@@ -51,7 +58,7 @@ namespace С4S.API.Features.Authentication.Actions
                 _dbContext = dbContext;
             }
 
-            public async Task<AuthorizationTokens> Handle(
+            public async Task<ResponseViewModel> Handle(
                 Query query,
                 CancellationToken cancellationToken)
             {
@@ -60,15 +67,22 @@ namespace С4S.API.Features.Authentication.Actions
                         x => x.Login.Equals(query.UserCreditionals.Login),
                         cancellationToken);
 
-                var response = new AuthorizationTokens
+                var developerName = user.GetDeveloperName();
+
+                var authorizationTokens = new AuthorizationTokens
                 {
                     AccessToken = _jwtService.CreateJwtToken(user, _jwtService.AccessTokenExpiry),
                     RefreshToken = _jwtService.CreateJwtToken(user, _jwtService.RefreshTokenExpiry),
                 };
 
-                user.SetRefreshToken(response.RefreshToken);
-
+                user.SetRefreshToken(authorizationTokens.RefreshToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
+
+                var response = new ResponseViewModel
+                {
+                    DeveloperName = developerName,
+                    AuthorizationTokens = authorizationTokens,
+                };
 
                 return response;
             }

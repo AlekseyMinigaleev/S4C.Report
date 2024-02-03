@@ -1,4 +1,6 @@
-﻿namespace С4S.API.Features.Authentication.Models
+﻿using System.Text.Json.Serialization;
+
+namespace С4S.API.Features.Authentication.Models
 {
     /// <summary>
     /// бъект для хранения токенов авторизации.
@@ -13,6 +15,7 @@
         /// <summary>
         /// Токен обновления
         /// </summary>
+        [JsonIgnore]
         public string RefreshToken { get; set; }
     }
 }
