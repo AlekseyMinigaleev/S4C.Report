@@ -25,7 +25,10 @@ namespace С4S.API.Features.Game.Actions
             public TotalViewModel Total => new()
             {
                 PlayersCount = Games.Sum(x => x.PlayersCount.ValueWithProgress.ActualValue),
-                CashIncome = Games.Sum(x => x.CashIncome.ValueWithProgress?.ActualValue)
+                CashIncome = Games
+                    .Any(x => x.CashIncome.ValueWithProgress is not null)
+                        ? Games.Sum(x => x.CashIncome.ValueWithProgress?.ActualValue)
+                        : null
             };
         }
 
@@ -146,7 +149,7 @@ namespace С4S.API.Features.Game.Actions
 
                 double percentage = (a / b) * 100;
 
-                var roundedPercetage = Math.Round(percentage, 2);
+                var roundedPercetage = Math.Round(percentage, 3);
 
                 return roundedPercetage;
             }
