@@ -58,5 +58,19 @@ namespace С4S.API.Features.Game
             var result = await Mediator.Send(query, cancellationToken);
             return Ok(result);
         }
+
+        /// <summary>
+        /// Возвращает список записей статистики по игре
+        /// </summary>
+        [Authorize]
+        [HttpGet("get-statistic-by-game")]
+        public async Task<ActionResult> GetGameStatisticsAsync(
+            [FromQuery] GetGameStatistics.Query query,
+            CancellationToken cancellationToken)
+        {
+            var result = await Mediator.Send(query, cancellationToken);
+
+            return Ok(result);
+        }
     }
 }
