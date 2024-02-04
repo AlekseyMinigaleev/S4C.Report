@@ -1,4 +1,6 @@
-﻿using C4S.DB;
+﻿using AutoMapper;
+using C4S.DB;
+using C4S.DB.Models;
 using C4S.Services.Interfaces;
 using FluentValidation;
 using MediatR;
@@ -21,7 +23,22 @@ namespace С4S.API.Features.Authentication.Actions
         {
             public AuthorizationTokens AuthorizationTokens { get; set; }
 
+            public DeveloperInfoViewModel DeveloperInfo { get; set; }
+        }
+
+        public class DeveloperInfoViewModel
+        {
             public string DeveloperName { get; set; }
+            public string DeveloperPageUrl { get; set; }
+        }
+
+        public class DeveloperInfoProfiler : Profile
+        {
+            public DeveloperInfoProfiler()
+            {
+                CreateMap<UserModel, DeveloperInfoViewModel>()
+                    .ForMember(dest => dest.DeveloperName, opt => opt.MapFrom(src => src.GetDeveloperName()));
+            }
         }
 
         public class QueryValidator : AbstractValidator<Query>
@@ -48,14 +65,17 @@ namespace С4S.API.Features.Authentication.Actions
         private class Handler : IRequestHandler<Query, ResponseViewModel>
         {
             private readonly IJwtService _jwtService;
+            private readonly IMapper _mapper;
             private readonly ReportDbContext _dbContext;
 
             public Handler(
                 ReportDbContext dbContext,
-                IJwtService jwtService)
+                IJwtService jwtService,
+                IMapper mapper)
             {
                 _jwtService = jwtService;
                 _dbContext = dbContext;
+                _mapper = mapper;
             }
 
             public async Task<ResponseViewModel> Handle(
@@ -67,8 +87,24 @@ namespace С4S.API.Features.Authentication.Actions
                         x => x.Login.Equals(query.UserCreditionals.Login),
                         cancellationToken);
 
-                var developerName = user.GetDeveloperName();
+                var authorizationTokens =
+                    await CreateAuthorizationTokensAndUpdateDBAsync(user, cancellationToken);
 
+                var developerInfo = _mapper.Map<DeveloperInfoViewModel>(user);
+
+                var response = new ResponseViewModel
+                {
+                    AuthorizationTokens = authorizationTokens,
+                    DeveloperInfo = developerInfo,
+                };
+
+                return response;
+            }
+
+            private async Task<AuthorizationTokens> CreateAuthorizationTokensAndUpdateDBAsync(
+                UserModel user,
+                CancellationToken cancellationToken)
+            {
                 var authorizationTokens = new AuthorizationTokens
                 {
                     AccessToken = _jwtService.CreateJwtToken(user, _jwtService.AccessTokenExpiry),
@@ -78,13 +114,7 @@ namespace С4S.API.Features.Authentication.Actions
                 user.SetRefreshToken(authorizationTokens.RefreshToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                var response = new ResponseViewModel
-                {
-                    DeveloperName = developerName,
-                    AuthorizationTokens = authorizationTokens,
-                };
-
-                return response;
+                return authorizationTokens;
             }
         }
     }
