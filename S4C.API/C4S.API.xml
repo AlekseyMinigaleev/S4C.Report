@@ -187,7 +187,7 @@
             Возвращает список всех игр
             </summary>
         </member>
-        <member name="M:С4S.API.Features.Game.GameController.GetGameStatisticsAsync(С4S.API.Features.Game.Actions.GetGameStatistics.Query,System.Threading.CancellationToken)">
+        <member name="M:С4S.API.Features.Game.GameController.GetGameStatisticsAsync(С4S.API.Features.Game.Actions.GetGameStatistics.Query,FluentValidation.IValidator{С4S.API.Features.Game.Actions.GetGameStatistics.Query},System.Threading.CancellationToken)">
             <summary>
             Возвращает список записей статистики по игре
             </summary>

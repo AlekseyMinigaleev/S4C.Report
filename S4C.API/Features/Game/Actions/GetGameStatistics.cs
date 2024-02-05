@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using C4S.DB;
 using C4S.DB.Models;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
@@ -19,6 +20,15 @@ namespace С4S.API.Features.Game.Actions
             public Paginate Paginate { get; set; }
 
             public Sort Sort { get; set; }
+        }
+
+        public class QueryValidator : AbstractValidator<Query>
+        {
+            public QueryValidator()
+            {
+                RuleFor(x => x.Paginate)
+                    .SetValidator(new PaginateValidator());
+            }
         }
 
         public class ResponseViewModel
