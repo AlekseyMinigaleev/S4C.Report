@@ -2,10 +2,9 @@
 using AutoMapper.QueryableExtensions;
 using C4S.DB;
 using C4S.DB.Models;
-using C4S.Helpers.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Principal;
+using System.Linq.Dynamic.Core;
 using С4S.API.Extensions;
 using С4S.API.Models;
 
@@ -18,6 +17,8 @@ namespace С4S.API.Features.Game.Actions
             public Guid GameId { get; set; }
 
             public Paginate Paginate { get; set; }
+
+            public Sort Sort { get; set; }
         }
 
         public class ResponseViewModel
@@ -43,23 +44,20 @@ namespace С4S.API.Features.Game.Actions
         {
             private readonly ReportDbContext _dbContext;
             private readonly IMapper _mapper;
-            private readonly IPrincipal _principal;
 
             public Handler(
                 ReportDbContext dbContext,
-                IMapper mapper,
-                IPrincipal principal)
+                IMapper mapper)
             {
                 _dbContext = dbContext;
                 _mapper = mapper;
-                _principal = principal;
             }
 
             public async Task<ResponseViewModel[]> Handle(Query request, CancellationToken cancellationToken)
             {
-                var userId = _principal.GetUserId();
                 var response = await _dbContext.GamesStatistics
-                    .Where(x => x.Game.UserId == userId)
+                    .Where(x => x.GameId == request.GameId)
+                    .OrderBy(request.Sort.GetSortExpression())
                     .Paginate(request.Paginate)
                     .ProjectTo<ResponseViewModel>(_mapper.ConfigurationProvider)
                     .ToArrayAsync(cancellationToken);
