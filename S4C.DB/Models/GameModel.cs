@@ -1,4 +1,6 @@
-﻿namespace C4S.DB.Models
+﻿using static System.Net.WebRequestMethods;
+
+namespace C4S.DB.Models
 {
     /// <summary>
     /// Таблица игры
@@ -44,6 +46,16 @@
         public Guid UserId { get; private set; }
 
         /// <summary>
+        /// Ссылка на картинку игры
+        /// </summary>
+        public string? PreviewURL { get; set; }
+
+        /// <summary>
+        /// Ссылка на игру
+        /// </summary>
+        public string? URL => $"{URL}#app={AppId}";
+
+        /// <summary>
         /// Список записей статистики
         /// </summary>
         public ISet<GameStatisticModel> GameStatistics { get; private set; }
@@ -77,7 +89,7 @@
             Name = name;
             PublicationDate = publicationDate;
         }
-
+        
         /// <summary>
         /// Устанавливает указанный <paramref name="pageId"/>
         /// </summary>
