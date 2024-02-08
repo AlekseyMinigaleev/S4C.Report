@@ -13,7 +13,7 @@ namespace С4S.API.Features.Game.Actions
 {
     public class GetGameStatistics
     {
-        public class Query : IRequest<ResponseViewModel[]>
+        public class Query : IRequest<ResponseViewModel>
         {
             public Guid GameId { get; set; }
 
@@ -33,6 +33,15 @@ namespace С4S.API.Features.Game.Actions
 
         public class ResponseViewModel
         {
+            public GameStatisticViewModel[] GameStatistics { get; set; }
+
+            public int TotalCount { get; set; }
+
+            public int RemainingCount { get; set; }
+        }
+
+        public class GameStatisticViewModel
+        {
             public double Evaluation { get; set; }
 
             public int PlayersCount { get; set; }
@@ -42,15 +51,15 @@ namespace С4S.API.Features.Game.Actions
             public DateTime LastSynchroDate { get; set; }
         }
 
-        public class ResponseViewModelProfiler : Profile
+        public class GameStatisticViewModelProfiler : Profile
         {
-            public ResponseViewModelProfiler()
+            public GameStatisticViewModelProfiler()
             {
-                CreateMap<GameStatisticModel, ResponseViewModel>();
+                CreateMap<GameStatisticModel, GameStatisticViewModel>();
             }
         }
 
-        public class Handler : IRequestHandler<Query, ResponseViewModel[]>
+        public class Handler : IRequestHandler<Query, ResponseViewModel>
         {
             private readonly ReportDbContext _dbContext;
             private readonly IMapper _mapper;
@@ -63,14 +72,29 @@ namespace С4S.API.Features.Game.Actions
                 _mapper = mapper;
             }
 
-            public async Task<ResponseViewModel[]> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<ResponseViewModel> Handle(Query request, CancellationToken cancellationToken)
             {
-                var response = await _dbContext.GamesStatistics
-                    .Where(x => x.GameId == request.GameId)
+                var gameStatisticsQuery = _dbContext.GamesStatistics
+                    .Where(x => x.GameId == request.GameId);
+
+                var totalCount = await gameStatisticsQuery.CountAsync(cancellationToken);
+
+                var remainingCount = await gameStatisticsQuery
+                    .Skip(request.Paginate.PageNumber * request.Paginate.ItemsPerPage)
+                    .CountAsync(cancellationToken);
+
+                var gameStatistics = await gameStatisticsQuery
                     .OrderBy(request.Sort.GetSortExpression())
                     .Paginate(request.Paginate)
-                    .ProjectTo<ResponseViewModel>(_mapper.ConfigurationProvider)
+                    .ProjectTo<GameStatisticViewModel>(_mapper.ConfigurationProvider)
                     .ToArrayAsync(cancellationToken);
+
+                var response = new ResponseViewModel
+                {
+                    GameStatistics = gameStatistics,
+                    TotalCount = totalCount,
+                    RemainingCount = remainingCount
+                };
 
                 return response;
             }
