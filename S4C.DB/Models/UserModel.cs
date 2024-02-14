@@ -112,4 +112,5 @@ namespace C4S.DB.Models
     /// </summary>
     public static class UserExpressions
     { }
+    
 }
