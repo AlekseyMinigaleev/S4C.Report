@@ -28,6 +28,11 @@ namespace C4S.DB.Models
         public double Evaluation { get; private set; }
 
         /// <summary>
+        /// Рейтинг игры
+        /// </summary>
+        public int Rating { get; set; }
+
+        /// <summary>
         /// Количество игроков
         /// </summary>
         public int PlayersCount { get; private set; }
