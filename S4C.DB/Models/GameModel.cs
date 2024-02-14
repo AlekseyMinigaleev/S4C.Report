@@ -1,6 +1,4 @@
-﻿using static System.Net.WebRequestMethods;
-
-namespace C4S.DB.Models
+﻿namespace C4S.DB.Models
 {
     /// <summary>
     /// Таблица игры
@@ -53,7 +51,7 @@ namespace C4S.DB.Models
         /// <summary>
         /// Ссылка на игру
         /// </summary>
-        public string? URL => $"{URL}#app={AppId}";
+        public string? URL => $"{User.DeveloperPageUrl}#app={AppId}";
 
         /// <summary>
         /// Список записей статистики
