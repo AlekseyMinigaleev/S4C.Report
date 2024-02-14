@@ -16,14 +16,14 @@ namespace S4C.YandexGateway.DeveloperPage
         /// Создает <see cref="HttpRequestMessage"/> для получения <see cref="GameInfoModel"/>.
         /// </summary>
         /// <param name="requestUrl">url запроса</param>
-        /// <param name="appIDs">массив, содержащий id <see cref="GameModel"/>, по которым необходимо получить информацию</param>
+        /// <param name="appID">id <see cref="GameModel"/>, по которому необходимо получить информацию</param>
         /// <param name="format">формат ответа</param>.
         /// <returns><see cref="HttpRequestMessage"/></returns>.
-        public static HttpRequestMessage GetGamesInfo(string requestUrl, int[] appIDs, RequestFormat format)
+        public static HttpRequestMessage GetGamesInfo(string requestUrl, int appID, RequestFormat format)
         {
             var requestData = new
             {
-                appIDs = appIDs,
+                appID = appID,
                 format = format.GetName(),
             };
 

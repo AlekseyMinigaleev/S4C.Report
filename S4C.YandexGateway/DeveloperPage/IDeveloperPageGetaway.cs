@@ -22,8 +22,7 @@ namespace S4C.YandexGateway.DeveloperPage
         /// <see cref="GameInfoModel"/>[]
         /// </returns>
         /// <exception cref="HttpRequestException"></exception>
-        /// <exception cref="InvalidContractException"></exception>
-        public Task<GameInfoModel[]> GetGameInfoAsync(
+        public Task<GameInfoModel[]> GetGamesInfoAsync(
             int[] gameIds,
             BaseLogger logger,
             CancellationToken cancellationToken = default);

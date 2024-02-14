@@ -82,27 +82,33 @@
         /// </summary>
         /// <param name="name">Название игры</param>
         /// <param name="publicationDate">дата публикации</param>
-        public void Update(string name, DateTime publicationDate)
+        public void Update(string name, DateTime publicationDate, string previewURL)
         {
             Name = name;
             PublicationDate = publicationDate;
+            PreviewURL = previewURL;
         }
-        
+
         /// <summary>
         /// Устанавливает указанный <paramref name="pageId"/>
         /// </summary>
         /// <param name="pageId">Id страницы, необходимо для РСЯ</param>
         public void SetPageId(int pageId) => PageId = pageId;
 
-        /// <inheritdoc cref="GameModel.HasChanges(GameModel)"/>
+        /*TODO: Очень жесткое дублирование*/
+
+        /// <inheritdoc cref="HasChanges(GameModel)"/>
         /// <param name="incomingFields"> Поля с которым происходит сравнение</param>
         public bool HasChanges(GameModifiableFields incomingFields)
         {
             var hasChanges = Name == incomingFields.Name
-                && PublicationDate == incomingFields.PublicationDate;
+                && PublicationDate == incomingFields.PublicationDate
+                && incomingFields.PreviewURL == PreviewURL;
 
-            return hasChanges;
+            return !hasChanges;
         }
+
+        /*TODO: Очень жесткое дублирование*/
 
         /// <summary>
         /// Проверяет есть ли изменения у модели по сравнению с <paramref name="incomingGameModel"/>
@@ -114,11 +120,14 @@
         public bool HasChanges(GameModel incomingGameModel)
         {
             var hasChanges = Name == incomingGameModel.Name
-                && PublicationDate == incomingGameModel.PublicationDate;
+                && PublicationDate == incomingGameModel.PublicationDate
+                && incomingGameModel.PreviewURL == PreviewURL;
 
             return hasChanges;
         }
     }
+
+    /*TOOD: очень сомнительная штука, добавляет много гемора, нужно пересмотреть*/
 
     /// <summary>
     /// Изменяемые поля модели <see cref="GameModel"/>
@@ -131,12 +140,17 @@
         /// <inheritdoc cref="GameModel.PublicationDate"/>
         public DateTime PublicationDate { get; set; }
 
+        /// <inheritdoc cref="GameModel.PreviewURL"/>
+        public string PreviewURL { get; set; }
+
         public GameModifiableFields(
             string name,
-            DateTime publicationDate)
+            DateTime publicationDate,
+            string previewURL)
         {
             Name = name;
             PublicationDate = publicationDate;
+            PreviewURL = previewURL;
         }
 
         private GameModifiableFields()

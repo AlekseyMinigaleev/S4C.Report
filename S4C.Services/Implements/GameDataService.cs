@@ -77,10 +77,9 @@ namespace C4S.Services.Implements
 
             var developerPagePrefix = "[Страница разработчика]";
             var rsyaPrefix = "[РСЯ]";
-
-            _logger.LogInformation($"{developerPagePrefix} Начат процесс получения данных.");
+            _logger.LogInformation($"{developerPagePrefix} Начат процесс получения данных по всем играм.");
             var allIncomingGameData = await _developerPageGetaway
-                .GetGameInfoAsync(gameIds, _logger, cancellationToken);
+                .GetGamesInfoAsync(gameIds, _logger, cancellationToken);
             _logger.LogSuccess($"{developerPagePrefix} Процесс успешно завершен");
 
             await StartEnrichGameInfoProcess(rsyaPrefix, allIncomingGameData, games);
@@ -154,10 +153,6 @@ namespace C4S.Services.Implements
                     : lastGameStatistic.LastSynchroDate.AddDays(1);
 
             var endDate = DateTime.Now;
-
-            /*TODO: Не убирать, нужно для выполнения ручной синхронизацией*/
-            //var startDate =  new DateTime(2024, 1, 25);
-            //var endDate = new DateTime(2024, 1, 25);
 
             var period = new DateTimeRange(startDate, endDate);
 
@@ -234,6 +229,8 @@ namespace C4S.Services.Implements
             incomingGameStatisticModel.AddStatuses(gameStatusQuery);
         }
 
+        /*TODO: мб заменить GameModifiableFields на маппер*/
+
         private void UpdateGameModel(
             GameModel sourceGame,
             GameModifiableFields incomingGameModifiableFields,
@@ -243,14 +240,15 @@ namespace C4S.Services.Implements
 
             if (hasChanges)
             {
-                _logger.LogInformation($"[{gameIdForLogs}] данные актуальны.");
-            }
-            else
-            {
                 _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
                 sourceGame.Update(
                     incomingGameModifiableFields.Name,
-                    incomingGameModifiableFields.PublicationDate);
+                    incomingGameModifiableFields.PublicationDate,
+                    incomingGameModifiableFields.PreviewURL);
+            }
+            else
+            {
+                _logger.LogInformation($"[{gameIdForLogs}] данные актуальны.");
             }
         }
     }
