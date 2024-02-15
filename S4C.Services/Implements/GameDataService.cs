@@ -207,28 +207,26 @@ namespace C4S.Services.Implements
 
             incomingGameStatisticModel.GameId = sourceGameId;
 
-            /*TODO: сделать мапинг статусов*/
-            //SetLinksForStatuses(incomingGameInfo, incomingGameStatisticModel);
+            SetLinksForCategories(incomingGameInfo, incomingGameModifiableFields);
 
             return (incomingGameModifiableFields, incomingGameStatisticModel);
         }
 
-        /*TODO: Сделать поддержку статуса promoted после реализации сервиса парсинга с РСЯ*/
+        private void SetLinksForCategories(
+            GameInfoModel incomingGameInfo,
+            GameModel gameModel)
+        {
+            var existCategories = _dbContext.Categories;
 
-        //private void SetLinksForStatuses(
-        //    GameInfoModel incomingGameInfo,
-        //    GameStatisticModel incomingGameStatisticModel)
-        //{
-        //    var existingGameStatusQuery = _dbContext.GameStatuses;
-        //    var incomingGameStatusNames = incomingGameInfo.CategoriesNames;
+            var incomingCategories = incomingGameInfo.CategoriesNames;
 
-        //    var gameStatusQuery = existingGameStatusQuery
-        //        .Where(x => incomingGameStatusNames
-        //            .Contains(x.Title))
-        //        .ToHashSet();
+            var categories = existCategories
+                .Where(x => incomingCategories
+                    .Contains(x.Name))
+                .ToHashSet();
 
-        //    incomingGameStatisticModel.AddStatuses(gameStatusQuery);
-        //}
+            gameModel.AddCategories(categories);
+        }
 
         private void UpdateGameModel(
             GameModel sourceGame,
@@ -245,7 +243,8 @@ namespace C4S.Services.Implements
                 sourceGame.Update(
                     name: incomingGameModifiableFields.Name!,
                     publicationDate: incomingGameModifiableFields.PublicationDate!.Value,
-                    previewURL: incomingGameModifiableFields.PreviewURL!);
+                    previewURL: incomingGameModifiableFields.PreviewURL!,
+                    categories: incomingGameModifiableFields.Categories);
             }
             else
             {

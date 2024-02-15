@@ -116,11 +116,17 @@
         /// <param name="name">Название игры</param>
         /// <param name="publicationDate">дата публикации</param>
         /// <param name="previewURL">Ссылка на превью</param>
-        public void Update(string name, DateTime publicationDate, string previewURL)
+        /// <param name="categories">категории игры</param>
+        public void Update(
+            string name,
+            DateTime publicationDate,
+            string previewURL,
+            ISet<CategoryModel> categories)
         {
             Name = name;
             PublicationDate = publicationDate;
             PreviewURL = previewURL;
+            AddCategories(categories);
         }
 
         /// <summary>
