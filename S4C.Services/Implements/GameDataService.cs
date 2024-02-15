@@ -71,7 +71,7 @@ namespace C4S.Services.Implements
                 .Where(x => x.UserId == _user.Id)
                 .ToArrayAsync(cancellationToken);
 
-            var gameIds = games
+            var appIds = games
                 .Select(x => x.AppId)
                 .ToArray();
 
@@ -79,7 +79,7 @@ namespace C4S.Services.Implements
             var rsyaPrefix = "[РСЯ]";
             _logger.LogInformation($"{developerPagePrefix} Начат процесс получения данных по всем играм.");
             var allIncomingGameData = await _developerPageGetaway
-                .GetGamesInfoAsync(gameIds, _logger, cancellationToken);
+                .GetGamesInfoAsync(appIds, _logger, cancellationToken);
             _logger.LogSuccess($"{developerPagePrefix} Процесс успешно завершен");
 
             await StartEnrichGameInfoProcess(rsyaPrefix, allIncomingGameData, games);

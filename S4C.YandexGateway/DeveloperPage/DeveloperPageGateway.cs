@@ -28,19 +28,19 @@ namespace S4C.YandexGateway.DeveloperPage
 
         /// <inheritdoc/>
         public async Task<GameInfoModel[]> GetGamesInfoAsync(
-            int[] gameIds,
+            int[] appIds,
             BaseLogger logger,
             CancellationToken cancellationToken = default)
         {
             var result = new List<GameInfoModel>();
-            foreach (var gameId in gameIds)
+            foreach (var appId in appIds)
             {
-                var loggerPrefix = $"[{gameId}]";
+                var loggerPrefix = $"[{appId}]";
                 logger.LogInformation($"{loggerPrefix} Составление запроса на сервер Яндекс");
                 HttpRequestMessage createRequest() =>
                     HttpRequestMethodDitctionary.GetGamesInfo(
                         _yandexGetGameRequestURL,
-                        gameId,
+                        appId,
                         RequestFormat.Long);
 
                 var httpResponseMessage = await HttpUtils.SendRequestAsync(
@@ -83,24 +83,26 @@ namespace S4C.YandexGateway.DeveloperPage
             var rating = gameJToken.GetValue<int?>("gqRating");
             var previewURL = gameJToken.GetValue<string>("media", "cover", "prefix-url");
 
+            var loggerPrefix = $"[{appId}]";
+
             ProcessNullableField(
                 field: title,
-                log: () => logger.LogError("Не удалось получить название"),
+                log: () => logger.LogError($"{loggerPrefix} Не удалось получить название"),
                 withException: true);
 
             ProcessNullableField(
                 field: previewURL,
-                log: () => logger.LogError("Не удалось получить превью"),
+                log: () => logger.LogError($"{loggerPrefix} Не удалось получить превью"),
                 withException: true);
 
             ProcessNullableField(
                 field: categoriesNames,
-                log: () => logger.LogError("Не удалось получить категории"),
+                log: () => logger.LogError($"{loggerPrefix} Не удалось получить категории"),
                 withException: true);
 
             ProcessNullableField(
                 field: rating,
-                log: () => logger.LogError("Не удалось получить рейтинг"),
+                log: () => logger.LogError($"{loggerPrefix} Не удалось получить рейтинг"),
                 withException: false);
 
             var gameInfo = new GameInfoModel(

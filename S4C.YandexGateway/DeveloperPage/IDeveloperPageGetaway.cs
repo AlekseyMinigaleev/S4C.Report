@@ -15,7 +15,7 @@ namespace S4C.YandexGateway.DeveloperPage
         /// <summary>
         /// Возвращает <see cref="GameInfoModel"/>[] со страницы разработчика.
         /// </summary>
-        /// <param name="gameIds">Массив id <see cref="GameModel"/>, для которых необходимо получить <see cref="GameInfoModel"/>[]</param>
+        /// <param name="appIds">Массив id <see cref="GameModel"/>, для которых необходимо получить <see cref="GameInfoModel"/>[]</param>
         /// <param name="logger">Объект <see cref="BaseLogger"/>с помощью, которого будет выполняться логирование</param>
         /// <param name="cancellationToken"><inheritdoc cref="CancellationToken"/></param>
         /// <returns>
@@ -23,7 +23,7 @@ namespace S4C.YandexGateway.DeveloperPage
         /// </returns>
         /// <exception cref="HttpRequestException"></exception>
         public Task<GameInfoModel[]> GetGamesInfoAsync(
-            int[] gameIds,
+            int[] appIds,
             BaseLogger logger,
             CancellationToken cancellationToken = default);
     }
