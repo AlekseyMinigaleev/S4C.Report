@@ -1,4 +1,5 @@
 ﻿using C4S.DB.Models;
+using C4S.Helpers.Logger;
 using Hangfire.Server;
 
 namespace C4S.Services.Interfaces
@@ -18,5 +19,14 @@ namespace C4S.Services.Interfaces
             Guid userId,
             PerformContext hangfireContext,
             CancellationToken cancellationToken = default);
+
+        /// <inheritdoc cref="IGameDataService.SyncGameStatistics(Guid, PerformContext, CancellationToken)"/>
+        /// <remarks>
+        /// Эта вариация выполняется не на стороне hangfire
+        /// </remarks>
+        public Task SyncGameStatistics(
+            Guid userId,
+            BaseLogger logger,
+            CancellationToken cancellationToken);
     }
 }

@@ -6,7 +6,6 @@ using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using S4C.YandexGateway.DeveloperPage;
 using S4C.YandexGateway.DeveloperPage.Models;
 using S4C.YandexGateway.RSYA;
@@ -46,16 +45,13 @@ namespace C4S.Services.Implements
             await StartAsync(userId, cancellationToken);
         }
 
-        /// <inheritdoc cref="IGameDataService.SyncGameStatistics(Guid, PerformContext, CancellationToken)"/>
-        /// <remarks>
-        /// Эта вариация выполняется не на стороне hangfire
-        /// </remarks>
+        /// <inheritdoc/>
         public async Task SyncGameStatistics(
             Guid userId,
-            ILogger logger,
+            BaseLogger logger,
             CancellationToken cancellationToken)
         {
-            _logger = new ConsoleLogger(logger);
+            _logger = logger;
             await StartAsync(userId, cancellationToken);
         }
 

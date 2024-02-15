@@ -149,9 +149,9 @@
         /// </returns>
         public bool HasChanges(GameModel incomingGameModel)
         {
-            var hasChanges = Name == incomingGameModel.Name
-                && PublicationDate == incomingGameModel.PublicationDate
-                && PreviewURL == incomingGameModel.PreviewURL;
+            var hasChanges = Name != incomingGameModel.Name
+                || PublicationDate != incomingGameModel.PublicationDate
+                || PreviewURL != incomingGameModel.PreviewURL;
 
             return hasChanges;
         }

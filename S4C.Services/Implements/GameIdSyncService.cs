@@ -31,8 +31,22 @@ namespace C4S.Services.Implements
             PerformContext hangfireContext,
             CancellationToken cancellationToken = default)
         {
-            _user = await _dbContext.Users.SingleAsync(x => x.Id == userId, cancellationToken);
             _logger = new HangfireLogger(hangfireContext);
+            await StartAsync(userId, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task SyncAllGameIdAsync(Guid userId, BaseLogger logger, CancellationToken cancellationToken = default)
+        {
+            _logger = logger;
+            await StartAsync(userId, cancellationToken);
+        }
+
+        private async Task StartAsync(
+            Guid userId,
+            CancellationToken cancellationToken)
+        {
+            _user = await _dbContext.Users.SingleAsync(x => x.Id == userId, cancellationToken);
 
             var finalLogMessage = "Процесс успешно завершен.";
             var errorLogMessage = "Процесс завершен c ошибкой: ";
@@ -41,7 +55,7 @@ namespace C4S.Services.Implements
             try
             {
                 _logger.LogInformation($"Запущен процесс парсинга id игр:");
-                await RunAsync(cancellationToken);
+                await Main(cancellationToken);
             }
             catch (EmptyDeveloperPageException e)
             {
@@ -61,7 +75,7 @@ namespace C4S.Services.Implements
             }
         }
 
-        private async Task RunAsync(
+        private async Task Main(
             CancellationToken cancellationToken)
         {
             var developerPageUrl = _user
