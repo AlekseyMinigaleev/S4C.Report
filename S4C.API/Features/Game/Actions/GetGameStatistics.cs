@@ -49,6 +49,8 @@ namespace С4S.API.Features.Game.Actions
             public double? CashIncome { get; set; }
 
             public DateTime LastSynchroDate { get; set; }
+
+            public int? Rating { get; set; }
         }
 
         public class GameStatisticViewModelProfiler : Profile
