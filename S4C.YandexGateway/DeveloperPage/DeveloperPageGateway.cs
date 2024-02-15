@@ -12,78 +12,124 @@ namespace S4C.YandexGateway.DeveloperPage
     public class DeveloperPageGateway : IDeveloperPageGetaway
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private string _yandexGamesRequestUrl;
+        private string _yandexGetGameRequestURL;
 
         public DeveloperPageGateway(
             IHttpClientFactory httpClient,
             IConfiguration configuration)
         {
             _httpClientFactory = httpClient;
-            _yandexGamesRequestUrl = configuration["YandexGamesRequestUrl"]!;
-            /*TODO: ??????*/
-            ArgumentException.ThrowIfNullOrEmpty("в файле appsetting.json не указана или указана неверно ссылка на запрос по Яндекс играм");
+            _yandexGetGameRequestURL = configuration["YandexGetGame"]!;
+
+            ArgumentException.ThrowIfNullOrEmpty(
+                _yandexGetGameRequestURL,
+                "в файле appsetting.json не указана или указана неверно ссылка на запрос по Яндекс играм");
         }
 
         /// <inheritdoc/>
-        public async Task<GameInfoModel[]> GetGameInfoAsync(
-            int[] gameIds,
+        public async Task<GameInfoModel[]> GetGamesInfoAsync(
+            int[] appIds,
             BaseLogger logger,
             CancellationToken cancellationToken = default)
         {
-            logger.LogInformation($"Составление запроса на сервер Яндекс");
-            var createRequest = () =>
-            HttpRequestMethodDitctionary.GetGamesInfo(
-                    _yandexGamesRequestUrl,
-                    gameIds,
-                    RequestFormat.Long);
+            var result = new List<GameInfoModel>();
+            foreach (var appId in appIds)
+            {
+                var loggerPrefix = $"[{appId}]";
+                logger.LogInformation($"{loggerPrefix} Составление запроса на сервер Яндекс");
+                HttpRequestMessage createRequest() =>
+                    HttpRequestMethodDitctionary.GetGamesInfo(
+                        _yandexGetGameRequestURL,
+                        appId,
+                        RequestFormat.Long);
 
-            var httpResponseMessage = await HttpUtils.SendRequestAsync(
-                createRequest,
-                _httpClientFactory,
-                cancellationToken);
-            logger.LogSuccess($"Ответ от Яндекса успешно получен");
+                var httpResponseMessage = await HttpUtils.SendRequestAsync(
+                    createRequest,
+                    _httpClientFactory,
+                    cancellationToken);
+                logger.LogSuccess($"{loggerPrefix} Ответ от Яндекса успешно получен");
 
-            logger.LogInformation($"Начало обработки ответа");
-            var gameInfoModel = await DeserializeObjectsAsync(
-                httpResponseMessage,
-                cancellationToken);
-            logger.LogSuccess($"Ответ успешно обработан");
+                logger.LogInformation($"{loggerPrefix} Начало обработки ответа");
+                var gameInfoModel = await DeserializeObjectsAsync(
+                    httpResponseMessage,
+                    logger,
+                    cancellationToken);
+                logger.LogSuccess($"{loggerPrefix} Ответ успешно обработан");
 
-            return gameInfoModel;
+                result.Add(gameInfoModel);
+            }
+
+            return result.ToArray();
         }
 
-        private async Task<GameInfoModel[]> DeserializeObjectsAsync(
+        private async Task<GameInfoModel> DeserializeObjectsAsync(
             HttpResponseMessage httpResponseMessage,
+            BaseLogger logger,
             CancellationToken cancellationToken)
         {
             var jsonString = await httpResponseMessage.Content
                 .ReadAsStringAsync(cancellationToken);
 
             var jObject = JObject.Parse(jsonString);
-            var gamesJToken = jObject.GetValue<JArray>("games");
+            var gameJToken = jObject.GetValue("game") ??
+                throw new ArgumentNullException("Не удалось получить объект game из ответа Яндекса");
 
-            var results = new GameInfoModel[gamesJToken.Count];
-            for (int i = 0; i < gamesJToken.Count; i++)
+            var title = gameJToken.GetValue<string>("title");
+            var appId = gameJToken.GetValue<int>("appID");
+            var firstPublished = gameJToken.GetValue<int>("firstPublished");
+            var evaluation = gameJToken.GetValue<double>("rating");
+            var playersCount = gameJToken.GetValue<int>("playersCount");
+            var categoriesNames = gameJToken.GetValue<string[]>("categoriesNames");
+            var rating = gameJToken.GetValue<int?>("gqRating");
+            var previewURL = gameJToken.GetValue<string>("media", "cover", "prefix-url");
+
+            var loggerPrefix = $"[{appId}]";
+
+            ProcessNullableField(
+                field: title,
+                log: () => logger.LogError($"{loggerPrefix} Не удалось получить название"),
+                withException: true);
+
+            ProcessNullableField(
+                field: previewURL,
+                log: () => logger.LogError($"{loggerPrefix} Не удалось получить превью"),
+                withException: true);
+
+            ProcessNullableField(
+                field: categoriesNames,
+                log: () => logger.LogError($"{loggerPrefix} Не удалось получить категории"),
+                withException: true);
+
+            ProcessNullableField(
+                field: rating,
+                log: () => logger.LogError($"{loggerPrefix} Не удалось получить рейтинг"),
+                withException: false);
+
+            var gameInfo = new GameInfoModel(
+                title: title!,
+                appId: appId,
+                firstPublished: firstPublished,
+                evaluation: evaluation,
+                playersCount: playersCount,
+                categoriesNames: categoriesNames!,
+                previewURL: previewURL!,
+                rating: rating);
+
+            return gameInfo;
+        }
+
+        private static void ProcessNullableField<T>(
+            T field,
+            Action log,
+            bool withException)
+        {
+            if (field is null)
             {
-                var title = gamesJToken[i].GetValue<string>("title");
-                var appId = gamesJToken[i].GetValue<int>("appID");
-                var firstPublished = gamesJToken[i].GetValue<int>("firstPublished");
-                var rating = gamesJToken[i].GetValue<double>("rating");
-                var playersCount = gamesJToken[i].GetValue<int>("playersCount");
-                var categoriesNames = gamesJToken[i].GetValue<string[]>("categoriesNames");
+                log();
 
-                var gameInfo = new GameInfoModel(
-                    title: title,
-                    appId: appId,
-                    firstPublished: firstPublished,
-                    rating: rating,
-                    playersCount: playersCount,
-                    categoriesNames: categoriesNames);
-
-                results[i] = gameInfo;
+                if (withException)
+                    throw new ArgumentNullException(nameof(field));
             }
-
-            return results;
         }
     }
 }

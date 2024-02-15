@@ -71,16 +71,15 @@ namespace C4S.Services.Implements
                 .Where(x => x.UserId == _user.Id)
                 .ToArrayAsync(cancellationToken);
 
-            var gameIds = games
+            var appIds = games
                 .Select(x => x.AppId)
                 .ToArray();
 
             var developerPagePrefix = "[Страница разработчика]";
             var rsyaPrefix = "[РСЯ]";
-
-            _logger.LogInformation($"{developerPagePrefix} Начат процесс получения данных.");
+            _logger.LogInformation($"{developerPagePrefix} Начат процесс получения данных по всем играм.");
             var allIncomingGameData = await _developerPageGetaway
-                .GetGameInfoAsync(gameIds, _logger, cancellationToken);
+                .GetGamesInfoAsync(appIds, _logger, cancellationToken);
             _logger.LogSuccess($"{developerPagePrefix} Процесс успешно завершен");
 
             await StartEnrichGameInfoProcess(rsyaPrefix, allIncomingGameData, games);
@@ -155,10 +154,6 @@ namespace C4S.Services.Implements
 
             var endDate = DateTime.Now;
 
-            /*TODO: Не убирать, нужно для выполнения ручной синхронизацией*/
-            //var startDate =  new DateTime(2024, 1, 25);
-            //var endDate = new DateTime(2024, 1, 25);
-
             var period = new DateTimeRange(startDate, endDate);
 
             return period;
@@ -175,7 +170,7 @@ namespace C4S.Services.Implements
                     gameIdForLogs) = GetDataForProcess(sourceGameModels, incomingGameInfo);
 
                 var (incomingGameModelFields,
-                incomingGameStatisticModel) = Projection(incomingGameInfo, sourceGameModel.Id);
+                incomingGameStatisticModel) = Mapping(incomingGameInfo, sourceGameModel.Id);
 
                 UpdateGameModel(
                     sourceGameModel,
@@ -205,9 +200,9 @@ namespace C4S.Services.Implements
             return (sourceGameModel, gameIdForLogs);
         }
 
-        private (GameModifiableFields, GameStatisticModel) Projection(GameInfoModel incomingGameInfo, Guid sourceGameId)
+        private (GameModel, GameStatisticModel) Mapping(GameInfoModel incomingGameInfo, Guid sourceGameId)
         {
-            var incomingGameModifiableFields = _mapper.Map<GameInfoModel, GameModifiableFields>(incomingGameInfo);
+            var incomingGameModifiableFields = _mapper.Map<GameInfoModel, GameModel>(incomingGameInfo);
             var incomingGameStatisticModel = _mapper.Map<GameInfoModel, GameStatisticModel>(incomingGameInfo);
 
             incomingGameStatisticModel.GameId = sourceGameId;
@@ -236,21 +231,24 @@ namespace C4S.Services.Implements
 
         private void UpdateGameModel(
             GameModel sourceGame,
-            GameModifiableFields incomingGameModifiableFields,
+            GameModel incomingGameModifiableFields,
             string gameIdForLogs)
         {
             var hasChanges = sourceGame.HasChanges(incomingGameModifiableFields);
 
             if (hasChanges)
             {
-                _logger.LogInformation($"[{gameIdForLogs}] данные актуальны.");
+                _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
+
+                /*TODO: убрать ! после фикса джобы*/
+                sourceGame.Update(
+                    name: incomingGameModifiableFields.Name!,
+                    publicationDate: incomingGameModifiableFields.PublicationDate!.Value,
+                    previewURL: incomingGameModifiableFields.PreviewURL!);
             }
             else
             {
-                _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
-                sourceGame.Update(
-                    incomingGameModifiableFields.Name,
-                    incomingGameModifiableFields.PublicationDate);
+                _logger.LogInformation($"[{gameIdForLogs}] данные актуальны.");
             }
         }
     }

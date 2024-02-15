@@ -12,35 +12,29 @@ namespace S4C.YandexGateway.DeveloperPage.Models
     /// </remarks>
     public class GameInfoModel
     {
-        /// <summary>
-        /// Название игры
-        /// </summary>
+        /// <inheritdoc cref="GameModel.Name"/>
         public string Title { get; set; }
 
-        /// <summary>
-        /// id игры
-        /// </summary>
+        /// <inheritdoc cref="GameModel.AppId"/>
         public int AppId { get; set; }
 
-        /// <summary>
-        /// Дата публикации
-        /// </summary>
+        /// <inheritdoc cref="GameModel.PublicationDate"/>
         public int FirstPublished { get; set; }
 
-        /// <summary>
-        /// Оценка
-        /// </summary>
-        public double Rating { get; set; }
+        /// <inheritdoc cref="GameStatisticModel.Evaluation"/>
+        public double Evaluation { get; set; }
 
-        /// <summary>
-        /// Количество игроков
-        /// </summary>
+        /// <inheritdoc cref="GameStatisticModel.PlayersCount"/>
         public int PlayersCount { get; set; }
 
-        /// <summary>
-        /// Доход игры
-        /// </summary>
+        /// <inheritdoc cref="GameStatisticModel.CashIncome"/>
         public double? CashIncome { get; set; }
+
+        /// <inheritdoc cref="GameStatisticModel.Rating"/>
+        public int? Rating { get; set; }
+
+        /// <inheritdoc cref="GameModel.PreviewURL"/>
+        public string PreviewURL { get; set; }
 
         /// <summary>
         /// Имена всех категорий, к которым относится игра
@@ -51,18 +45,22 @@ namespace S4C.YandexGateway.DeveloperPage.Models
             int appId,
             string title,
             int firstPublished,
-            double rating,
+            double evaluation,
             int playersCount,
             string[] categoriesNames,
+            string previewURL,
+            int? rating = default,
             double? cashIncome = default)
         {
             AppId = appId;
             Title = title;
             FirstPublished = firstPublished;
-            Rating = rating;
+            Evaluation = evaluation;
             PlayersCount = playersCount;
             CategoriesNames = categoriesNames;
+            PreviewURL = previewURL;
             CashIncome = cashIncome;
+            Rating = rating;
         }
 
         private GameInfoModel()
@@ -94,21 +92,22 @@ namespace S4C.YandexGateway.DeveloperPage.Models
     {
         public GameModelProfiler()
         {
-            CreateMap<GameInfoModel, GameModifiableFields>()
+            CreateMap<GameInfoModel, GameModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Title))
-                .ForMember(dest => dest.PublicationDate, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.FirstPublished).DateTime));
+                .ForMember(dest => dest.PublicationDate, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.FirstPublished).DateTime))
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.AppId, opt => opt.Ignore())
+                .ForMember(dest => dest.PageId, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.Ignore())
+                .ForMember(dest => dest.URL, opt => opt.Ignore())
+                .ForMember(dest => dest.GameStatistics, opt => opt.Ignore());
 
             CreateMap<GameInfoModel, GameStatisticModel>()
-                //.ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.I))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
-                .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(src => src.Rating))
-                .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src.PlayersCount))
-                .ForMember(dest => dest.Statuses, opt => opt.Ignore())
-                .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(src => src.CashIncome))
                 .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now))
-                /*TODO: Не убирать, нужно для выполнения ручной синхронизацией*/
-                //.ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => new DateTime(2024, 1, 25)))
-                ;
+                .ForMember(dest => dest.Statuses, opt => opt.Ignore())
+                .ForMember(dest => dest.GameGameStatus, opt => opt.Ignore());
         }
     }
 }

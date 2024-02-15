@@ -60,7 +60,7 @@ namespace C4S.DB.Models
             string? refreshToken = null)
         {
             Id = Guid.NewGuid();
-            DeveloperPageUrl = developerPageUrl;
+            DeveloperPageUrl = NormalizeDeveloperPageUrl(developerPageUrl);
             RsyaAuthorizationToken = rsyaAuthorizationToken;
             Games = games;
             Login = login;
@@ -104,6 +104,24 @@ namespace C4S.DB.Models
             var developerName = DeveloperPageUrl[(DeveloperPageUrl.IndexOf('=') + 1)..];
 
             return developerName;
+        }
+
+        /// <summary>
+        /// Нормализует ссылку на страницу разработчика
+        /// </summary>
+        /// <param name="developerPageUrl">Ссылка на страницу разработчика</param>
+        /// <returns>Нормализованная ссылка на страницу разработчика</returns>
+        public static string NormalizeDeveloperPageUrl(string developerPageUrl)
+        {
+            var index = developerPageUrl.IndexOf("#redir-data");
+
+            if (index > -1)
+            {
+                var result = developerPageUrl[..index];
+                return result;
+            }
+
+            return developerPageUrl;
         }
     }
 
