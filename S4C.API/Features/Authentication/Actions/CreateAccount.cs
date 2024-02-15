@@ -96,7 +96,7 @@ namespace С4S.API.Features.Authentication.Actions
         {
             private readonly ReportDbContext _dbContext;
             private readonly IHangfireBackgroundJobService _hangfireBackgroundJobService;
-            private readonly ConsoleLogger<CreateAccount> _logger;
+            private readonly ConsoleLogger _logger;
 
             public Handler(
                 ReportDbContext dbContext,
@@ -106,7 +106,7 @@ namespace С4S.API.Features.Authentication.Actions
             {
                 _dbContext = dbContext;
                 _hangfireBackgroundJobService = hangfireBackgroundJobService;
-                _logger = new ConsoleLogger<CreateAccount>(logger);
+                _logger = new ConsoleLogger(logger);
             }
 
             public async Task Handle(Query request, CancellationToken cancellationToken)

@@ -24,12 +24,12 @@ namespace С4S.API.Extensions
             logger.LogInformation("Все миграции успешно выполнены");
         }
 
-        private static (ConsoleLogger<Program>, ReportDbContext) GetDependencies(IServiceScope scope)
+        private static (ConsoleLogger, ReportDbContext) GetDependencies(IServiceScope scope)
         {
             var services = scope.ServiceProvider;
 
             var defaultLogger = services.GetRequiredService<ILogger<Program>>();
-            var logger = new ConsoleLogger<Program>(defaultLogger);
+            var logger = new ConsoleLogger(defaultLogger);
 
             var dbContext = services.GetRequiredService<ReportDbContext>();
 

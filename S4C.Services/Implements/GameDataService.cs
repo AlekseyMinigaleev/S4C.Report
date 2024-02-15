@@ -6,6 +6,7 @@ using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using S4C.YandexGateway.DeveloperPage;
 using S4C.YandexGateway.DeveloperPage.Models;
 using S4C.YandexGateway.RSYA;
@@ -42,6 +43,26 @@ namespace C4S.Services.Implements
             CancellationToken cancellationToken)
         {
             _logger = new HangfireLogger(hangfireContext);
+            await StartAsync(userId, cancellationToken);
+        }
+
+        /// <inheritdoc cref="IGameDataService.SyncGameStatistics(Guid, PerformContext, CancellationToken)"/>
+        /// <remarks>
+        /// Эта вариация выполняется не на стороне hangfire
+        /// </remarks>
+        public async Task SyncGameStatistics(
+            Guid userId,
+            ILogger logger,
+            CancellationToken cancellationToken)
+        {
+            _logger = new ConsoleLogger(logger);
+            await StartAsync(userId, cancellationToken);
+        }
+
+        private async Task StartAsync(
+            Guid userId,
+            CancellationToken cancellationToken)
+        {
             _user = await _dbContext.Users.SingleAsync(x => x.Id == userId, cancellationToken);
 
             var finalLogMessage = "Процесс успешно завершен.";
@@ -50,7 +71,7 @@ namespace C4S.Services.Implements
             try
             {
                 _logger.LogInformation("Начат процесс синхронизации всех данных по играм:");
-                await RunAsync(cancellationToken);
+                await Main(cancellationToken);
             }
             catch (Exception e)
             {
@@ -64,7 +85,7 @@ namespace C4S.Services.Implements
             }
         }
 
-        private async Task RunAsync(
+        private async Task Main(
             CancellationToken cancellationToken)
         {
             var games = await _dbContext.Games

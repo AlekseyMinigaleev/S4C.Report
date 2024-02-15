@@ -37,11 +37,11 @@ namespace С4S.API.Extensions
             logger.LogSuccess(loggerMessage);
         }
 
-        private static ConsoleLogger<Program> CreateLogger()
+        private static ConsoleLogger CreateLogger()
         {
             var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             var defaultLogger = loggerFactory.CreateLogger<Program>();
-            var consoleLogger = new ConsoleLogger<Program>(defaultLogger);
+            var consoleLogger = new ConsoleLogger(defaultLogger);
             return consoleLogger;
         }
 

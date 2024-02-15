@@ -5,12 +5,11 @@ namespace C4S.Helpers.Logger
     /// <summary>
     /// Логгер в консоль
     /// </summary>
-    public class ConsoleLogger<T> : BaseLogger
-        where T : class
+    public class ConsoleLogger : BaseLogger
     {
-        private readonly ILogger<T> _logger;
+        private readonly ILogger _logger;
 
-        public ConsoleLogger(ILogger<T> logger)
+        public ConsoleLogger(ILogger logger)
         {
             _logger = logger;
         }

@@ -68,7 +68,13 @@
         /// <summary>
         /// Список связей <see cref="GameModel"/> - <see cref="CategoryModel"/>
         /// </summary>
-        public ISet<CategoryGameModel> CategoryGameModels { get; private set; }
+        public ISet<CategoryGameModel> CategoryGameModels
+        {
+            get => _categoryGameModel ?? new HashSet<CategoryGameModel>();
+            set { _categoryGameModel = value; }
+        }
+
+        private ISet<CategoryGameModel>? _categoryGameModel;
 
         private GameModel()
         { }
@@ -90,7 +96,6 @@
             PublicationDate = publicationDate;
             GameStatistics = gameStatistics;
         }
-
 
         /// <summary>
         /// Изменяет список статусов игры на <paramref name="categories"/>

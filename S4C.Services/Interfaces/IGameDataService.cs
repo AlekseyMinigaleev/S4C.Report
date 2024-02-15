@@ -10,12 +10,10 @@ namespace C4S.Services.Interfaces
     public interface IGameDataService
     {
         /// <summary>
-        /// Выполняет обновление данных в таблице <see cref="GameModel"/> и создает новые записи для таблицы <see cref="GameStatisticModel"/>
-        /// </summary>
-        /// <remarks>
+        /// Выполняет обновление данных в таблице <see cref="GameModel"/> и создает новые записи для таблицы <see cref="GameStatisticModel"/>.
         /// Если у <see cref="GameModel"/> нет никаких изменений, то обновление данных пропускается.
         /// При успешном завершении процесса, создается по 1 записи в таблице <see cref="GameStatisticModel"/> для каждой <see cref="GameModel"/>
-        /// </remarks>
+        /// </summary>
         public Task SyncGameStatistics(
             Guid userId,
             PerformContext hangfireContext,
