@@ -12,7 +12,7 @@ namespace С4S.API.Features.Jobs.Actions
         public class Handler : IRequestHandler<Command>
         {
             private readonly IHangfireBackgroundJobService _hangfireBackgroundJobService;
-            private readonly ILogger<IHangfireBackgroundJobService> _iLogger;
+            private readonly ILogger<IHangfireBackgroundJobService> _ILogger;
             private readonly BaseLogger _logger;
 
             public Handler(
@@ -20,8 +20,8 @@ namespace С4S.API.Features.Jobs.Actions
                 ILogger<IHangfireBackgroundJobService> logger)
             {
                 _hangfireBackgroundJobService = hangfireBackgroundJobService;
-                _iLogger = logger;
-                _logger = new ConsoleLogger<IHangfireBackgroundJobService>(_iLogger);
+                _ILogger = logger;
+                _logger = new ConsoleLogger(_ILogger);
             }
 
             public async Task Handle(

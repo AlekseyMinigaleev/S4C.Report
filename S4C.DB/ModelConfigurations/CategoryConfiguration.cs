@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace C4S.DB.ModelConfigurations
 {
-    public class GameStatusConfiguration : IEntityTypeConfiguration<GameStatusModel>
+    public class CategoryConfiguration : IEntityTypeConfiguration<CategoryModel>
     {
-        public void Configure(EntityTypeBuilder<GameStatusModel> builder)
+        public void Configure(EntityTypeBuilder<CategoryModel> builder)
         {
-            builder.ToTable("GameStatus")
+            builder.ToTable("Category")
                 .HasKey(x => x.Id);
         }
     }

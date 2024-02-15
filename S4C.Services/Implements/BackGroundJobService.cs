@@ -6,7 +6,7 @@ using C4S.Helpers.Logger;
 using C4S.Services.Exceptions;
 using C4S.Services.Interfaces;
 using Hangfire;
-using Hangfire.Storage;
+using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Security.Principal;
@@ -229,14 +229,14 @@ namespace C4S.Services.Implements
                     AddOrUpdateRecurringJob<IGameIdSyncService>(
                         userLogin,
                         jobConfig,
-                        (service) => service.SyncAllGameIdAsync(userId, null, CancellationToken.None));
+                        (service) => service.SyncAllGameIdAsync(userId, (PerformContext)null, CancellationToken.None));
                     break;
 
                 case HangfireJobType.SyncGameInfoAndGameCreateGameStatistic:
                     AddOrUpdateRecurringJob<IGameDataService>(
                         userLogin,
                         jobConfig,
-                        (service) => service.SyncGameStatistics(userId,null, CancellationToken.None));
+                        (service) => service.SyncGameStatistics(userId, (PerformContext)null, CancellationToken.None));
                     break;
 
                 default:

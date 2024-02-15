@@ -42,6 +42,23 @@ namespace C4S.Services.Implements
             CancellationToken cancellationToken)
         {
             _logger = new HangfireLogger(hangfireContext);
+            await StartAsync(userId, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task SyncGameStatistics(
+            Guid userId,
+            BaseLogger logger,
+            CancellationToken cancellationToken)
+        {
+            _logger = logger;
+            await StartAsync(userId, cancellationToken);
+        }
+
+        private async Task StartAsync(
+            Guid userId,
+            CancellationToken cancellationToken)
+        {
             _user = await _dbContext.Users.SingleAsync(x => x.Id == userId, cancellationToken);
 
             var finalLogMessage = "Процесс успешно завершен.";
@@ -50,7 +67,7 @@ namespace C4S.Services.Implements
             try
             {
                 _logger.LogInformation("Начат процесс синхронизации всех данных по играм:");
-                await RunAsync(cancellationToken);
+                await Main(cancellationToken);
             }
             catch (Exception e)
             {
@@ -64,7 +81,7 @@ namespace C4S.Services.Implements
             }
         }
 
-        private async Task RunAsync(
+        private async Task Main(
             CancellationToken cancellationToken)
         {
             var games = await _dbContext.Games
@@ -207,26 +224,25 @@ namespace C4S.Services.Implements
 
             incomingGameStatisticModel.GameId = sourceGameId;
 
-            SetLinksForStatuses(incomingGameInfo, incomingGameStatisticModel);
+            SetLinksForCategories(incomingGameInfo, incomingGameModifiableFields);
 
             return (incomingGameModifiableFields, incomingGameStatisticModel);
         }
 
-        /*TODO: Сделать поддержку статуса promoted после реализации сервиса парсинга с РСЯ*/
-
-        private void SetLinksForStatuses(
+        private void SetLinksForCategories(
             GameInfoModel incomingGameInfo,
-            GameStatisticModel incomingGameStatisticModel)
+            GameModel gameModel)
         {
-            var existingGameStatusQuery = _dbContext.GameStatuses;
-            var incomingGameStatusNames = incomingGameInfo.CategoriesNames;
+            var existCategories = _dbContext.Categories;
 
-            var gameStatusQuery = existingGameStatusQuery
-                .Where(x => incomingGameStatusNames
+            var incomingCategories = incomingGameInfo.CategoriesNames;
+
+            var categories = existCategories
+                .Where(x => incomingCategories
                     .Contains(x.Name))
                 .ToHashSet();
 
-            incomingGameStatisticModel.AddStatuses(gameStatusQuery);
+            gameModel.AddCategories(categories);
         }
 
         private void UpdateGameModel(
@@ -240,11 +256,12 @@ namespace C4S.Services.Implements
             {
                 _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
 
-                /*TODO: убрать ! после фикса джобы*/
+                /*TODO: Изменить после принятия решения, как делать, через 2 джобы или через 1*/
                 sourceGame.Update(
                     name: incomingGameModifiableFields.Name!,
                     publicationDate: incomingGameModifiableFields.PublicationDate!.Value,
-                    previewURL: incomingGameModifiableFields.PreviewURL!);
+                    previewURL: incomingGameModifiableFields.PreviewURL!,
+                    categories: incomingGameModifiableFields.Categories);
             }
             else
             {

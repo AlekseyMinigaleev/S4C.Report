@@ -1,4 +1,5 @@
 ﻿using C4S.DB.Models;
+using C4S.Helpers.Logger;
 using Hangfire.Server;
 
 namespace C4S.Services.Interfaces
@@ -10,15 +11,22 @@ namespace C4S.Services.Interfaces
     public interface IGameDataService
     {
         /// <summary>
-        /// Выполняет обновление данных в таблице <see cref="GameModel"/> и создает новые записи для таблицы <see cref="GameStatisticModel"/>
-        /// </summary>
-        /// <remarks>
+        /// Выполняет обновление данных в таблице <see cref="GameModel"/> и создает новые записи для таблицы <see cref="GameStatisticModel"/>.
         /// Если у <see cref="GameModel"/> нет никаких изменений, то обновление данных пропускается.
         /// При успешном завершении процесса, создается по 1 записи в таблице <see cref="GameStatisticModel"/> для каждой <see cref="GameModel"/>
-        /// </remarks>
+        /// </summary>
         public Task SyncGameStatistics(
             Guid userId,
             PerformContext hangfireContext,
             CancellationToken cancellationToken = default);
+
+        /// <inheritdoc cref="IGameDataService.SyncGameStatistics(Guid, PerformContext, CancellationToken)"/>
+        /// <remarks>
+        /// Эта вариация выполняется не на стороне hangfire
+        /// </remarks>
+        public Task SyncGameStatistics(
+            Guid userId,
+            BaseLogger logger,
+            CancellationToken cancellationToken);
     }
 }

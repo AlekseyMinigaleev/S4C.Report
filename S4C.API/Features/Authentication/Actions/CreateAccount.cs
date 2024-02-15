@@ -11,6 +11,7 @@ using С4S.API.Features.User.Requests;
 
 namespace С4S.API.Features.Authentication.Actions
 {
+    /*TOOD: Перенести это на user а не Authorization*/
     public class CreateAccount
     {
         public class Query : IRequest
@@ -30,7 +31,7 @@ namespace С4S.API.Features.Authentication.Actions
             [JsonPropertyName("rsyaAuthorizationToken")]
             public string? RsyaAuthorizationTokenString
             {
-                get { return RsyaAuthorizationToken?.Token; }
+                get => RsyaAuthorizationToken?.Token;
                 set
                 {
                     if (string.IsNullOrWhiteSpace(value))
@@ -96,17 +97,22 @@ namespace С4S.API.Features.Authentication.Actions
         {
             private readonly ReportDbContext _dbContext;
             private readonly IHangfireBackgroundJobService _hangfireBackgroundJobService;
-            private readonly ConsoleLogger<CreateAccount> _logger;
+            private readonly IGameDataService _gameDataService;
+            private readonly IGameIdSyncService _gameIdSyncService;
+            private readonly ConsoleLogger _logger;
 
             public Handler(
                 ReportDbContext dbContext,
                 IHangfireBackgroundJobService hangfireBackgroundJobService,
-                ILogger<CreateAccount> logger
-                )
+                IGameDataService gameDataService,
+                IGameIdSyncService gameIdSyncService,
+                ILogger<CreateAccount> logger)
             {
                 _dbContext = dbContext;
+                _logger = new ConsoleLogger(logger);
                 _hangfireBackgroundJobService = hangfireBackgroundJobService;
-                _logger = new ConsoleLogger<CreateAccount>(logger);
+                _gameDataService = gameDataService;
+                _gameIdSyncService = gameIdSyncService;
             }
 
             public async Task Handle(Query request, CancellationToken cancellationToken)
@@ -123,6 +129,10 @@ namespace С4S.API.Features.Authentication.Actions
 
                 await _hangfireBackgroundJobService
                     .AddMissingHangfirejobsAsync(user, _logger, cancellationToken);
+
+                await _gameIdSyncService.SyncAllGameIdAsync(user.Id, _logger, cancellationToken);
+
+                await _gameDataService.SyncGameStatistics(user.Id, _logger, cancellationToken);
             }
         }
     }

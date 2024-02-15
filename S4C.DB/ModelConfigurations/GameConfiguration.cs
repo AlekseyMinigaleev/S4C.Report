@@ -14,6 +14,13 @@ namespace C4S.DB.ModelConfigurations
             builder.HasMany(x => x.GameStatistics)
                 .WithOne(x => x.Game)
                 .HasForeignKey(x => x.GameId);
+
+            builder.HasMany(x => x.CategoryGameModels)
+                .WithOne(x => x.Game)
+                .HasForeignKey(x => x.GameId);
+
+            builder
+                .Ignore(x => x.Categories);
         }
     }
 }
