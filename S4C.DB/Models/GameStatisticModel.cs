@@ -30,7 +30,7 @@ namespace C4S.DB.Models
         /// <summary>
         /// Рейтинг игры
         /// </summary>
-        public int Rating { get; set; }
+        public int? Rating { get; set; }
 
         /// <summary>
         /// Количество игроков

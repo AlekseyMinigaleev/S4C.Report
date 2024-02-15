@@ -15,16 +15,15 @@ namespace S4C.YandexGateway.DeveloperPage
         /// <summary>
         /// Возвращает <see cref="GameInfoModel"/>[] со страницы разработчика.
         /// </summary>
-        /// <param name="gameIds">Массив id <see cref="GameModel"/>, для которых необходимо получить <see cref="GameInfoModel"/>[]</param>
+        /// <param name="appIds">Массив id <see cref="GameModel"/>, для которых необходимо получить <see cref="GameInfoModel"/>[]</param>
         /// <param name="logger">Объект <see cref="BaseLogger"/>с помощью, которого будет выполняться логирование</param>
         /// <param name="cancellationToken"><inheritdoc cref="CancellationToken"/></param>
         /// <returns>
         /// <see cref="GameInfoModel"/>[]
         /// </returns>
         /// <exception cref="HttpRequestException"></exception>
-        /// <exception cref="InvalidContractException"></exception>
-        public Task<GameInfoModel[]> GetGameInfoAsync(
-            int[] gameIds,
+        public Task<GameInfoModel[]> GetGamesInfoAsync(
+            int[] appIds,
             BaseLogger logger,
             CancellationToken cancellationToken = default);
     }
