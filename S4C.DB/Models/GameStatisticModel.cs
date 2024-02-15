@@ -47,37 +47,15 @@ namespace C4S.DB.Models
         /// </summary>
         public DateTime LastSynchroDate { get; private set; }
 
-        /// <summary>
-        /// Список статусов игры
-        /// </summary>
-        public ISet<GameStatusModel> Statuses =>
-            GameGameStatus.Select(x => x.GameStatus).ToHashSet();
-
-        /// <summary>
-        /// Список связей <see cref="GameModel"/> - <see cref="GameStatusModel"/>
-        /// </summary>
-        public ISet<GameGameStatusModel> GameGameStatus
-        {
-            get
-            {
-                return _gameGameStatus ?? new HashSet<GameGameStatusModel>();
-            }
-            set { _gameGameStatus = value; }
-        }
-
-        private ISet<GameGameStatusModel>? _gameGameStatus;
-
         public GameStatisticModel(
             GameModel game,
             int playersCount,
             DateTime lastSynchroDate,
-            double evaluation,
-            ISet<GameStatusModel> statuses)
+            double evaluation)
         {
             Id = Guid.NewGuid();
             GameId = game.Id;
             Game = game;
-            AddStatuses(statuses);
             PlayersCount = playersCount;
             LastSynchroDate = lastSynchroDate;
             Evaluation = evaluation;
@@ -85,34 +63,11 @@ namespace C4S.DB.Models
 
         private GameStatisticModel()
         { }
-
-        /// <summary>
-        /// Изменяет список статусов игры на <paramref name="statuses"/>
-        /// </summary>
-        /// <param name="statuses">Новый список статусов игры</param>
-        public void AddStatuses(ISet<GameStatusModel> statuses)
-        {
-            GameGameStatus.Clear();
-            foreach (var status in statuses)
-                AddStatus(status);
-        }
-
-        /// <summary>
-        /// Добавляет <paramref name="status"/> к списку статусов игры
-        /// </summary>
-        /// <param name="status">Добавляемый статус</param>
-        public void AddStatus(GameStatusModel status) =>
-            GameGameStatus.Add(new GameGameStatusModel(this, status));
     }
 
     /// <summary>
     /// Справочник <see cref="Expression"/> для <see cref="GameStatisticModel"/>
     /// </summary>
     public static class GameStatisticExpression
-    {
-        public static readonly Expression<Func<GameStatisticModel, string>> GetStatusesAsStringExpression = (gameStatistic) =>
-            gameStatistic.Statuses.Count() == 0
-                ? "-"
-                : string.Join(", ", gameStatistic);
-    }
+    { }
 }

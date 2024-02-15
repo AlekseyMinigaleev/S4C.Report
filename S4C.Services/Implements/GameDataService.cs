@@ -207,27 +207,28 @@ namespace C4S.Services.Implements
 
             incomingGameStatisticModel.GameId = sourceGameId;
 
-            SetLinksForStatuses(incomingGameInfo, incomingGameStatisticModel);
+            /*TODO: сделать мапинг статусов*/
+            //SetLinksForStatuses(incomingGameInfo, incomingGameStatisticModel);
 
             return (incomingGameModifiableFields, incomingGameStatisticModel);
         }
 
         /*TODO: Сделать поддержку статуса promoted после реализации сервиса парсинга с РСЯ*/
 
-        private void SetLinksForStatuses(
-            GameInfoModel incomingGameInfo,
-            GameStatisticModel incomingGameStatisticModel)
-        {
-            var existingGameStatusQuery = _dbContext.GameStatuses;
-            var incomingGameStatusNames = incomingGameInfo.CategoriesNames;
+        //private void SetLinksForStatuses(
+        //    GameInfoModel incomingGameInfo,
+        //    GameStatisticModel incomingGameStatisticModel)
+        //{
+        //    var existingGameStatusQuery = _dbContext.GameStatuses;
+        //    var incomingGameStatusNames = incomingGameInfo.CategoriesNames;
 
-            var gameStatusQuery = existingGameStatusQuery
-                .Where(x => incomingGameStatusNames
-                    .Contains(x.Name))
-                .ToHashSet();
+        //    var gameStatusQuery = existingGameStatusQuery
+        //        .Where(x => incomingGameStatusNames
+        //            .Contains(x.Title))
+        //        .ToHashSet();
 
-            incomingGameStatisticModel.AddStatuses(gameStatusQuery);
-        }
+        //    incomingGameStatisticModel.AddStatuses(gameStatusQuery);
+        //}
 
         private void UpdateGameModel(
             GameModel sourceGame,

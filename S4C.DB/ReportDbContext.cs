@@ -32,12 +32,12 @@ namespace C4S.DB
         /// <summary>
         /// Список статусов игр
         /// </summary>
-        public DbSet<GameStatusModel> GameStatuses { get; set; }
+        public DbSet<CategoryModel> Categories { get; set; }
 
         /// <summary>
-        /// Список связей <see cref="GameStatusModel"/> - <see cref="GameStatisticModel"/>
+        /// Список связей <see cref="CategoryModel"/> - <see cref="GameModel"/>
         /// </summary>
-        public DbSet<GameGameStatusModel> GameGameStatuses { get; set; }
+        public DbSet<CategoryGameModel> CategoryGames { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -101,13 +101,16 @@ namespace S4C.YandexGateway.DeveloperPage.Models
                 .ForMember(dest => dest.User, opt => opt.Ignore())
                 .ForMember(dest => dest.UserId, opt => opt.Ignore())
                 .ForMember(dest => dest.URL, opt => opt.Ignore())
-                .ForMember(dest => dest.GameStatistics, opt => opt.Ignore());
+                .ForMember(dest => dest.GameStatistics, opt => opt.Ignore())
+
+                /*Реализовать возможность получения категорий*/
+                .ForMember(dest => dest.Categories, opt => opt.Ignore())
+                .ForMember(dest => dest.CategoryGameModels, opt => opt.Ignore())
+                ;
 
             CreateMap<GameInfoModel, GameStatisticModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
-                .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now))
-                .ForMember(dest => dest.Statuses, opt => opt.Ignore())
-                .ForMember(dest => dest.GameGameStatus, opt => opt.Ignore());
+                .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now));
         }
     }
 }

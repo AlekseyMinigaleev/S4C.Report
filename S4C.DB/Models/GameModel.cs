@@ -58,12 +58,25 @@
         /// </summary>
         public ISet<GameStatisticModel> GameStatistics { get; private set; }
 
+        /// <summary>
+        /// Список категорий игры
+        /// </summary>
+        public ISet<CategoryModel> Categories => CategoryGameModels
+            .Select(x => x.Category)
+            .ToHashSet();
+
+        /// <summary>
+        /// Список связей <see cref="GameModel"/> - <see cref="CategoryModel"/>
+        /// </summary>
+        public ISet<CategoryGameModel> CategoryGameModels { get; private set; }
+
         private GameModel()
         { }
 
         public GameModel(
             int appId,
             UserModel user,
+            ISet<CategoryModel> categories,
             string? name = default,
             DateTime? publicationDate = default,
             ISet<GameStatisticModel>? gameStatistics = default)
@@ -73,9 +86,29 @@
             User = user;
             UserId = user.Id;
             Name = name;
+            AddCategories(categories);
             PublicationDate = publicationDate;
             GameStatistics = gameStatistics;
         }
+
+
+        /// <summary>
+        /// Изменяет список статусов игры на <paramref name="categories"/>
+        /// </summary>
+        /// <param name="categories">Новый список статусов игры</param>
+        public void AddCategories(ISet<CategoryModel> categories)
+        {
+            CategoryGameModels.Clear();
+            foreach (var category in categories)
+                AddCategory(category);
+        }
+
+        /// <summary>
+        /// Добавляет <paramref name="category"/> к списку статусов игры
+        /// </summary>
+        /// <param name="category">Добавляемый статус</param>
+        public void AddCategory(CategoryModel category) =>
+            CategoryGameModels.Add(new CategoryGameModel(this, category));
 
         /// <summary>
         /// Выполняет обновление сущности
