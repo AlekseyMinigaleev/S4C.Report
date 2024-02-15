@@ -92,15 +92,22 @@ namespace S4C.YandexGateway.DeveloperPage.Models
     {
         public GameModelProfiler()
         {
-            CreateMap<GameInfoModel, GameModifiableFields>()
+            CreateMap<GameInfoModel, GameModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Title))
-                .ForMember(dest => dest.PublicationDate, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.FirstPublished).DateTime));
+                .ForMember(dest => dest.PublicationDate, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.FirstPublished).DateTime))
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.AppId, opt => opt.Ignore())
+                .ForMember(dest => dest.PageId, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.Ignore())
+                .ForMember(dest => dest.URL, opt => opt.Ignore())
+                .ForMember(dest => dest.GameStatistics, opt => opt.Ignore());
 
             CreateMap<GameInfoModel, GameStatisticModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
-                .ForMember(dest => dest.Statuses, opt => opt.Ignore())
                 .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now))
-                ;
+                .ForMember(dest => dest.Statuses, opt => opt.Ignore())
+                .ForMember(dest => dest.GameGameStatus, opt => opt.Ignore());
         }
     }
 }

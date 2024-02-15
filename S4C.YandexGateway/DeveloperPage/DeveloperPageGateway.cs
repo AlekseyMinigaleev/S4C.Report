@@ -62,8 +62,6 @@ namespace S4C.YandexGateway.DeveloperPage
             return result.ToArray();
         }
 
-        /*TODO: мб вынести в автомаппер*/
-
         private async Task<GameInfoModel> DeserializeObjectsAsync(
             HttpResponseMessage httpResponseMessage,
             BaseLogger logger,
@@ -73,7 +71,8 @@ namespace S4C.YandexGateway.DeveloperPage
                 .ReadAsStringAsync(cancellationToken);
 
             var jObject = JObject.Parse(jsonString);
-            var gameJToken = jObject.GetValue("game") ?? throw new Exception();
+            var gameJToken = jObject.GetValue("game") ??
+                throw new ArgumentNullException("Не удалось получить объект game из ответа Яндекса");
 
             var title = gameJToken.GetValue<string>("title");
             var appId = gameJToken.GetValue<int>("appID");
@@ -105,19 +104,19 @@ namespace S4C.YandexGateway.DeveloperPage
                 withException: false);
 
             var gameInfo = new GameInfoModel(
-                title: title,
+                title: title!,
                 appId: appId,
                 firstPublished: firstPublished,
                 evaluation: evaluation,
                 playersCount: playersCount,
-                categoriesNames: categoriesNames,
-                previewURL: previewURL,
+                categoriesNames: categoriesNames!,
+                previewURL: previewURL!,
                 rating: rating);
 
             return gameInfo;
         }
 
-        private void ProcessNullableField<T>(
+        private static void ProcessNullableField<T>(
             T field,
             Action log,
             bool withException)

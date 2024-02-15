@@ -82,6 +82,7 @@
         /// </summary>
         /// <param name="name">Название игры</param>
         /// <param name="publicationDate">дата публикации</param>
+        /// <param name="previewURL">Ссылка на превью</param>
         public void Update(string name, DateTime publicationDate, string previewURL)
         {
             Name = name;
@@ -95,21 +96,6 @@
         /// <param name="pageId">Id страницы, необходимо для РСЯ</param>
         public void SetPageId(int pageId) => PageId = pageId;
 
-        /*TODO: Очень жесткое дублирование*/
-
-        /// <inheritdoc cref="HasChanges(GameModel)"/>
-        /// <param name="incomingFields"> Поля с которым происходит сравнение</param>
-        public bool HasChanges(GameModifiableFields incomingFields)
-        {
-            var hasChanges = Name == incomingFields.Name
-                && PublicationDate == incomingFields.PublicationDate
-                && incomingFields.PreviewURL == PreviewURL;
-
-            return !hasChanges;
-        }
-
-        /*TODO: Очень жесткое дублирование*/
-
         /// <summary>
         /// Проверяет есть ли изменения у модели по сравнению с <paramref name="incomingGameModel"/>
         /// </summary>
@@ -121,39 +107,9 @@
         {
             var hasChanges = Name == incomingGameModel.Name
                 && PublicationDate == incomingGameModel.PublicationDate
-                && incomingGameModel.PreviewURL == PreviewURL;
+                && PreviewURL == incomingGameModel.PreviewURL;
 
             return hasChanges;
         }
-    }
-
-    /*TOOD: очень сомнительная штука, добавляет много гемора, нужно пересмотреть*/
-
-    /// <summary>
-    /// Изменяемые поля модели <see cref="GameModel"/>
-    /// </summary>
-    public class GameModifiableFields
-    {
-        /// <inheritdoc cref="GameModel.Name"/>
-        public string Name { get; set; }
-
-        /// <inheritdoc cref="GameModel.PublicationDate"/>
-        public DateTime PublicationDate { get; set; }
-
-        /// <inheritdoc cref="GameModel.PreviewURL"/>
-        public string PreviewURL { get; set; }
-
-        public GameModifiableFields(
-            string name,
-            DateTime publicationDate,
-            string previewURL)
-        {
-            Name = name;
-            PublicationDate = publicationDate;
-            PreviewURL = previewURL;
-        }
-
-        private GameModifiableFields()
-        { }
     }
 }

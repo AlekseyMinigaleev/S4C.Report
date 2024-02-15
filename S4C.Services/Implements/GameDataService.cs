@@ -170,7 +170,7 @@ namespace C4S.Services.Implements
                     gameIdForLogs) = GetDataForProcess(sourceGameModels, incomingGameInfo);
 
                 var (incomingGameModelFields,
-                incomingGameStatisticModel) = Projection(incomingGameInfo, sourceGameModel.Id);
+                incomingGameStatisticModel) = Mapping(incomingGameInfo, sourceGameModel.Id);
 
                 UpdateGameModel(
                     sourceGameModel,
@@ -200,9 +200,9 @@ namespace C4S.Services.Implements
             return (sourceGameModel, gameIdForLogs);
         }
 
-        private (GameModifiableFields, GameStatisticModel) Projection(GameInfoModel incomingGameInfo, Guid sourceGameId)
+        private (GameModel, GameStatisticModel) Mapping(GameInfoModel incomingGameInfo, Guid sourceGameId)
         {
-            var incomingGameModifiableFields = _mapper.Map<GameInfoModel, GameModifiableFields>(incomingGameInfo);
+            var incomingGameModifiableFields = _mapper.Map<GameInfoModel, GameModel>(incomingGameInfo);
             var incomingGameStatisticModel = _mapper.Map<GameInfoModel, GameStatisticModel>(incomingGameInfo);
 
             incomingGameStatisticModel.GameId = sourceGameId;
@@ -229,11 +229,9 @@ namespace C4S.Services.Implements
             incomingGameStatisticModel.AddStatuses(gameStatusQuery);
         }
 
-        /*TODO: мб заменить GameModifiableFields на маппер*/
-
         private void UpdateGameModel(
             GameModel sourceGame,
-            GameModifiableFields incomingGameModifiableFields,
+            GameModel incomingGameModifiableFields,
             string gameIdForLogs)
         {
             var hasChanges = sourceGame.HasChanges(incomingGameModifiableFields);
@@ -241,10 +239,12 @@ namespace C4S.Services.Implements
             if (hasChanges)
             {
                 _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
+
+                /*TODO: убрать ! после фикса джобы*/
                 sourceGame.Update(
-                    incomingGameModifiableFields.Name,
-                    incomingGameModifiableFields.PublicationDate,
-                    incomingGameModifiableFields.PreviewURL);
+                    name: incomingGameModifiableFields.Name!,
+                    publicationDate: incomingGameModifiableFields.PublicationDate!.Value,
+                    previewURL: incomingGameModifiableFields.PreviewURL!);
             }
             else
             {
