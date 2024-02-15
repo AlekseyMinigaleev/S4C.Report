@@ -11,6 +11,7 @@ using С4S.API.Features.User.Requests;
 
 namespace С4S.API.Features.Authentication.Actions
 {
+    /*TOOD: Перенести это на user а не Authorization*/
     public class CreateAccount
     {
         public class Query : IRequest

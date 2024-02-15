@@ -256,7 +256,7 @@ namespace C4S.Services.Implements
             {
                 _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
 
-                /*TODO: убрать ! после фикса джобы*/
+                /*TODO: Изменить после принятия решения, как делать, через 2 джобы или через 1*/
                 sourceGame.Update(
                     name: incomingGameModifiableFields.Name!,
                     publicationDate: incomingGameModifiableFields.PublicationDate!.Value,
