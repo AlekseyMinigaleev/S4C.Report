@@ -74,7 +74,7 @@
             set { _categoryGameModel = value; }
         }
 
-        private ISet<CategoryGameModel>? _categoryGameModel;
+        private ISet<CategoryGameModel> _categoryGameModel = new HashSet<CategoryGameModel>();
 
         private GameModel()
         { }
@@ -113,7 +113,7 @@
         /// </summary>
         /// <param name="category">Добавляемый статус</param>
         public void AddCategory(CategoryModel category) =>
-            CategoryGameModels.Add(new CategoryGameModel(this, category));
+            _categoryGameModel.Add(new CategoryGameModel(this, category));
 
         /// <summary>
         /// Выполняет обновление сущности
@@ -151,7 +151,8 @@
         {
             var hasChanges = Name != incomingGameModel.Name
                 || PublicationDate != incomingGameModel.PublicationDate
-                || PreviewURL != incomingGameModel.PreviewURL;
+                || PreviewURL != incomingGameModel.PreviewURL
+                || !Categories.SequenceEqual(incomingGameModel.Categories);
 
             return hasChanges;
         }

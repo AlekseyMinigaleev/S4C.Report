@@ -26,11 +26,11 @@
         public Guid CategoryId { get; private set; }
 
         public CategoryGameModel(
-            GameModel gameStatistic,
+            GameModel game,
             CategoryModel status)
         {
-            Game = gameStatistic;
-            GameId = gameStatistic.Id;
+            Game = game;
+            GameId = game.Id;
             Category = status;
             CategoryId = status.Id;
         }
