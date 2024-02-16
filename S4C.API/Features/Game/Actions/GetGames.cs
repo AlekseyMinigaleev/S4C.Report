@@ -15,8 +15,7 @@ namespace С4S.API.Features.Game.Actions
     public class GetGames
     {
         public class Query : IRequest<ResponseViewModel>
-        {
-        }
+        { }
 
         public class ResponseViewModel
         {
@@ -61,6 +60,12 @@ namespace С4S.API.Features.Game.Actions
 
             public double Evaluation { get; set; }
 
+            public string URL { get; set; }
+
+            public string PreviewURL { get; set; }
+
+            public string[] Categories { get; set; }
+
             public CashIncomeViewModel CashIncome { get; set; }
 
             public PlayersCountViewModel PlayersCount { get; set; }
@@ -73,7 +78,9 @@ namespace С4S.API.Features.Game.Actions
                 CreateMap<GameModel, GameViewModel>()
                     .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(GameExpressions.LastSynchronizedEvaluationExpression))
                     .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(src => src))
-                    .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src));
+                    .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src))
+                    .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.CategoryGameModels
+                        .Select(x => x.Category.Title)));
 
                 CreateMap<GameModel, PlayersCountViewModel>()
                       .ForMember(dest => dest.ValueWithProgress, opt => opt.MapFrom(GameExpressions.PlayersCountWithProgressExpression))
@@ -108,6 +115,7 @@ namespace С4S.API.Features.Game.Actions
                 var userId = _principal.GetUserId();
 
                 var games = await _dbContext.Games
+                    .Include(x => x.User) /*Почему то не подргужает автоматически для получения URL*/
                     .Where(x => x.UserId == userId)
                     .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider)
                     .ToArrayAsync(cancellationToken);
