@@ -11,6 +11,7 @@ using С4S.API.Models;
 
 namespace С4S.API.Features.Game.Actions
 {
+    /*Вынести в отдельный контроллер*/
     public class GetGameStatistics
     {
         public class Query : IRequest<ResponseViewModel>
