@@ -17,6 +17,7 @@ namespace C4S.Services.Extensions
             services.AddScoped<IGameIdSyncService, GameIdSyncService>();
             services.AddScoped<IGameDataService, GameDataService>();
             services.AddScoped<IExcelWorksheetService, DetailedReportService>();
+            services.AddScoped<ICategoriesSyncService,CategoriesSyncService>();
             services.AddScoped<IJwtService, JwtServise>((provider) =>
             {
                 var jwtConfig = provider.GetService<IOptions<JwtConfiguration>>();
