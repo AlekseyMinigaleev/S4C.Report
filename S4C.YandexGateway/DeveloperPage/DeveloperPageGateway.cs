@@ -13,6 +13,7 @@ namespace S4C.YandexGateway.DeveloperPage
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private string _yandexGetGameRequestURL;
+        private const string PreviewFormat = "pjpg350x209";
 
         public DeveloperPageGateway(
             IHttpClientFactory httpClient,
@@ -112,7 +113,7 @@ namespace S4C.YandexGateway.DeveloperPage
                 evaluation: evaluation,
                 playersCount: playersCount,
                 categoriesNames: categoriesNames!,
-                previewURL: previewURL!,
+                previewURL: $"{previewURL!}{PreviewFormat}",
                 rating: rating);
 
             return gameInfo;
