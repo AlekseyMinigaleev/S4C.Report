@@ -13,11 +13,6 @@ namespace C4S.DB.Migrations
             migrationBuilder.DropColumn(
                 name: "RefreshTokenExpiry",
                 table: "User");
-
-            migrationBuilder.Sql("" +
-                "update [User]" +
-                "set RefreshToken  = null" +
-                "where 1=1");
         }
 
         /// <inheritdoc />

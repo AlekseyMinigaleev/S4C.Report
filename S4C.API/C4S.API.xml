@@ -110,6 +110,12 @@
             Пароль пользователя
             </summary>
         </member>
+        <member name="M:С4S.API.Features.Category.CategoryController.SyncCategories(System.Threading.CancellationToken)">
+            <summary>
+            Запускает синхронизацию категорий игрк с Яндекса
+            </summary>
+            <param name="cancellationToken"></param>
+        </member>
         <member name="M:С4S.API.Features.GameStatisticReport.GameStatisticReportController.GetGameStatisticReportAsync(System.String,System.String,FluentValidation.IValidator{С4S.API.Features.GameStatisticReport.Actions.GetReportFileWithGameStatistics.Query},System.Threading.CancellationToken)">
             <summary>
             Возвращает готовый к скачиванию файл отчета игровой статистики.

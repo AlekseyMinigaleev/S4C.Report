@@ -12,7 +12,7 @@ namespace C4S.DB.ModelConfigurations
 
             builder.HasKey(x => new { x.GameId, x.CategoryId });
 
-            builder.HasOne(x => x.Category)
+            builder.HasOne(x => x.Game)
                 .WithMany()
                 .HasForeignKey(x => x.GameId);
         }
