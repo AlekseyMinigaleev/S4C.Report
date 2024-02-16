@@ -9,9 +9,8 @@ using System.Linq.Dynamic.Core;
 using С4S.API.Extensions;
 using С4S.API.Models;
 
-namespace С4S.API.Features.Game.Actions
+namespace С4S.API.Features.GameStatistic.Actions
 {
-    /*Вынести в отдельный контроллер*/
     public class GetGameStatistics
     {
         public class Query : IRequest<ResponseViewModel>
