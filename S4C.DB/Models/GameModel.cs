@@ -1,4 +1,7 @@
-﻿namespace C4S.DB.Models
+﻿using C4S.DB.TDO;
+using C4S.Helpers.Extensions;
+
+namespace C4S.DB.Models
 {
     /// <summary>
     /// Таблица игры
@@ -68,13 +71,7 @@
         /// <summary>
         /// Список связей <see cref="GameModel"/> - <see cref="CategoryModel"/>
         /// </summary>
-        public ISet<CategoryGameModel> CategoryGameModels
-        {
-            get => _categoryGameModel ?? new HashSet<CategoryGameModel>();
-            set { _categoryGameModel = value; }
-        }
-
-        private ISet<CategoryGameModel> _categoryGameModel = new HashSet<CategoryGameModel>();
+        public ISet<CategoryGameModel> CategoryGameModels { get; private set; }
 
         private GameModel()
         { }
@@ -98,24 +95,6 @@
         }
 
         /// <summary>
-        /// Изменяет список статусов игры на <paramref name="categories"/>
-        /// </summary>
-        /// <param name="categories">Новый список статусов игры</param>
-        public void AddCategories(ISet<CategoryModel> categories)
-        {
-            CategoryGameModels.Clear();
-            foreach (var category in categories)
-                AddCategory(category);
-        }
-
-        /// <summary>
-        /// Добавляет <paramref name="category"/> к списку статусов игры
-        /// </summary>
-        /// <param name="category">Добавляемый статус</param>
-        public void AddCategory(CategoryModel category) =>
-            _categoryGameModel.Add(new CategoryGameModel(this, category));
-
-        /// <summary>
         /// Выполняет обновление сущности
         /// </summary>
         /// <param name="name">Название игры</param>
@@ -126,12 +105,51 @@
             string name,
             DateTime publicationDate,
             string previewURL,
-            ISet<CategoryModel> categories)
+            IEnumerable<CategoryModel> categories)
         {
             Name = name;
             PublicationDate = publicationDate;
             PreviewURL = previewURL;
-            AddCategories(categories);
+            UpdateCategories(categories);
+        }
+
+        /// <summary>
+        /// Изменяет список статусов игры на <paramref name="categories"/>
+        /// </summary>
+        /// <param name="categories">Новый список статусов игры</param>
+        public void AddCategories(IEnumerable<CategoryModel> categories)
+        {
+            foreach (var category in categories)
+                AddCategory(category);
+        }
+
+        /// <summary>
+        /// Добавляет <paramref name="category"/> к списку статусов игры
+        /// </summary>
+        /// <param name="category">Добавляемый статус</param>
+        public void AddCategory(CategoryModel category) =>
+            CategoryGameModels.Add(new CategoryGameModel(this, category));
+
+        /// <summary>
+        /// Удаляет указанные категории из коллекции.
+        /// </summary>
+        /// <param name="categories">Набор категорий для удаления.</param>
+        public void RemoveCategories(IEnumerable<CategoryModel> categories)
+        {
+            foreach (var category in categories)
+                RemoveCategory(category);
+        }
+
+        /// <summary>
+        /// Удаляет указанную категорию из коллекции категорий игр.
+        /// </summary>
+        /// <param name="category">Категория для удаления.</param>
+        public void RemoveCategory(CategoryModel category)
+        {
+            var categoryGameModelToRemove = CategoryGameModels
+                   .First(x => x.CategoryId == category.Id);
+
+            CategoryGameModels.Remove(categoryGameModelToRemove);
         }
 
         /// <summary>
@@ -140,21 +158,34 @@
         /// <param name="pageId">Id страницы, необходимо для РСЯ</param>
         public void SetPageId(int pageId) => PageId = pageId;
 
+        /*TOOD: по идее это следует заменить переопределением Equals*/
+
         /// <summary>
-        /// Проверяет есть ли изменения у модели по сравнению с <paramref name="incomingGameModel"/>
+        /// Проверяет есть ли изменения у модели по сравнению с <paramref name="modifibleFields"/>
         /// </summary>
-        /// <param name="incomingGameModel">Игра с которой происходит сравнение</param>
+        /// <param name="modifibleFields">Игра с которой происходит сравнение</param>
         /// <returns>
         /// <see langword="true"/> если в модели есть изменения, иначе <see langword="false"/>
         /// </returns>
-        public bool HasChanges(GameModel incomingGameModel)
+        public bool HasChanges(GameModifibleFields modifibleFields)
         {
-            var hasChanges = Name != incomingGameModel.Name
-                || PublicationDate != incomingGameModel.PublicationDate
-                || PreviewURL != incomingGameModel.PreviewURL
-                || !Categories.SequenceEqual(incomingGameModel.Categories);
+            var hasChanges = Name != modifibleFields.Name
+                || PublicationDate != modifibleFields.PublicationDate
+                || PreviewURL != modifibleFields.PreviewURL
+                || !Categories.SequenceEqual(modifibleFields.Categories);
 
             return hasChanges;
+        }
+
+        private void UpdateCategories(IEnumerable<CategoryModel> categories)
+        {
+            var categoriesToRemove = Categories
+                .GetItemsNotInSecondCollection(categories);
+            RemoveCategories(categoriesToRemove);
+
+            var categoriesToAdd = categories
+                .GetItemsNotInSecondCollection(Categories);
+            AddCategories(categoriesToAdd);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using C4S.DB.Models;
+using C4S.DB.TDO;
 using System.Linq.Expressions;
 
 namespace S4C.YandexGateway.DeveloperPage.Models
@@ -92,21 +93,10 @@ namespace S4C.YandexGateway.DeveloperPage.Models
     {
         public GameModelProfiler()
         {
-            CreateMap<GameInfoModel, GameModel>()
+            CreateMap<GameInfoModel, GameModifibleFields>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.PublicationDate, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.FirstPublished).DateTime))
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.AppId, opt => opt.Ignore())
-                .ForMember(dest => dest.PageId, opt => opt.Ignore())
-                .ForMember(dest => dest.User, opt => opt.Ignore())
-                .ForMember(dest => dest.UserId, opt => opt.Ignore())
-                .ForMember(dest => dest.URL, opt => opt.Ignore())
-                .ForMember(dest => dest.GameStatistics, opt => opt.Ignore())
-
-                /*Реализовать возможность получения категорий*/
-                .ForMember(dest => dest.Categories, opt => opt.Ignore())
-                .ForMember(dest => dest.CategoryGameModels, opt => opt.Ignore())
-                ;
+                .ForMember(dest => dest.Categories, opt => opt.Ignore());
 
             CreateMap<GameInfoModel, GameStatisticModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))

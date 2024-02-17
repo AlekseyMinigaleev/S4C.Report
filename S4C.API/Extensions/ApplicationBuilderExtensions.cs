@@ -1,5 +1,6 @@
 ﻿using C4S.DB;
 using C4S.Helpers.Logger;
+using C4S.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace С4S.API.Extensions
@@ -17,14 +18,18 @@ namespace С4S.API.Extensions
             CancellationToken cancellationToken = default)
         {
             using var scope = app.Services.CreateScope();
-            var (logger, dbContext) = GetDependencies(scope);
+            var (logger, dbContext, categorySyncServiice) = GetDependencies(scope);
 
-            logger.LogInformation("Начало выполнения миграций: ");
+            logger.LogInformation("Начало выполнения миграций:");
             await dbContext.Database.MigrateAsync(cancellationToken);
             logger.LogInformation("Все миграции успешно выполнены");
+
+            logger.LogInformation("Начало синхронизации категорий с яндексом:");
+            await categorySyncServiice.SyncCategoriesAsync(logger, cancellationToken);
+            logger.LogInformation("Категории успешно синхронизированы");
         }
 
-        private static (ConsoleLogger, ReportDbContext) GetDependencies(IServiceScope scope)
+        private static (ConsoleLogger, ReportDbContext, ICategoriesSyncService) GetDependencies(IServiceScope scope)
         {
             var services = scope.ServiceProvider;
 
@@ -32,8 +37,9 @@ namespace С4S.API.Extensions
             var logger = new ConsoleLogger(defaultLogger);
 
             var dbContext = services.GetRequiredService<ReportDbContext>();
+            var categoriesSyncService = services.GetRequiredService<ICategoriesSyncService>();
 
-            return (logger, dbContext);
+            return (logger, dbContext, categoriesSyncService);
         }
     }
 }

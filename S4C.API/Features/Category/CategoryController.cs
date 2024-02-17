@@ -1,6 +1,5 @@
 ﻿using C4S.Helpers.ApiHeplers.Controllers;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using С4S.API.Features.Category.Actions;
 

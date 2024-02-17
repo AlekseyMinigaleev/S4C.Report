@@ -2,6 +2,7 @@
 using C4S.Common.Models;
 using C4S.DB;
 using C4S.DB.Models;
+using C4S.DB.TDO;
 using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
 using Hangfire.Server;
@@ -85,6 +86,8 @@ namespace C4S.Services.Implements
             CancellationToken cancellationToken)
         {
             var games = await _dbContext.Games
+                .Include(x => x.CategoryGameModels)
+                    .ThenInclude(x => x.Category)
                 .Where(x => x.UserId == _user.Id)
                 .ToArrayAsync(cancellationToken);
 
@@ -184,21 +187,21 @@ namespace C4S.Services.Implements
             foreach (var incomingGameInfo in incomingGamesInfo)
             {
                 var (sourceGameModel,
-                    gameIdForLogs) = GetDataForProcess(sourceGameModels, incomingGameInfo);
+                    appId) = GetDataForProcess(sourceGameModels, incomingGameInfo);
 
                 var (incomingGameModelFields,
-                incomingGameStatisticModel) = Mapping(incomingGameInfo, sourceGameModel.Id);
+                incomingGameStatisticModel) = await MappingAsync(incomingGameInfo, sourceGameModel.Id, cancellationToken);
+                _logger.LogInformation($"[{appId}] создана запись игровой статистики.");
 
-                UpdateGameModel(
-                    sourceGameModel,
-                    incomingGameModelFields,
-                    gameIdForLogs);
+                sourceGameModel.Update(
+                    name: incomingGameModelFields.Name,
+                    publicationDate: incomingGameModelFields.PublicationDate,
+                    previewURL: incomingGameModelFields.PreviewURL,
+                    categories: incomingGameModelFields.Categories);
+                _logger.LogInformation($"[{appId}] данные игры актуализированы.");
 
-                _logger.LogInformation($"[{gameIdForLogs}] создана запись игровой статистики.");
                 await _dbContext.GamesStatistics
                     .AddAsync(incomingGameStatisticModel, cancellationToken);
-
-                await _dbContext.SaveChangesAsync(cancellationToken);
             }
         }
 
@@ -217,56 +220,36 @@ namespace C4S.Services.Implements
             return (sourceGameModel, gameIdForLogs);
         }
 
-        private (GameModel, GameStatisticModel) Mapping(GameInfoModel incomingGameInfo, Guid sourceGameId)
+        private async Task<(GameModifibleFields, GameStatisticModel)> MappingAsync(
+            GameInfoModel incomingGameInfo,
+            Guid sourceGameId,
+            CancellationToken cancellationToken)
         {
-            var incomingGameModifiableFields = _mapper.Map<GameInfoModel, GameModel>(incomingGameInfo);
             var incomingGameStatisticModel = _mapper.Map<GameInfoModel, GameStatisticModel>(incomingGameInfo);
-
             incomingGameStatisticModel.GameId = sourceGameId;
 
-            SetLinksForCategories(incomingGameInfo, incomingGameModifiableFields);
+            var incomingGameModifiableFields = _mapper.Map<GameInfoModel, GameModifibleFields>(incomingGameInfo);
+
+            var categories = await GetCategoriesAsync(incomingGameInfo, cancellationToken);
+            incomingGameModifiableFields.Categories = categories;
 
             return (incomingGameModifiableFields, incomingGameStatisticModel);
         }
 
-        private void SetLinksForCategories(
+        private async Task<List<CategoryModel>> GetCategoriesAsync(
             GameInfoModel incomingGameInfo,
-            GameModel gameModel)
+            CancellationToken cancellationToken)
         {
             var existCategories = _dbContext.Categories;
 
             var incomingCategories = incomingGameInfo.CategoriesNames;
 
-            var categories = existCategories
+            var categories = await existCategories
                 .Where(x => incomingCategories
                     .Contains(x.Name))
-                .ToHashSet();
+                .ToListAsync(cancellationToken);
 
-            gameModel.AddCategories(categories);
-        }
-
-        private void UpdateGameModel(
-            GameModel sourceGame,
-            GameModel incomingGameModifiableFields,
-            string gameIdForLogs)
-        {
-            var hasChanges = sourceGame.HasChanges(incomingGameModifiableFields);
-
-            if (hasChanges)
-            {
-                _logger.LogInformation($"[{gameIdForLogs}] есть изменения, установлена пометка на обновление.");
-
-                /*TODO: Изменить после принятия решения, как делать, через 2 джобы или через 1*/
-                sourceGame.Update(
-                    name: incomingGameModifiableFields.Name!,
-                    publicationDate: incomingGameModifiableFields.PublicationDate!.Value,
-                    previewURL: incomingGameModifiableFields.PreviewURL!,
-                    categories: incomingGameModifiableFields.Categories);
-            }
-            else
-            {
-                _logger.LogInformation($"[{gameIdForLogs}] данные актуальны.");
-            }
+            return categories;
         }
     }
 }

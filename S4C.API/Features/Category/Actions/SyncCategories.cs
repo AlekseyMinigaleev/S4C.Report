@@ -1,5 +1,4 @@
 ﻿using C4S.Helpers.Logger;
-using C4S.Services.Implements;
 using C4S.Services.Interfaces;
 using MediatR;
 
@@ -15,6 +14,7 @@ namespace С4S.API.Features.Category.Actions
             private readonly ICategoriesSyncService _categoriesSyncService;
             private readonly ConsoleLogger _logger;
 
+            /*TODO: Добавить доступ только определенной роли*/
             public Handler(
                 ICategoriesSyncService categoriesSyncService,
                 ILogger<SyncCategories> logger)

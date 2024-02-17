@@ -20,6 +20,20 @@
         /// </summary>
         public string Title { get; private set; }
 
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            var category = (CategoryModel)obj;
+
+            return Name == category.Name;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => HashCode.Combine(Id, Name);
+
         public CategoryModel(
             string name,
             string title)

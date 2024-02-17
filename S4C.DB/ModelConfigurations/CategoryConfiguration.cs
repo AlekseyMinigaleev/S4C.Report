@@ -10,6 +10,9 @@ namespace C4S.DB.ModelConfigurations
         {
             builder.ToTable("Category")
                 .HasKey(x => x.Id);
+
+            builder.Property(x => x.Name)
+                .IsUnicode(true);
         }
     }
 }
