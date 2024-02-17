@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using AngleSharp;
 using C4S.DB;
 using C4S.DB.Models;
 using C4S.Services.Interfaces;
@@ -32,15 +32,6 @@ namespace С4S.API.Features.Authentication.Actions
             public string DeveloperPageUrl { get; set; }
         }
 
-        public class DeveloperInfoProfiler : Profile
-        {
-            public DeveloperInfoProfiler()
-            {
-                CreateMap<UserModel, DeveloperInfoViewModel>()
-                    .ForMember(dest => dest.DeveloperName, opt => opt.MapFrom(src => src.GetDeveloperName()));
-            }
-        }
-
         public class QueryValidator : AbstractValidator<Query>
         {
             public QueryValidator(ReportDbContext dbContext)
@@ -65,17 +56,17 @@ namespace С4S.API.Features.Authentication.Actions
         private class Handler : IRequestHandler<Query, ResponseViewModel>
         {
             private readonly IJwtService _jwtService;
-            private readonly IMapper _mapper;
+            private readonly IBrowsingContext _browsingContext;
             private readonly ReportDbContext _dbContext;
 
             public Handler(
                 ReportDbContext dbContext,
                 IJwtService jwtService,
-                IMapper mapper)
+                IBrowsingContext browsingContext)
             {
                 _jwtService = jwtService;
                 _dbContext = dbContext;
-                _mapper = mapper;
+                _browsingContext = browsingContext;
             }
 
             public async Task<ResponseViewModel> Handle(
@@ -90,7 +81,7 @@ namespace С4S.API.Features.Authentication.Actions
                 var authorizationTokens =
                     await CreateAuthorizationTokensAndUpdateDBAsync(user, cancellationToken);
 
-                var developerInfo = _mapper.Map<DeveloperInfoViewModel>(user);
+                var developerInfo = await CreateDeveloperInfoViewModel(user, cancellationToken);
 
                 var response = new ResponseViewModel
                 {
@@ -115,6 +106,25 @@ namespace С4S.API.Features.Authentication.Actions
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 return authorizationTokens;
+            }
+
+            private async Task<DeveloperInfoViewModel> CreateDeveloperInfoViewModel(
+                UserModel user,
+                CancellationToken cancellationToken)
+            {
+                var document = await _browsingContext
+                    .OpenAsync("https://yandex.ru/games/developer/42543", cancellationToken);
+
+                var developerCard = document.QuerySelector(".developer-card__name") ?? throw new ArgumentNullException();
+                var developerName = developerCard.TextContent;
+
+                var developerInfo = new DeveloperInfoViewModel
+                {
+                    DeveloperPageUrl = user.DeveloperPageUrl,
+                    DeveloperName = developerName,
+                };
+
+                return developerInfo;
             }
         }
     }
