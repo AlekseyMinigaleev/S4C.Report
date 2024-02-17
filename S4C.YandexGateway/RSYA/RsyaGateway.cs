@@ -23,7 +23,7 @@ namespace S4C.YandexGateway.RSYA
             DateTimeRange period,
             CancellationToken cancellationToken = default)
         {
-            var createRequest = () =>
+            HttpRequestMessage createRequest() =>
                 HttpRequestsMethodDictionary.GetAppReport(
                     authorization,
                     pageId,
@@ -45,7 +45,7 @@ namespace S4C.YandexGateway.RSYA
                 .GetValue<JToken>("totals")
                 .GetValue<JArray>("2")
                 .ToObject<CashIncome[]>()!
-                .SingleOrDefault();
+                .Single();
 
             return cashIncome?.Value;
         }
