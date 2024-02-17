@@ -124,6 +124,11 @@
             dd.MM.yyyy
             </remarks>
         </member>
+        <member name="M:С4S.API.Features.GameStatistic.GameStatisticController.GetGameStatisticsAsync(С4S.API.Features.GameStatistic.Actions.GetGameStatistics.Query,FluentValidation.IValidator{С4S.API.Features.GameStatistic.Actions.GetGameStatistics.Query},System.Threading.CancellationToken)">
+            <summary>
+            Возвращает список записей статистики по игре
+            </summary>
+        </member>
         <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.GameId">
             <summary>
             Id игры
@@ -191,11 +196,6 @@
         <member name="M:С4S.API.Features.Game.GameController.GetGamesAsync(System.Threading.CancellationToken)">
             <summary>
             Возвращает список всех игр
-            </summary>
-        </member>
-        <member name="M:С4S.API.Features.Game.GameController.GetGameStatisticsAsync(С4S.API.Features.Game.Actions.GetGameStatistics.Query,FluentValidation.IValidator{С4S.API.Features.Game.Actions.GetGameStatistics.Query},System.Threading.CancellationToken)">
-            <summary>
-            Возвращает список записей статистики по игре
             </summary>
         </member>
         <member name="P:С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command.RsyaAythorizationToken">
