@@ -12,6 +12,7 @@ using С4S.API.Features.User.Requests;
 namespace С4S.API.Features.Authentication.Actions
 {
     /*TOOD: Перенести это на user а не Authorization*/
+
     public class CreateAccount
     {
         public class Query : IRequest
@@ -67,13 +68,21 @@ namespace С4S.API.Features.Authentication.Actions
                 RuleFor(x => x.DeveloperPageUrl)
                     .Must(developerPageUrl =>
                     {
-                        var isValid = developerPageUrl
-                            .StartsWith("https://yandex.ru/games/developer?name=");
+                        var keyword = "developer";
+                        var index = developerPageUrl.IndexOf(keyword) + keyword.Length + 1;/*+1 учитывает слеш*/
 
-                        /*TODO: хранить валидные ссылки в отдельной таблице, и сначала пытаться найти в этой таблице, только потом делать запрос, не парсить а запрос*/
+                        var developerURL = developerPageUrl[..index];
+
+                        var developerIdString = developerPageUrl[index..];
+                        var parseResult = int.TryParse(developerIdString, out int developerId);
+
+                        var isValid = developerURL
+                            .StartsWith("https://yandex.ru/games/developer/") && parseResult;
+
                         if (!isValid)
                             return isValid;
 
+                        /*TODO: хранить валидные ссылки в отдельной таблице, и сначала пытаться найти в этой таблице, только потом делать запрос, не парсить а запрос*/
                         var errorPage = browsingContext
                             .OpenAsync(developerPageUrl).Result
                             .QuerySelector(".error-page__title");
