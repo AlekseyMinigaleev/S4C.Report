@@ -23,7 +23,7 @@ namespace S4C.YandexGateway.RSYA
             DateTimeRange period,
             CancellationToken cancellationToken = default)
         {
-            var createRequest = () =>
+            HttpRequestMessage createRequest() =>
                 HttpRequestsMethodDictionary.GetAppReport(
                     authorization,
                     pageId,

@@ -97,12 +97,12 @@ namespace C4S.Services.Implements
 
             var developerPagePrefix = "[Страница разработчика]";
             var rsyaPrefix = "[РСЯ]";
+
             _logger.LogInformation($"{developerPagePrefix} Начат процесс получения данных по всем играм.");
             var allIncomingGameData = await _developerPageGetaway
                 .GetGamesInfoAsync(appIds, _logger, cancellationToken);
+            await StartEnrichGameInfoProcess(rsyaPrefix, allIncomingGameData, games, cancellationToken);
             _logger.LogSuccess($"{developerPagePrefix} Процесс успешно завершен");
-
-            await StartEnrichGameInfoProcess(rsyaPrefix, allIncomingGameData, games);
 
             _logger.LogInformation($"Начало обработки полученных данных, со страницы разработчика:");
             await ProcessingIncomingDataAsync(allIncomingGameData, games, cancellationToken);
@@ -116,7 +116,8 @@ namespace C4S.Services.Implements
         private async Task StartEnrichGameInfoProcess(
             string rsyaPrefix,
             GameInfoModel[] allIncomingGameData,
-            GameModel[] games)
+            GameModel[] games,
+            CancellationToken cancellationToken)
         {
             _logger.LogInformation($"{rsyaPrefix} Начат процесс получения данных");
             var authorizationToken = _user.RsyaAuthorizationToken;
@@ -126,7 +127,7 @@ namespace C4S.Services.Implements
             }
             else
             {
-                await EnrichGameInfoProcess(allIncomingGameData, games, authorizationToken);
+                await EnrichGameInfoProcess(allIncomingGameData, games, authorizationToken, cancellationToken);
                 _logger.LogSuccess($"{rsyaPrefix} Процесс завершен");
             }
         }
@@ -134,17 +135,18 @@ namespace C4S.Services.Implements
         private async Task EnrichGameInfoProcess(
             GameInfoModel[] gamesInfo,
             GameModel[] games,
-            string authorizationToken)
+            string authorizationToken,
+            CancellationToken cancellationToken)
         {
-            var period = CreatePeriod(games.First());
-
             for (int i = 0; i < games.Length; i++)
             {
                 var game = games[i];
 
                 if (game.PageId.HasValue)
                 {
-                    var cashIncome = await _rsyaGateway.GetAppCashIncomeAsync(game.PageId.Value, authorizationToken, period);
+                    var period = CreatePeriod(games[i]);
+
+                    var cashIncome = await _rsyaGateway.GetAppCashIncomeAsync(game.PageId.Value, authorizationToken, period, cancellationToken);
 
                     if (!cashIncome.HasValue)
                         _logger.LogWarning($"Для игры '{game.Name}' неверно указан pageId. PageId: {game.PageId}");
@@ -161,17 +163,7 @@ namespace C4S.Services.Implements
 
         private DateTimeRange CreatePeriod(GameModel game)
         {
-            var lastGameStatistic = _dbContext.GamesStatistics
-                .Where(x => x.GameId == game.Id)
-                .OrderBy(x => x.LastSynchroDate)
-                .LastOrDefault();
-
-            DateTime startDate = lastGameStatistic is null
-                ? DateTime.Now
-                : lastGameStatistic.LastSynchroDate.Date == DateTime.Now.Date
-                    ? lastGameStatistic.LastSynchroDate.Date
-                    : lastGameStatistic.LastSynchroDate.AddDays(1);
-
+            var startDate = game.PublicationDate!.Value;
             var endDate = DateTime.Now;
 
             var period = new DateTimeRange(startDate, endDate);
