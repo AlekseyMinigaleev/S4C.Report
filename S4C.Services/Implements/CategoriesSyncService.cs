@@ -95,7 +95,8 @@ namespace C4S.Services.Implements
             IEnumerable<CategoryModel> existCategories,
             IEnumerable<CategoryModel> incomingCategories)
         {
-            var categoriesToDelete = GetItemsNotInCollection(existCategories, incomingCategories);
+            var categoriesToDelete = CategoryModel
+                .GetItemsNotInCollection(existCategories, incomingCategories);
 
             _dbContext.Categories.RemoveRange(categoriesToDelete);
 
@@ -106,21 +107,12 @@ namespace C4S.Services.Implements
             IEnumerable<CategoryModel> existCategories,
             IEnumerable<CategoryModel> incomingCategories)
         {
-            var categoriesToAdd = GetItemsNotInCollection(incomingCategories, existCategories);
+            var categoriesToAdd = CategoryModel
+                .GetItemsNotInCollection(incomingCategories, existCategories);
 
             _dbContext.Categories.AddRange(categoriesToAdd);
 
             return categoriesToAdd.Count();
-        }
-
-        private static IEnumerable<CategoryModel> GetItemsNotInCollection(
-            IEnumerable<CategoryModel> firstCollection,
-            IEnumerable<CategoryModel> secondCollection)
-        {
-            var itemsNotInCollection = firstCollection
-                .Where(firstItem => !secondCollection.Any(secondItem => secondItem.Name == firstItem.Name));
-
-            return itemsNotInCollection;
         }
     }
 }

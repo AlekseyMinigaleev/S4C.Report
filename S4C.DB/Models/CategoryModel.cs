@@ -19,6 +19,16 @@
         /// Название статуса
         /// </summary>
         public string Title { get; private set; }
+    
+        /*TODO: переопределить Equals в этой модели, изменить название метода, сделать его дженериком и вынести в Helpers, добавить документацию*/
+        public static IEnumerable<CategoryModel> GetItemsNotInCollection(
+          IEnumerable<CategoryModel> firstCollection,
+          IEnumerable<CategoryModel> secondCollection)
+        {
+            var itemsNotInCollection = firstCollection
+                .Where(firstItem => !secondCollection.Any(secondItem => secondItem.Name == firstItem.Name));
+            return itemsNotInCollection;
+        }
 
         public CategoryModel(
             string name,
