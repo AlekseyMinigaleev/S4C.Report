@@ -2,6 +2,7 @@
 using C4S.Common.Models;
 using C4S.DB;
 using C4S.DB.Models;
+using C4S.DB.TDO;
 using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
 using Hangfire.Server;
@@ -108,7 +109,7 @@ namespace C4S.Services.Implements
             _logger.LogSuccess($"Все данные успешно обработаны.");
 
             _logger.LogInformation($"Начало обновления базы данных.");
-            await _dbContext.SaveChangesAsync(cancellationToken); /*TODO: как будто это юзлсе вроде все сохраняется в методе ProcessingIncomingDataAsync*/
+            await _dbContext.SaveChangesAsync(cancellationToken);
             _logger.LogSuccess($"База данных успешно обновлена.");
         }
 
@@ -201,8 +202,6 @@ namespace C4S.Services.Implements
 
                 await _dbContext.GamesStatistics
                     .AddAsync(incomingGameStatisticModel, cancellationToken);
-
-                //await _dbContext.SaveChangesAsync(cancellationToken);
             }
         }
 

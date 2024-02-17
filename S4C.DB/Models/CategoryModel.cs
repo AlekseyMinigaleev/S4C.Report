@@ -19,16 +19,20 @@
         /// Название статуса
         /// </summary>
         public string Title { get; private set; }
-    
-        /*TODO: переопределить Equals в этой модели, изменить название метода, сделать его дженериком и вынести в Helpers, добавить документацию*/
-        public static IEnumerable<CategoryModel> GetItemsNotInCollection(
-          IEnumerable<CategoryModel> firstCollection,
-          IEnumerable<CategoryModel> secondCollection)
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
         {
-            var itemsNotInCollection = firstCollection
-                .Where(firstItem => !secondCollection.Any(secondItem => secondItem.Name == firstItem.Name));
-            return itemsNotInCollection;
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            var category = (CategoryModel)obj;
+
+            return Name == category.Name;
         }
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => HashCode.Combine(Id, Name);
 
         public CategoryModel(
             string name,

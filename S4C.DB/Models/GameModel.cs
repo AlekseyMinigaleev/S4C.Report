@@ -1,4 +1,7 @@
-﻿namespace C4S.DB.Models
+﻿using C4S.DB.TDO;
+using C4S.Helpers.Extensions;
+
+namespace C4S.DB.Models
 {
     /// <summary>
     /// Таблица игры
@@ -176,25 +179,13 @@
 
         private void UpdateCategories(IEnumerable<CategoryModel> categories)
         {
-            var categoriesToRemove = CategoryModel
-                .GetItemsNotInCollection(Categories, categories);
+            var categoriesToRemove = Categories
+                .GetItemsNotInSecondCollection(categories);
             RemoveCategories(categoriesToRemove);
 
-            var categoriesToAdd = CategoryModel
-                .GetItemsNotInCollection(categories, Categories);
+            var categoriesToAdd = categories
+                .GetItemsNotInSecondCollection(Categories);
             AddCategories(categoriesToAdd);
         }
-    }
-    
-    /*TODO: DTO*/
-    public class GameModifibleFields
-    {
-        public string Name { get; set; }
-
-        public DateTime PublicationDate { get; set; }
-
-        public string PreviewURL { get; set; }
-
-        public List<CategoryModel> Categories { get; set; }
     }
 }

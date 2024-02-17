@@ -1,6 +1,7 @@
 ﻿using AngleSharp;
 using C4S.DB;
 using C4S.DB.Models;
+using C4S.Helpers.Extensions;
 using C4S.Helpers.Logger;
 using C4S.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -95,8 +96,8 @@ namespace C4S.Services.Implements
             IEnumerable<CategoryModel> existCategories,
             IEnumerable<CategoryModel> incomingCategories)
         {
-            var categoriesToDelete = CategoryModel
-                .GetItemsNotInCollection(existCategories, incomingCategories);
+            var categoriesToDelete = existCategories
+                .GetItemsNotInSecondCollection(incomingCategories);
 
             _dbContext.Categories.RemoveRange(categoriesToDelete);
 
@@ -107,8 +108,8 @@ namespace C4S.Services.Implements
             IEnumerable<CategoryModel> existCategories,
             IEnumerable<CategoryModel> incomingCategories)
         {
-            var categoriesToAdd = CategoryModel
-                .GetItemsNotInCollection(incomingCategories, existCategories);
+            var categoriesToAdd = incomingCategories
+                .GetItemsNotInSecondCollection(existCategories);
 
             _dbContext.Categories.AddRange(categoriesToAdd);
 

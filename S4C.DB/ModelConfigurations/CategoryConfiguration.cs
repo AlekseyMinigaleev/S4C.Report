@@ -11,7 +11,8 @@ namespace C4S.DB.ModelConfigurations
             builder.ToTable("Category")
                 .HasKey(x => x.Id);
 
-            /*TODO: добавить для поля name уникальность*/
+            builder.Property(x => x.Name)
+                .IsUnicode(true);
         }
     }
 }
