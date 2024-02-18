@@ -64,12 +64,14 @@ namespace C4S.Services.Implements
             _existingGameModelsQuery = _dbContext.Games
                 .Where(x => x.UserId == _user.Id);
 
+            _logger.LogInformation("Начат процесс получения данных по всем играм");
             var incomingAppIds = await _developerPageParser
                 .GetAppIdsAsync(_user.DeveloperPageUrl, _logger, cancellationToken);
 
             var gameInfoModels = await _developerPageGetaway
                 .GetGamesInfoAsync(incomingAppIds, _logger, cancellationToken);
 
+            _logger.LogInformation("Обработка полученных данных");
             var newGameModels = new List<GameModel>();
             foreach (var gameInfoModel in gameInfoModels)
             {
@@ -85,8 +87,13 @@ namespace C4S.Services.Implements
 
                 newGameModels.Add(newGameModel);
             }
+            _logger.LogSuccess("Данные успешно обработаны");
 
+            _logger.LogInformation("Сохранение данных в бд");
             await UpdateDatabaseAsync(newGameModels, cancellationToken);
+            _logger.LogSuccess("Данные успешно сохранены");
+
+            _logger.LogInformation("Процесс получения данных по всем играм, успешно завершен");
         }
 
         private UserModel GetUser(Guid userId)
@@ -180,7 +187,9 @@ namespace C4S.Services.Implements
 
             Update(existingGameModels, newGameModels);
 
+            _logger.LogInformation($"Начало обновление бд");
             await _dbContext.SaveChangesAsync(cancellationToken);
+            _logger.LogSuccess($"Бд обновлена");
 
             void Archive(
                 IEnumerable<GameModel> existingGameModels,
@@ -192,6 +201,8 @@ namespace C4S.Services.Implements
 
                 gameModelsToArchive
                     .ForEach(x => x.SetIsArchived(true));
+
+                _logger.LogInformation($"Пометка 'архивные' установлена {gameModelsToArchive.Count} играм");
             }
 
             void Add(
@@ -204,12 +215,14 @@ namespace C4S.Services.Implements
                 gameModelsToAdd.ToList().ForEach(x => x.UserId = _user.Id);
 
                 _dbContext.Games.AddRange(gameModelsToAdd);
+                _logger.LogInformation($"На добавление помечено {gameModelsToAdd.Count()} игр");
             }
 
             void Update(
                 IEnumerable<GameModel> existingGameModels,
                 IEnumerable<GameModel> newGameModels)
             {
+                var count = 0;
                 foreach (var newGameModel in newGameModels)
                 {
                     var modelForUpdate = existingGameModels
@@ -229,8 +242,11 @@ namespace C4S.Services.Implements
 
                         _dbContext.GamesStatistics
                             .Add(gameStatistic);
+                        count++;
                     }
                 }
+
+                _logger.LogInformation($"На обновление помечено {count} игр");
             }
         }
     }
