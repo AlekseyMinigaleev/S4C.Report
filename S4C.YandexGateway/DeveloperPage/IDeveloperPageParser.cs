@@ -8,7 +8,7 @@ namespace S4C.YandexGateway.DeveloperPage
     /// </summary>
     public interface IDeveloperPageParser
     {
-        // TODO: что будет если страница разработчика не содрежит игр
+        // TODO: что будет если страница разработчика не содержит игр
         /// <summary>
         /// Возвращает id всех игр со страницы разработчика.
         /// </summary>
@@ -23,7 +23,7 @@ namespace S4C.YandexGateway.DeveloperPage
         /// </returns>
         /// <exception cref="EmptyDeveloperPageException"></exception>
         /// <exception cref="InvalidGameIdException"></exception>
-        public Task<int[]> GetGameIdsAsync(
+        public Task<int[]> GetAppIdsAsync(
             string developerPageUrl,
             BaseLogger logger,
             CancellationToken cancellationToken = default);

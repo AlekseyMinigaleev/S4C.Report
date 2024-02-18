@@ -19,7 +19,7 @@ namespace S4C.YandexGateway.DeveloperPage
         }
 
         /// <inheritdoc/>
-        public async Task<int[]> GetGameIdsAsync(
+        public async Task<int[]> GetAppIdsAsync(
             string developerPageUrl,
             BaseLogger logger,
             CancellationToken cancellationToken = default)

@@ -13,16 +13,6 @@ namespace C4S.DB.Models
         public Guid Id { get; private set; }
 
         /// <summary>
-        /// Связь с <see cref="GameModel"/>
-        /// </summary>
-        public GameModel Game { get; private set; }
-
-        /// <summary>
-        /// FK <see cref="GameModel"/>
-        /// </summary>
-        public Guid GameId { get; set; }
-
-        /// <summary>
         /// Оценка игры
         /// </summary>
         public double Evaluation { get; private set; }
@@ -47,6 +37,16 @@ namespace C4S.DB.Models
         /// </summary>
         public DateTime LastSynchroDate { get; private set; }
 
+        /// <summary>
+        /// Связь с <see cref="GameModel"/>
+        /// </summary>
+        public GameModel Game { get; private set; }
+
+        /// <summary>
+        /// FK <see cref="GameModel"/>
+        /// </summary>
+        public Guid GameId { get; set; }
+
         public GameStatisticModel(
             GameModel game,
             int playersCount,
@@ -60,6 +60,12 @@ namespace C4S.DB.Models
             LastSynchroDate = lastSynchroDate;
             Evaluation = evaluation;
         }
+
+        /// <summary>
+        /// Устанавливает указанный <paramref name="cashIncome"/>
+        /// </summary>
+        /// <param name="cashIncome">Доход игры</param>
+        public void SetCashIncome(double? cashIncome) => CashIncome = cashIncome;
 
         private GameStatisticModel()
         { }

@@ -106,22 +106,19 @@ namespace С4S.API.Features.Authentication.Actions
         {
             private readonly ReportDbContext _dbContext;
             private readonly IHangfireBackgroundJobService _hangfireBackgroundJobService;
-            private readonly IGameDataService _gameDataService;
-            private readonly IGameIdSyncService _gameIdSyncService;
+            private readonly IGameSyncService _gameSyncService;
             private readonly ConsoleLogger _logger;
 
             public Handler(
                 ReportDbContext dbContext,
                 IHangfireBackgroundJobService hangfireBackgroundJobService,
-                IGameDataService gameDataService,
-                IGameIdSyncService gameIdSyncService,
+                IGameSyncService gameSyncService,
                 ILogger<CreateAccount> logger)
             {
                 _dbContext = dbContext;
                 _logger = new ConsoleLogger(logger);
                 _hangfireBackgroundJobService = hangfireBackgroundJobService;
-                _gameDataService = gameDataService;
-                _gameIdSyncService = gameIdSyncService;
+                _gameSyncService = gameSyncService;
             }
 
             public async Task Handle(Query request, CancellationToken cancellationToken)
@@ -139,9 +136,7 @@ namespace С4S.API.Features.Authentication.Actions
                 await _hangfireBackgroundJobService
                     .AddMissingHangfirejobsAsync(user, _logger, cancellationToken);
 
-                await _gameIdSyncService.SyncAllGameIdAsync(user.Id, _logger, cancellationToken);
-
-                await _gameDataService.SyncGameStatistics(user.Id, _logger, cancellationToken);
+                await _gameSyncService.SyncGamesAsync(user.Id, _logger, cancellationToken);
             }
         }
     }

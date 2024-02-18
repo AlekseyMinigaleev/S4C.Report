@@ -14,8 +14,6 @@ namespace C4S.Services.Extensions
         public static void AddServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IHangfireBackgroundJobService, BackgroundJobService>();
-            services.AddScoped<IGameIdSyncService, GameIdSyncService>();
-            services.AddScoped<IGameDataService, GameDataService>();
             services.AddScoped<IExcelWorksheetService, DetailedReportService>();
             services.AddScoped<ICategoriesSyncService,CategoriesSyncService>();
             services.AddScoped<IJwtService, JwtServise>((provider) =>
@@ -29,7 +27,10 @@ namespace C4S.Services.Extensions
 
                 return service;
             });
+            services.AddScoped<IGameSyncService, GameSyncService>();
+
             services.AddYandexGetewayServices(configuration);
+
         }
     }
 }

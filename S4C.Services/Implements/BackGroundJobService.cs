@@ -225,18 +225,11 @@ namespace C4S.Services.Implements
         {
             switch (jobConfig.JobType)
             {
-                case HangfireJobType.ParseGameIdsFromDeveloperPage:
-                    AddOrUpdateRecurringJob<IGameIdSyncService>(
+                case HangfireJobType.SyncGameJob:
+                    AddOrUpdateRecurringJob<IGameSyncService>(
                         userLogin,
                         jobConfig,
-                        (service) => service.SyncAllGameIdAsync(userId, (PerformContext)null, CancellationToken.None));
-                    break;
-
-                case HangfireJobType.SyncGameInfoAndGameCreateGameStatistic:
-                    AddOrUpdateRecurringJob<IGameDataService>(
-                        userLogin,
-                        jobConfig,
-                        (service) => service.SyncGameStatistics(userId, (PerformContext)null, CancellationToken.None));
+                        (service) => service.SyncGamesAsync(userId, (PerformContext)null, CancellationToken.None));
                     break;
 
                 default:

@@ -1,5 +1,4 @@
-﻿using C4S.DB.TDO;
-using C4S.Helpers.Extensions;
+﻿using C4S.Helpers.Extensions;
 
 namespace C4S.DB.Models
 {
@@ -166,22 +165,7 @@ namespace C4S.DB.Models
         /// <param name="isArchived">Флаг указывающий, архивирована ли игра</param>
         public void SetIsArchived(bool isArchived) => IsArchived = isArchived;
 
-        /// <summary>
-        /// Проверяет есть ли изменения у модели по сравнению с <paramref name="modifiableFields"/>
-        /// </summary>
-        /// <param name="modifiableFields">Игра с которой происходит сравнение</param>
-        /// <returns>
-        /// <see langword="true"/> если в модели есть изменения, иначе <see langword="false"/>
-        /// </returns>
-        public bool HasChanges(GameModifibleFields modifiableFields)
-        {
-            var hasChanges = Name != modifiableFields.Name
-                || PublicationDate != modifiableFields.PublicationDate
-                || PreviewURL != modifiableFields.PreviewURL
-                || !Categories.SequenceEqual(modifiableFields.Categories);
-
-            return hasChanges;
-        }
+        
 
         /// <inheritdoc/>
         public override bool Equals(object obj)
