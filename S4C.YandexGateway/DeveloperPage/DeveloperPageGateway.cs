@@ -33,6 +33,8 @@ namespace S4C.YandexGateway.DeveloperPage
             BaseLogger logger,
             CancellationToken cancellationToken = default)
         {
+            logger.LogInformation($"Начат процесс получения данных всем играм");
+
             var result = new List<GameInfoModel>();
             foreach (var appId in appIds)
             {
@@ -60,6 +62,7 @@ namespace S4C.YandexGateway.DeveloperPage
                 result.Add(gameInfoModel);
             }
 
+            logger.LogSuccess($"Процесс получения данных по всем играм успешно завершен");
             return result.ToArray();
         }
 
