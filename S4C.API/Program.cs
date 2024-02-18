@@ -65,7 +65,7 @@ services.AddValidatorsFromAssemblyContaining<ReportDbContext>();
 services.AddAutoMapper(
     typeof(Program),
     typeof(IDeveloperPageGetaway),
-    typeof(IGameDataService));
+    typeof(IGameSyncService));
 
 services.AddServices(configuration);
 

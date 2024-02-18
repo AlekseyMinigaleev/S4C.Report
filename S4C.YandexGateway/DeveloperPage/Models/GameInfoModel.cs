@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using C4S.DB.Models;
-using C4S.DB.TDO;
 using System.Linq.Expressions;
 
 namespace S4C.YandexGateway.DeveloperPage.Models
@@ -13,14 +12,28 @@ namespace S4C.YandexGateway.DeveloperPage.Models
     /// </remarks>
     public class GameInfoModel
     {
+        #region GameModelInfo
+
         /// <inheritdoc cref="GameModel.Name"/>
         public string Title { get; set; }
 
         /// <inheritdoc cref="GameModel.AppId"/>
         public int AppId { get; set; }
 
+        /// <inheritdoc cref="GameModel.PreviewURL"/>
+        public string PreviewURL { get; set; }
+
         /// <inheritdoc cref="GameModel.PublicationDate"/>
         public int FirstPublished { get; set; }
+
+        /// <summary>
+        /// Имена всех категорий, к которым относится игра
+        /// </summary>
+        public string[] CategoriesNames { get; set; }
+
+        #endregion GameModelInfo
+
+        #region GameStatisticModel
 
         /// <inheritdoc cref="GameStatisticModel.Evaluation"/>
         public double Evaluation { get; set; }
@@ -28,19 +41,10 @@ namespace S4C.YandexGateway.DeveloperPage.Models
         /// <inheritdoc cref="GameStatisticModel.PlayersCount"/>
         public int PlayersCount { get; set; }
 
-        /// <inheritdoc cref="GameStatisticModel.CashIncome"/>
-        public double? CashIncome { get; set; }
-
         /// <inheritdoc cref="GameStatisticModel.Rating"/>
         public int? Rating { get; set; }
 
-        /// <inheritdoc cref="GameModel.PreviewURL"/>
-        public string PreviewURL { get; set; }
-
-        /// <summary>
-        /// Имена всех категорий, к которым относится игра
-        /// </summary>
-        public string[] CategoriesNames { get; set; }
+        # endregion GameStatisticModel
 
         public GameInfoModel(
             int appId,
@@ -50,8 +54,7 @@ namespace S4C.YandexGateway.DeveloperPage.Models
             int playersCount,
             string[] categoriesNames,
             string previewURL,
-            int? rating = default,
-            double? cashIncome = default)
+            int? rating = default)
         {
             AppId = appId;
             Title = title;
@@ -60,7 +63,6 @@ namespace S4C.YandexGateway.DeveloperPage.Models
             PlayersCount = playersCount;
             CategoriesNames = categoriesNames;
             PreviewURL = previewURL;
-            CashIncome = cashIncome;
             Rating = rating;
         }
 
@@ -93,14 +95,24 @@ namespace S4C.YandexGateway.DeveloperPage.Models
     {
         public GameModelProfiler()
         {
-            CreateMap<GameInfoModel, GameModifibleFields>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Title))
+            CreateMap<GameInfoModel, GameModel>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
+                .ForMember(dest => dest.CategoryGameModels, opt => opt.MapFrom(src => new HashSet<CategoryGameModel>()))
                 .ForMember(dest => dest.PublicationDate, opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(src.FirstPublished).DateTime))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dest => dest.PageId, opt => opt.Ignore())
+                .ForMember(dest => dest.URL, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.Ignore())
+                .ForMember(dest => dest.GameStatistics, opt => opt.Ignore())
                 .ForMember(dest => dest.Categories, opt => opt.Ignore());
 
             CreateMap<GameInfoModel, GameStatisticModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
-                .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now));
+                .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now))
+                .ForMember(dest => dest.Game, opt => opt.Ignore())
+                .ForMember(dest => dest.GameId, opt => opt.Ignore())
+                .ForMember(dest => dest.CashIncome, opt => opt.Ignore());
         }
     }
 }

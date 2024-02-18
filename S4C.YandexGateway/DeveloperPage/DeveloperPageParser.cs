@@ -19,19 +19,21 @@ namespace S4C.YandexGateway.DeveloperPage
         }
 
         /// <inheritdoc/>
-        public async Task<int[]> GetGameIdsAsync(
+        public async Task<int[]> GetAppIdsAsync(
             string developerPageUrl,
             BaseLogger logger,
             CancellationToken cancellationToken = default)
         {
             _developerPageUrl = developerPageUrl;
 
-            logger.LogInformation("Начало получения игр как html элементов");
+            logger.LogInformation("Начат процесс получения AppId игр");
+
+            logger.LogInformation("Получение игр как html элементов");
             var gamesHtmlCollection = await GetGamesAsHtmlElementsAsync(
                 cancellationToken);
             logger.LogSuccess($"Успешно получено {gamesHtmlCollection.Count()} элементов");
 
-            logger.LogInformation("Начало получения id из html элементов");
+            logger.LogInformation("Получения id из html элементов");
             var gameIds = new int[gamesHtmlCollection.Length];
             for (int i = 0; i < gamesHtmlCollection.Length; i++)
             {
@@ -40,6 +42,7 @@ namespace S4C.YandexGateway.DeveloperPage
             }
             logger.LogSuccess($"Успешно получено {gameIds.Length} id");
 
+            logger.LogSuccess("Процесс получения AppId игр успешно завершен");
             return gameIds;
         }
 

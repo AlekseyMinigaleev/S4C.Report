@@ -1,5 +1,4 @@
-﻿using C4S.DB.TDO;
-using C4S.Helpers.Extensions;
+﻿using C4S.Helpers.Extensions;
 
 namespace C4S.DB.Models
 {
@@ -11,7 +10,7 @@ namespace C4S.DB.Models
         /// <summary>
         /// PK
         /// </summary>
-        public Guid Id { get; set; }
+        public Guid Id { get; private set; }
 
         /// <remarks>
         /// appId со страницы разработчика
@@ -29,12 +28,27 @@ namespace C4S.DB.Models
         /// <summary>
         /// Название игры
         /// </summary>
-        public string? Name { get; private set; }
+        public string Name { get; private set; }
 
         /// <summary>
         /// Дата публикации
         /// </summary>
-        public DateTime? PublicationDate { get; private set; }
+        public DateTime PublicationDate { get; private set; }
+
+        /// <summary>
+        /// Ссылка на картинку игры
+        /// </summary>
+        public string PreviewURL { get; set; }
+
+        /// <summary>
+        /// Ссылка на игру
+        /// </summary>
+        public string URL => $"{User.DeveloperPageUrl}#app={AppId}";
+
+        /// <summary>
+        /// Флаг указывающий, архивирована ли игра
+        /// </summary>
+        public bool IsArchived { get; private set; }
 
         /// <summary>
         /// Пользователь, которому принадлежит игра
@@ -44,22 +58,12 @@ namespace C4S.DB.Models
         /// <summary>
         /// FK <see cref="UserModel"/>
         /// </summary>
-        public Guid UserId { get; private set; }
-
-        /// <summary>
-        /// Ссылка на картинку игры
-        /// </summary>
-        public string? PreviewURL { get; set; }
-
-        /// <summary>
-        /// Ссылка на игру
-        /// </summary>
-        public string? URL => $"{User.DeveloperPageUrl}#app={AppId}";
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// Список записей статистики
         /// </summary>
-        public ISet<GameStatisticModel> GameStatistics { get; private set; }
+        public ISet<GameStatisticModel> GameStatistics { get; set; }
 
         /// <summary>
         /// Список категорий игры
@@ -73,16 +77,13 @@ namespace C4S.DB.Models
         /// </summary>
         public ISet<CategoryGameModel> CategoryGameModels { get; private set; }
 
-        private GameModel()
-        { }
-
         public GameModel(
             int appId,
             UserModel user,
             ISet<CategoryModel> categories,
-            string? name = default,
-            DateTime? publicationDate = default,
-            ISet<GameStatisticModel>? gameStatistics = default)
+            string name,
+            DateTime publicationDate,
+            ISet<GameStatisticModel> gameStatistics)
         {
             Id = Guid.NewGuid();
             AppId = appId;
@@ -158,24 +159,27 @@ namespace C4S.DB.Models
         /// <param name="pageId">Id страницы, необходимо для РСЯ</param>
         public void SetPageId(int pageId) => PageId = pageId;
 
-        /*TOOD: по идее это следует заменить переопределением Equals*/
-
         /// <summary>
-        /// Проверяет есть ли изменения у модели по сравнению с <paramref name="modifibleFields"/>
+        /// Устанавливает указанный флаг <paramref name="isArchived"/>
         /// </summary>
-        /// <param name="modifibleFields">Игра с которой происходит сравнение</param>
-        /// <returns>
-        /// <see langword="true"/> если в модели есть изменения, иначе <see langword="false"/>
-        /// </returns>
-        public bool HasChanges(GameModifibleFields modifibleFields)
-        {
-            var hasChanges = Name != modifibleFields.Name
-                || PublicationDate != modifibleFields.PublicationDate
-                || PreviewURL != modifibleFields.PreviewURL
-                || !Categories.SequenceEqual(modifibleFields.Categories);
+        /// <param name="isArchived">Флаг указывающий, архивирована ли игра</param>
+        public void SetIsArchived(bool isArchived) => IsArchived = isArchived;
 
-            return hasChanges;
+        
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            var gameModel = (GameModel)obj;
+
+            return AppId == gameModel.AppId;
         }
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => HashCode.Combine(Id, AppId);
 
         private void UpdateCategories(IEnumerable<CategoryModel> categories)
         {
@@ -187,5 +191,8 @@ namespace C4S.DB.Models
                 .GetItemsNotInSecondCollection(Categories);
             AddCategories(categoriesToAdd);
         }
+
+        private GameModel()
+        { }
     }
 }

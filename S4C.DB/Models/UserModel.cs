@@ -44,7 +44,7 @@ namespace C4S.DB.Models
         /// <summary>
         /// Список игр
         /// </summary>
-        public ISet<GameModel> Games { get; private set; }
+        public ISet<GameModel> Games { get; set; }
 
         /// <summary>
         /// Список конфигураций джоб
@@ -130,5 +130,4 @@ namespace C4S.DB.Models
     /// </summary>
     public static class UserExpressions
     { }
-    
 }
