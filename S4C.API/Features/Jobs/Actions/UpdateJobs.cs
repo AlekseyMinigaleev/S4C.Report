@@ -1,6 +1,6 @@
 ﻿using C4S.Db.Exceptions;
 using C4S.DB.Models.Hangfire;
-using C4S.Services.Interfaces;
+using C4S.Services.Services.BackgroundJobService;
 using FluentValidation;
 using MediatR;
 

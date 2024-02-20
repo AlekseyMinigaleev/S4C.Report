@@ -1,9 +1,9 @@
 ﻿using C4S.Common.Models;
 using C4S.DB;
+using C4S.Services.Services.GetGamesDataService;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using S4C.YandexGateway.RSYA;
 using System.Net;
 using System.Security.Principal;
 using С4S.API.Extensions;
@@ -114,16 +114,16 @@ namespace С4S.API.Features.Game.Actions
         public class Handler : IRequestHandler<Command, ViewModel[]>
         {
             private readonly ReportDbContext _dbContext;
-            private readonly IRsyaGateway _rsyaGateway;
+            private readonly IGetGameDataService _getGameDataService;
             private readonly IPrincipal _principal;
 
             public Handler(
                 ReportDbContext dbContext,
-                IRsyaGateway rsyaGateway,
+                IGetGameDataService getGameDataService,
                 IPrincipal principal)
             {
                 _dbContext = dbContext;
-                _rsyaGateway = rsyaGateway;
+                _getGameDataService = getGameDataService;
                 _principal = principal;
             }
 
@@ -142,14 +142,14 @@ namespace С4S.API.Features.Game.Actions
                     if (body.PageId.HasValue)
                     {
                         /*TODO: возможно нужно при наличии result, записывать его в бд*/
-                        var result = await _rsyaGateway
-                            .GetAppCashIncomeAsync(
+                        var result = await _getGameDataService
+                            .GetPrivateGameDataAsync(
                                 pageId: body.PageId.Value,
                                 authorization: rsyaAuthorizationToken!,
                                 period: period,
                                 cancellationToken: cancellationToken);
 
-                        isSuccessfullySet = result.HasValue;
+                        isSuccessfullySet = result.CashIncome.HasValue;
 
                         if (isSuccessfullySet)
                             (await _dbContext.Games

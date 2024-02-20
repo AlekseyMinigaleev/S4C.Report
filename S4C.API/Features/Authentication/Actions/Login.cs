@@ -1,7 +1,7 @@
 ﻿using AngleSharp;
 using C4S.DB;
 using C4S.DB.Models;
-using C4S.Services.Interfaces;
+using C4S.Services.Services.JWTService;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

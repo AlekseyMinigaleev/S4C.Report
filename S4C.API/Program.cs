@@ -3,15 +3,14 @@ using C4S.Common.ConfigurationModels;
 using C4S.DB;
 using C4S.Helpers.ApiHeplers.Swagger;
 using C4S.Services.Extensions;
-using C4S.Services.Implements;
-using C4S.Services.Interfaces;
+using C4S.Services.Services.GameSyncService;
+using C4S.Services.Services.JWTService;
 using FluentValidation;
 using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using S4C.YandexGateway.DeveloperPage;
 using System.Reflection;
 using Ñ4S.API.Extensions;
 
@@ -64,7 +63,6 @@ services.AddValidatorsFromAssemblyContaining<Program>();
 services.AddValidatorsFromAssemblyContaining<ReportDbContext>();
 services.AddAutoMapper(
     typeof(Program),
-    typeof(IDeveloperPageGetaway),
     typeof(IGameSyncService));
 
 services.AddServices(configuration);
