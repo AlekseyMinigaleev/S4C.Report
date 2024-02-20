@@ -1,5 +1,5 @@
 ﻿using C4S.Helpers.Logger;
-using C4S.Services.Interfaces;
+using C4S.Services.Services.CategoriesSyncService;
 using MediatR;
 
 namespace С4S.API.Features.Category.Actions

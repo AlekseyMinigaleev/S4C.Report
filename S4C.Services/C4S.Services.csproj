@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="1.1.0" />
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="Hangfire.Core" Version="1.8.5" />
     <PackageReference Include="ncrontab" Version="3.3.1" />
@@ -17,7 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\C4S.Helpers\C4S.Helpers.csproj" />
     <ProjectReference Include="..\S4C.DB\C4S.DB.csproj" />
-    <ProjectReference Include="..\S4C.YandexGateway\S4C.YandexGateway.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
 ﻿using C4S.DB;
-using C4S.Services.Interfaces;
+using C4S.Services.Services.JWTService;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
