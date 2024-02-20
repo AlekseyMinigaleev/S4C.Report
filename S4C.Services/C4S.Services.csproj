@@ -17,7 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\C4S.Helpers\C4S.Helpers.csproj" />
     <ProjectReference Include="..\S4C.DB\C4S.DB.csproj" />
-    <ProjectReference Include="..\S4C.YandexGateway\S4C.YandexGateway.csproj" />
   </ItemGroup>
 
 </Project>
