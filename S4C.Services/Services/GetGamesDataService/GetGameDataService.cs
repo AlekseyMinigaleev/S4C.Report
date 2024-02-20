@@ -2,6 +2,7 @@
 using C4S.Helpers.Logger;
 using C4S.Services.Services.GetGamesDataService.Helpers;
 using C4S.Services.Services.GetGamesDataService.Models;
+using C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries;
 
 namespace C4S.Services.Services.GetGamesDataService
 {

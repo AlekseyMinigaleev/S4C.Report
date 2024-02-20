@@ -6,6 +6,7 @@ using C4S.Services.Services.ExcelWorksheetService;
 using C4S.Services.Services.GameSyncService;
 using C4S.Services.Services.GetGamesDataService;
 using C4S.Services.Services.GetGamesDataService.Helpers;
+using C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries;
 using C4S.Services.Services.JWTService;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

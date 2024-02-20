@@ -1,16 +1,17 @@
 ﻿using C4S.DB.Models;
 using C4S.Helpers.Extensions;
+using C4S.Services.Services.GetGamesDataService.Enums;
 using C4S.Services.Services.GetGamesDataService.Models;
 using Newtonsoft.Json;
+using System.Security.Policy;
 using System.Text;
 
-namespace C4S.Services.Services.GetGamesDataService.Helpers
+namespace C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries
 {
-    /*TODO: rename*/
     /// <summary>
     /// Словарь, содержащий все <see cref="HttpRequestMessage"/>, необходимые для получения данных по игре со страницы разработчика
     /// </summary>
-    public static class HttpRequestMethodDictionary
+    public static class YGApiHttpRequestMethodDictionary
     {
         /// <summary>
         /// Создает <see cref="HttpRequestMessage"/> для получения <see cref="PublicGameData"/>.
@@ -23,7 +24,7 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
         {
             var requestData = new
             {
-                appID = appID,
+                appID,
                 format = format.GetName(),
             };
 

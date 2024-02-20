@@ -62,9 +62,13 @@ namespace C4S.Services.Services.CategoriesSyncService
 
                 foreach (var category in categoryList)
                 {
+                    /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
                     var spanElement = category.QuerySelector("span.category-wrapper") ?? throw new Exception();
 
+                    /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
                     var dataName = spanElement.GetAttribute("data-name") ?? throw new Exception();
+
+                    /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
                     var title = spanElement.GetAttribute("title") ?? throw new Exception();
 
                     var categoryModel = new CategoryModel(dataName, title);
@@ -81,11 +85,11 @@ namespace C4S.Services.Services.CategoriesSyncService
         {
             var existCategories = await _dbContext.Categories.ToListAsync(cancellationToken);
 
-            var counOfDeletedCategories = RemoveFromDb(existCategories, incomingCategories);
-            _logger.LogInformation($"Добавлено на удаление {counOfDeletedCategories} категорий ");
+            var countOfDeletedCategories = RemoveFromDb(existCategories, incomingCategories);
+            _logger.LogInformation($"Добавлено на удаление {countOfDeletedCategories} категорий ");
 
-            var counOfAddedCategories = AddToDb(existCategories, incomingCategories);
-            _logger.LogInformation($"Добавлено на добавление {counOfAddedCategories} категорий");
+            var countOfAddedCategories = AddToDb(existCategories, incomingCategories);
+            _logger.LogInformation($"Добавлено на добавление {countOfAddedCategories} категорий");
 
             await _dbContext.SaveChangesAsync(cancellationToken);
             _logger.LogSuccess($"База данных обновлена");

@@ -1,6 +1,7 @@
 ﻿using C4S.Common.Models;
 using C4S.DB.Models;
 using C4S.Helpers.Extensions;
+using C4S.Services.Services.GetGamesDataService.HttpRequestMethodDictionaries;
 using C4S.Services.Services.GetGamesDataService.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -57,6 +58,8 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
                 .GetValue<JArray>("2")
                 .ToObject<CashIncome[]>()!
                 .Single();
+            /*TODO: сделать общую ошибку для случая когда с ответа от стороннего апи приходит null*/
+
 
             var result = new PrivateGameData { CashIncome = cashIncome?.Value };
 

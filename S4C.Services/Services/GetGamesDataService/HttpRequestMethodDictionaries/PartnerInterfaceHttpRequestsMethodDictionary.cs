@@ -1,6 +1,6 @@
 ﻿using C4S.Common.Models;
 
-namespace C4S.Services.Services.GetGamesDataService.Helpers
+namespace C4S.Services.Services.GetGamesDataService.HttpRequestMethodDictionaries
 {
     /// <summary>
     /// Словарь запросов <see cref="HttpRequestMessage"/>, необходимых для получения данных по игре с РСЯ.
@@ -25,6 +25,7 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
             var startDate = period.StartDate.ToString(dateTimeFormat);
             var finishDate = period.FinishDate.ToString(dateTimeFormat);
 
+            /*TODO:Вынести в appsetings*/
             var url = $"https://partner2.yandex.ru/api/" +
                 $"statistics2/get.json" +
                 $"?pretty=1&" +

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace C4S.Services.Services.GetGamesDataService.Helpers
+namespace C4S.Services.Services.GetGamesDataService.Enums
 {
     /// <summary>
     /// Словарь всех допустимых форматов для запроса на Яндекс игры

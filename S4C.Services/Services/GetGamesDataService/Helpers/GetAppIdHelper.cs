@@ -58,7 +58,8 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
         {
             var gameUrlElement = element
                 .QuerySelector(".game-url") as IHtmlAnchorElement
-                ?? throw new Exception($"На странице {_developerPageUrl} нет игр"); /*TODO: Exception*/
+                ?? throw new Exception($"На странице {_developerPageUrl} нет игр");
+            /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
 
             var path = gameUrlElement!.PathName;
 
@@ -67,7 +68,8 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
             var tryParseResult = int.TryParse(gameIdString, out var gameId);
 
             if (!tryParseResult)
-                throw new Exception($"не удалось преобразовать id - {gameIdString} в int"); /*TODO: Exception*/
+                throw new Exception($"не удалось преобразовать id - {gameIdString} в int");
+            /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
 
             return gameId;
         }
@@ -81,6 +83,7 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
             var gridList = document
                 .QuerySelector(".grid-list")
                 ?? throw new Exception($"На странице {_developerPageUrl} нет игр"); /*TODO: Exception*/
+            /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
 
             var children = gridList.Children;
 

@@ -1,11 +1,12 @@
 ﻿using C4S.Helpers.Extensions;
 using C4S.Helpers.Logger;
+using C4S.Services.Services.GetGamesDataService.Enums;
 using C4S.Services.Services.GetGamesDataService.Models;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using S4C.Helpers;
 
-namespace C4S.Services.Services.GetGamesDataService.Helpers
+namespace C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries
 {
     /// <summary>
     /// Вспомогательный класс для получения <see cref="PublicGameData"/> игр
@@ -48,7 +49,7 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
                 var loggerPrefix = $"[{appId}]";
                 logger.LogInformation($"{loggerPrefix} Составление запроса на сервер Яндекс");
                 HttpRequestMessage createRequest() =>
-                    HttpRequestMethodDictionary.GetGamesInfo(
+                    YGApiHttpRequestMethodDictionary.GetGamesInfo(
                         _yandexGetGameRequestURL, /*TODO: передавать внутрь только endpoint, внутри захардкодить BaseURL*/
                         appId,
                         RequestFormat.Long);
@@ -140,6 +141,7 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
 
                 if (withException)
                     throw new ArgumentNullException(nameof(field));
+                /*TODO: сделать общую ошибку для случая когда с ответа от стороннего апи приходит null*/
             }
         }
     }
