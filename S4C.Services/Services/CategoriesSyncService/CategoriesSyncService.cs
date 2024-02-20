@@ -3,10 +3,9 @@ using C4S.DB;
 using C4S.DB.Models;
 using C4S.Helpers.Extensions;
 using C4S.Helpers.Logger;
-using C4S.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace C4S.Services.Implements
+namespace C4S.Services.Services.CategoriesSyncService
 {
     /// <inheritdoc cref="ICategoriesSyncService"/>
     public class CategoriesSyncService : ICategoriesSyncService
@@ -36,12 +35,12 @@ namespace C4S.Services.Implements
 
             _logger.LogInformation("Запущен процесс синхронизации статусов игр");
 
-            _logger.LogInformation("Заупущен процесс получения статусов");
+            _logger.LogInformation("Запущен процесс получения статусов");
             var incomingCategories = await GetIncomingCategories(cancellationToken);
             _logger.LogSuccess($"процесс получения статусов успешно завершен. Получено {incomingCategories.Count} статусов");
 
             _logger.LogInformation("Запущен процесс обработки полученных статусов");
-            await ProseccIncomindgCategories(incomingCategories, cancellationToken);
+            await ProcessIncomingCategories(incomingCategories, cancellationToken);
             _logger.LogSuccess("процесс обработки полученных статусов успешно завершен");
 
             _logger.LogSuccess("процесс синхронизации статусов игр успешно завершен");
@@ -76,7 +75,7 @@ namespace C4S.Services.Implements
             return incomingCategoryModels;
         }
 
-        private async Task ProseccIncomindgCategories(
+        private async Task ProcessIncomingCategories(
             IEnumerable<CategoryModel> incomingCategories,
             CancellationToken cancellationToken)
         {

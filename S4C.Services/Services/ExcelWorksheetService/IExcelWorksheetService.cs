@@ -1,7 +1,7 @@
 ﻿using C4S.Common.Models;
 using OfficeOpenXml;
 
-namespace C4S.Services.Interfaces
+namespace C4S.Services.Services.ExcelWorksheetService
 {
     /// <summary>
     /// Сервис excel файлов

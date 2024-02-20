@@ -2,8 +2,10 @@
 using C4S.DB.Models;
 using Microsoft.IdentityModel.Tokens;
 
-namespace C4S.Services.Interfaces
+namespace C4S.Services.Services.JWTService
 {
+
+    /*TODO: Это модель а не сервис*/
     /// <summary>
     /// 
     /// </summary>

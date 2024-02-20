@@ -1,12 +1,11 @@
 ﻿using C4S.Common.ConfigurationModels;
 using C4S.DB.Models;
-using C4S.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace C4S.Services.Implements
+namespace C4S.Services.Services.JWTService
 {
     /// <summary>
     /// <inheritdoc cref="IJwtService"/>

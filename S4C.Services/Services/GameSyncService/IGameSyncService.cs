@@ -1,7 +1,7 @@
 ﻿using C4S.Helpers.Logger;
 using Hangfire.Server;
 
-namespace C4S.Services.Interfaces
+namespace C4S.Services.Services.GameSyncService
 {
     /// <summary>
     /// Сервис для синхронизации игр

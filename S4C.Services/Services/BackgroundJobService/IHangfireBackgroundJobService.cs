@@ -2,7 +2,7 @@
 using C4S.DB.Models.Hangfire;
 using C4S.Helpers.Logger;
 
-namespace C4S.Services.Interfaces
+namespace C4S.Services.Services.BackgroundJobService
 {
     /// <summary>
     /// Сервис для управления Hangfires job

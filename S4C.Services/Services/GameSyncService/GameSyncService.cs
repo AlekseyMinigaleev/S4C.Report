@@ -4,22 +4,18 @@ using C4S.DB;
 using C4S.DB.Models;
 using C4S.Helpers.Extensions;
 using C4S.Helpers.Logger;
-using C4S.Services.Interfaces;
+using C4S.Services.Services.GetGamesDataService;
+using C4S.Services.Services.GetGamesDataService.Models;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
-using S4C.YandexGateway.DeveloperPage;
-using S4C.YandexGateway.DeveloperPage.Models;
-using S4C.YandexGateway.RSYA;
 
-namespace C4S.Services.Implements
+namespace C4S.Services.Services.GameSyncService
 {
     /// <inheritdoc cref="IGameSyncService"/>
     public class GameSyncService : IGameSyncService
     {
         private readonly ReportDbContext _dbContext;
-        private readonly IDeveloperPageParser _developerPageParser;
-        private readonly IDeveloperPageGetaway _developerPageGetaway;
-        private readonly IRsyaGateway _rsyaGateway;
+        private readonly IGetGameDataService _getGameDataService;
         private readonly IMapper _mapper;
         private BaseLogger _logger;
         private UserModel _user;
@@ -27,15 +23,11 @@ namespace C4S.Services.Implements
 
         public GameSyncService(
             ReportDbContext dbContext,
-            IDeveloperPageParser developerPageParser,
-            IDeveloperPageGetaway developerPageGetaway,
-            IRsyaGateway rsyaGateway,
+            IGetGameDataService getGameDataService,
             IMapper mapper)
         {
             _dbContext = dbContext;
-            _developerPageParser = developerPageParser;
-            _developerPageGetaway = developerPageGetaway;
-            _rsyaGateway = rsyaGateway;
+            _getGameDataService = getGameDataService;
             _mapper = mapper;
         }
 
@@ -65,24 +57,23 @@ namespace C4S.Services.Implements
                 .Where(x => x.UserId == _user.Id);
 
             _logger.LogInformation("Начат процесс получения данных по всем играм");
-            var incomingAppIds = await _developerPageParser
-                .GetAppIdsAsync(_user.DeveloperPageUrl, _logger, cancellationToken);
-
-            var gameInfoModels = await _developerPageGetaway
-                .GetGamesInfoAsync(incomingAppIds, _logger, cancellationToken);
-
+            var publicGamesData = await _getGameDataService.GetPublicGameDataAsync(
+                _user.DeveloperPageUrl,
+                _logger,
+                cancellationToken);
             _logger.LogInformation("Обработка полученных данных");
+
             var newGameModels = new List<GameModel>();
-            foreach (var gameInfoModel in gameInfoModels)
+            foreach (var publicGameData in publicGamesData)
             {
-                var newGameModel = _mapper.Map<GameInfoModel, GameModel>(gameInfoModel);
-                var newGameStatistic = _mapper.Map<GameInfoModel, GameStatisticModel>(gameInfoModel);
+                var newGameModel = _mapper.Map<PublicGameData, GameModel>(publicGameData);
+                var newGameStatistic = _mapper.Map<PublicGameData, GameStatisticModel>(publicGameData);
 
                 newGameModel.GameStatistics = new HashSet<GameStatisticModel>() { newGameStatistic };
 
                 await EnrichGameModelsAsync(
                     newGameModel,
-                    gameInfoModel,
+                    publicGameData,
                     cancellationToken);
 
                 newGameModels.Add(newGameModel);
@@ -109,7 +100,7 @@ namespace C4S.Services.Implements
 
         private async Task EnrichGameModelsAsync(
             GameModel newGameModel,
-            GameInfoModel gameInfoModel,
+            PublicGameData gameInfoModel,
             CancellationToken cancellationToken)
         {
             var authorizationToken = _user.RsyaAuthorizationToken;
@@ -120,7 +111,7 @@ namespace C4S.Services.Implements
                 await EnrichCashIncomeAsync(newGameModel, cancellationToken);
 
             async Task EnrichCategories(
-                GameInfoModel gameInfoModel,
+                PublicGameData gameInfoModel,
                 GameModel newGameModel,
                 CancellationToken cancellationToken)
             {
@@ -128,7 +119,7 @@ namespace C4S.Services.Implements
                 newGameModel.AddCategories(categories);
 
                 async Task<IEnumerable<CategoryModel>> GetCategoriesAsync(
-                GameInfoModel incomingGameInfo,
+                PublicGameData incomingGameInfo,
                 CancellationToken cancellationToken)
                 {
                     var existCategories = _dbContext.Categories;
@@ -158,12 +149,13 @@ namespace C4S.Services.Implements
                     var endDate = DateTime.Now;
                     var period = new DateTimeRange(startDate, endDate);
 
-                    var cashIncome = await _rsyaGateway
-                        .GetAppCashIncomeAsync(
+                    var cashIncome = (await _getGameDataService
+                        .GetPrivateGameDataAsync(
                             pageId: existGameModel.PageId.Value,
-                            authorization: authorizationToken,
+                            authorization: _user.RsyaAuthorizationToken!,
                             period: period,
-                            cancellationToken);
+                            cancellationToken: cancellationToken))
+                        .CashIncome;
 
                     var lastSynchroGameStatistic = existGameModel.GameStatistics
                         .OrderByDescending(x => x.LastSynchroDate)

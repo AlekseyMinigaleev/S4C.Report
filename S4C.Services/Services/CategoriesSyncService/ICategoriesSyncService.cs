@@ -1,6 +1,6 @@
 ﻿using C4S.Helpers.Logger;
 
-namespace C4S.Services.Interfaces
+namespace C4S.Services.Services.CategoriesSyncService
 {
     /// <summary>
     /// Сервис для синхронизации статусов игр

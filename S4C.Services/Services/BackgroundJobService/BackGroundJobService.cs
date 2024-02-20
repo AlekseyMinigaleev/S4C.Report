@@ -3,15 +3,15 @@ using C4S.DB.Models;
 using C4S.DB.Models.Hangfire;
 using C4S.Helpers.Extensions;
 using C4S.Helpers.Logger;
-using C4S.Services.Exceptions;
-using C4S.Services.Interfaces;
+using C4S.Services.Services.BackgroundJobService.Exceptions;
+using C4S.Services.Services.GameSyncService;
 using Hangfire;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Security.Principal;
 
-namespace C4S.Services.Implements
+namespace C4S.Services.Services.BackgroundJobService
 {
     /// <inheritdoc cref="IHangfireBackgroundJobService"/>s
     public class BackgroundJobService : IHangfireBackgroundJobService
@@ -257,7 +257,7 @@ namespace C4S.Services.Implements
             {
                 var connectionString = _dbContext.Database.GetConnectionString();
                 if (connectionString is null)
-                    throw new HangfireDatabaseConnectException();
+                    throw new HangfireDatabaseConnectException(connectionString);
                 else
                     throw new HangfireDatabaseConnectException(connectionString);
             }

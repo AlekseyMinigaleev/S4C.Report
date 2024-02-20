@@ -5,13 +5,12 @@ using C4S.DB;
 using C4S.DB.Models;
 using C4S.Helpers.Extensions;
 using C4S.Helpers.Models;
-using C4S.Services.Interfaces;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Drawing;
 
 /*TODO: Не используется, переделать при добавлении возможности скачать отчет.*/
-namespace C4S.Services.Implements.ExcelFileServices
+namespace C4S.Services.Services.ExcelWorksheetService
 {
     /// <inheritdoc cref="IExcelWorksheetService"/>
     public class DetailedReportService : IExcelWorksheetService
