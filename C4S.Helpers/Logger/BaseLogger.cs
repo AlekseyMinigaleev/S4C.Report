@@ -1,7 +1,7 @@
 ﻿namespace C4S.Helpers.Logger
 {
     /// <summary>
-    /// Базовый логер в формате C4S
+    /// Базовый логгер в формате C4S
     /// </summary>
     public abstract class BaseLogger
     {
