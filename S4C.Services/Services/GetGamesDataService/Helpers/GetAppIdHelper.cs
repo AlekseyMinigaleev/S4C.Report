@@ -5,7 +5,8 @@ using C4S.Services.Services.GetGamesDataService.Models;
 using C4S.Shared.Logger;
 
 namespace C4S.Services.Services.GetGamesDataService.Helpers
-{
+{   
+    /*TODO: fix excepetion*/
     /// <summary>
     /// Вспомогательный класс для получения идентификаторов приложений (<see cref="PublicGameData.AppId"/>) игр из веб-страницы разработчика.
     /// </summary>
@@ -56,10 +57,11 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
 
         private int GetGameId(IElement element)
         {
+            var gameUlrSelector = ".game-url";
             var gameUrlElement = element
-                .QuerySelector(".game-url") as IHtmlAnchorElement
-                ?? throw new Exception($"На странице {_developerPageUrl} нет игр");
-            /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
+                .QuerySelector(gameUlrSelector) as IHtmlAnchorElement
+                ?? throw new Exception($"На странице {_developerPageUrl} нет игры");
+            /*TODO: Exception*/
 
             var path = gameUrlElement!.PathName;
 
@@ -68,9 +70,7 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
             var tryParseResult = int.TryParse(gameIdString, out var gameId);
 
             if (!tryParseResult)
-                throw new Exception($"не удалось преобразовать id - {gameIdString} в int");
-            /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
-
+                throw new FormatException($"не удалось преобразовать id - {gameIdString} в int");
             return gameId;
         }
 
@@ -83,7 +83,7 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
             var gridList = document
                 .QuerySelector(".grid-list")
                 ?? throw new Exception($"На странице {_developerPageUrl} нет игр"); /*TODO: Exception*/
-            /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
+            
 
             var children = gridList.Children;
 

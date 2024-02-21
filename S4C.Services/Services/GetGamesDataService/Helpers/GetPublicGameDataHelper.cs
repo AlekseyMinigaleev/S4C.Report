@@ -1,4 +1,5 @@
 ﻿using C4S.Helpers.Extensions;
+using C4S.Services.Exceptions;
 using C4S.Services.Services.GetGamesDataService.Enums;
 using C4S.Services.Services.GetGamesDataService.Models;
 using C4S.Shared.Logger;
@@ -99,21 +100,25 @@ namespace C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries
 
             ProcessNullableField(
                 field: title,
+                key: "title",
                 log: () => logger.LogError($"{loggerPrefix} Не удалось получить название"),
                 withException: true);
 
             ProcessNullableField(
                 field: previewURL,
+                key : "media, cover, prefix-url",
                 log: () => logger.LogError($"{loggerPrefix} Не удалось получить превью"),
                 withException: true);
 
             ProcessNullableField(
                 field: categoriesNames,
+                key: "categoriesNames",
                 log: () => logger.LogError($"{loggerPrefix} Не удалось получить категории"),
                 withException: true);
 
             ProcessNullableField(
                 field: rating,
+                key: "gqRating",
                 log: () => logger.LogError($"{loggerPrefix} Не удалось получить рейтинг"),
                 withException: false);
 
@@ -132,6 +137,7 @@ namespace C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries
 
         private static void ProcessNullableField<T>(
             T field,
+            string key,
             Action log,
             bool withException)
         {
@@ -140,8 +146,7 @@ namespace C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries
                 log();
 
                 if (withException)
-                    throw new ArgumentNullException(nameof(field));
-                /*TODO: сделать общую ошибку для случая когда с ответа от стороннего апи приходит null*/
+                    throw new JsonPropertyNullValueException(key);
             }
         }
     }

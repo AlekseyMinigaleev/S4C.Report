@@ -83,7 +83,6 @@ namespace С4S.API.Features.Authentication.Actions
                         if (!isValid)
                             return isValid;
 
-                        /*TODO: хранить валидные ссылки в отдельной таблице, и сначала пытаться найти в этой таблице, только потом делать запрос, не парсить а запрос*/
                         var errorPage = browsingContext
                             .OpenAsync(developerPageUrl).Result
                             .QuerySelector(".error-page__title");
