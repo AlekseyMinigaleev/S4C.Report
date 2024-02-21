@@ -1,8 +1,8 @@
 ﻿using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using C4S.Helpers.Logger;
 using C4S.Services.Services.GetGamesDataService.Models;
+using C4S.Shared.Logger;
 
 namespace C4S.Services.Services.GetGamesDataService.Helpers
 {

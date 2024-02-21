@@ -1,9 +1,9 @@
 ﻿using AngleSharp;
 using C4S.DB;
 using C4S.DB.Models;
-using C4S.Helpers.Logger;
 using C4S.Services.Services.BackgroundJobService;
 using C4S.Services.Services.GameSyncService;
+using C4S.Shared.Logger;
 using FluentValidation;
 using MediatR;
 using System.Text.Json.Serialization;

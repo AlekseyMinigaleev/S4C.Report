@@ -2,7 +2,7 @@
 using C4S.DB;
 using C4S.DB.Models;
 using C4S.Helpers.Extensions;
-using C4S.Helpers.Logger;
+using C4S.Shared.Logger;
 using Microsoft.EntityFrameworkCore;
 
 namespace C4S.Services.Services.CategoriesSyncService

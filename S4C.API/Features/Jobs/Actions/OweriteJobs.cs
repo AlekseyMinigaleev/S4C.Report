@@ -1,5 +1,5 @@
-﻿using C4S.Helpers.Logger;
-using C4S.Services.Services.BackgroundJobService;
+﻿using C4S.Services.Services.BackgroundJobService;
+using C4S.Shared.Logger;
 using MediatR;
 
 namespace С4S.API.Features.Jobs.Actions

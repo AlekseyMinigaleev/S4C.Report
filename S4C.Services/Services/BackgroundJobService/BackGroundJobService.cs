@@ -2,9 +2,9 @@
 using C4S.DB.Models;
 using C4S.DB.Models.Hangfire;
 using C4S.Helpers.Extensions;
-using C4S.Helpers.Logger;
 using C4S.Services.Services.BackgroundJobService.Exceptions;
 using C4S.Services.Services.GameSyncService;
+using C4S.Shared.Logger;
 using Hangfire;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
