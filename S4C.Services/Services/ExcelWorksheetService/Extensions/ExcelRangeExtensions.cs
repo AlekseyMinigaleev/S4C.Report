@@ -1,7 +1,7 @@
 ﻿using OfficeOpenXml;
 using OfficeOpenXml.Style;
 
-namespace C4S.Helpers.Extensions
+namespace C4S.Services.Services.ExcelWorksheetService.Extensions
 {
     /// <inheritdoc cref="ExcelRange"/>
     public static class ExcelRangeExtensions
@@ -17,9 +17,9 @@ namespace C4S.Helpers.Extensions
             ExcelHorizontalAlignment horizontalAlignment = default,
             ExcelVerticalAlignment verticalAlignment = default)
         {
-            if(range is not null)
+            if (range is not null)
             {
-                range.Value  = value;
+                range.Value = value;
                 range.Style.HorizontalAlignment = horizontalAlignment;
                 range.Style.VerticalAlignment = verticalAlignment;
             }

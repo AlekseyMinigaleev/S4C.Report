@@ -1,7 +1,7 @@
-﻿using C4S.Helpers.Extensions;
-using C4S.Services.Exceptions;
+﻿using C4S.Services.Exceptions;
 using C4S.Services.Services.GetGamesDataService.Enums;
 using C4S.Services.Services.GetGamesDataService.Models;
+using C4S.Shared.Extensions;
 using C4S.Shared.Logger;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;

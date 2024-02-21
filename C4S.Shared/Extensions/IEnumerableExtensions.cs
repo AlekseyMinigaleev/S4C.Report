@@ -1,4 +1,4 @@
-﻿namespace C4S.Helpers.Extensions
+﻿namespace C4S.Shared.Extensions
 {
     public static class IEnumerableExtensions
     {

@@ -1,11 +1,8 @@
 ﻿using System.Security.Claims;
 using System.Security.Principal;
 
-namespace C4S.Helpers.Extensions
+namespace C4S.Shared.Extensions
 {
-    /// <summary>
-    /// Статический класс с методами-расширениями для интерфейса IPrincipal.
-    /// </summary>
     public static class PrincipalExtension
     {
         /// <summary>

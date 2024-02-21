@@ -2,9 +2,9 @@
 using C4S.Common.Models;
 using C4S.DB;
 using C4S.DB.Models;
-using C4S.Helpers.Extensions;
 using C4S.Services.Services.GetGamesDataService;
 using C4S.Services.Services.GetGamesDataService.Models;
+using C4S.Shared.Extensions;
 using C4S.Shared.Logger;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-﻿using C4S.Helpers.Extensions;
+﻿using C4S.Shared.Extensions;
 
 namespace C4S.DB.Models
 {

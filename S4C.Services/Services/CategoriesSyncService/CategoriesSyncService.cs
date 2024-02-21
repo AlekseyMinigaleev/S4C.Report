@@ -1,8 +1,8 @@
 ﻿using AngleSharp;
 using C4S.DB;
 using C4S.DB.Models;
-using C4S.Helpers.Extensions;
 using C4S.Services.Exceptions;
+using C4S.Shared.Extensions;
 using C4S.Shared.Logger;
 using Microsoft.EntityFrameworkCore;
 

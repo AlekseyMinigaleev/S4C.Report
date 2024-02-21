@@ -1,8 +1,8 @@
 ﻿using C4S.Common.Models;
-using C4S.Helpers.Extensions;
 using C4S.Services.Exceptions;
 using C4S.Services.Services.GetGamesDataService.HttpRequestMethodDictionaries;
 using C4S.Services.Services.GetGamesDataService.Models;
+using C4S.Shared.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using S4C.Helpers;
