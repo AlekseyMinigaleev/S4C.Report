@@ -1,7 +1,6 @@
 using C4S.API.Extensions;
 using C4S.Common.ConfigurationModels;
 using C4S.DB;
-using C4S.Helpers.ApiHeplers.Swagger;
 using C4S.Services.Extensions;
 using C4S.Services.Services.GameSyncService;
 using C4S.Services.Services.JWTService;
@@ -13,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Ñ4S.API.Extensions;
+using Ñ4S.API.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

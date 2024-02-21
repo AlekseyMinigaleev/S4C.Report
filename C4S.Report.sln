@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C4S.Helpers", "C4S.Helpers\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C4S.Common", "C4S.Common\C4S.Common.csproj", "{D1C25FB8-89D5-4B42-992A-77CA36B052F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C4S.Shared", "C4S.Shared\C4S.Shared.csproj", "{BD3729AF-099A-49E2-84C7-1A10DAB72E0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C4S.Shared", "C4S.Shared\C4S.Shared.csproj", "{BD3729AF-099A-49E2-84C7-1A10DAB72E0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
