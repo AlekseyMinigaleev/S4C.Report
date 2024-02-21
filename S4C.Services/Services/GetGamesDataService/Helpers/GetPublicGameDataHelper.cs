@@ -3,9 +3,9 @@ using C4S.Services.Services.GetGamesDataService.Enums;
 using C4S.Services.Services.GetGamesDataService.Models;
 using C4S.Shared.Extensions;
 using C4S.Shared.Logger;
+using C4S.Shared.Utils;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
-using S4C.Helpers;
 
 namespace C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries
 {

@@ -1,4 +1,4 @@
-﻿namespace S4C.Helpers
+﻿namespace C4S.Shared.Utils
 {
     /// <summary>
     /// Класс, предоставляющий вспомогательные методы для выполнения HTTP-запросов
