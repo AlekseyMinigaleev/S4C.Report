@@ -1,7 +1,7 @@
 ﻿using Hangfire.Console;
 using Hangfire.Server;
 
-namespace C4S.Helpers.Logger
+namespace C4S.Shared.Logger
 {
     /// <summary>
     /// Логгер в консоль Hangfire
