@@ -1,4 +1,4 @@
-﻿namespace C4S.Helpers.Models
+﻿namespace C4S.Services.Services.ExcelWorksheetService.Models
 {
     /// <summary>
     /// Excel ячейка
