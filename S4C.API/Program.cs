@@ -1,9 +1,9 @@
 using C4S.API.Extensions;
-using C4S.Common.ConfigurationModels;
 using C4S.DB;
 using C4S.Services.Extensions;
 using C4S.Services.Services.GameSyncService;
 using C4S.Services.Services.JWTService;
+using C4S.Shared.Models;
 using FluentValidation;
 using Hangfire;
 using MediatR;
