@@ -18,14 +18,14 @@ namespace С4S.API.Extensions
             CancellationToken cancellationToken = default)
         {
             using var scope = app.Services.CreateScope();
-            var (logger, dbContext, categorySyncServiice) = GetDependencies(scope);
+            var (logger, dbContext, categorySyncService) = GetDependencies(scope);
 
             logger.LogInformation("Начало выполнения миграций:");
             await dbContext.Database.MigrateAsync(cancellationToken);
             logger.LogInformation("Все миграции успешно выполнены");
 
             logger.LogInformation("Начало синхронизации категорий с яндексом:");
-            await categorySyncServiice.SyncCategoriesAsync(logger, cancellationToken);
+            await categorySyncService.SyncCategoriesAsync(logger, cancellationToken);
             logger.LogInformation("Категории успешно синхронизированы");
         }
 
