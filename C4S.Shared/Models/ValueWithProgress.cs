@@ -1,4 +1,4 @@
-﻿namespace C4S.Common.Models
+﻿namespace C4S.Shared.Models
 {
     /// <summary>
     /// модель значения с прогрессом для сравнения.

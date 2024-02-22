@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using C4S.Common.Models;
 using C4S.DB;
 using C4S.DB.Expressions;
 using C4S.DB.Models;
@@ -9,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Security.Principal;
 using C4S.Shared.Extensions;
+using C4S.Shared.Models;
 
 namespace С4S.API.Features.Game.Actions
 {

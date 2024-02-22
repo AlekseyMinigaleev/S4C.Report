@@ -1,6 +1,6 @@
-﻿using C4S.Common.Models;
-using C4S.DB;
+﻿using C4S.DB;
 using C4S.Services.Services.GetGamesDataService;
+using C4S.Shared.Models;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
