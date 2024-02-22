@@ -1,11 +1,12 @@
-﻿using AngleSharp;
-using C4S.DB;
+﻿using C4S.DB;
 using C4S.DB.Models;
 using C4S.Services.Services.BackgroundJobService;
 using C4S.Services.Services.GameSyncService;
 using C4S.Shared.Logger;
+using C4S.Shared.Utils;
 using FluentValidation;
 using MediatR;
+using System.Net;
 using System.Text.Json.Serialization;
 using С4S.API.Features.Authentication.ViewModels;
 using С4S.API.Features.User.Requests;
@@ -46,7 +47,6 @@ namespace С4S.API.Features.User.Actions
         {
             public QueryValidator(
                 ReportDbContext dbContext,
-                IBrowsingContext browsingContext,
                 IHttpClientFactory httpClientFactory)
             {
                 RuleLevelCascadeMode = CascadeMode.Stop;
@@ -54,10 +54,10 @@ namespace С4S.API.Features.User.Actions
 
                 RuleFor(x => x.Credentionals)
                     .SetValidator(new UserCredentionalsValidator())
-                    .Must(userCreditionals =>
+                    .Must(userCredentials =>
                     {
                         var user = dbContext.Users
-                            .SingleOrDefault(x => x.Login.Equals(userCreditionals.Login));
+                            .SingleOrDefault(x => x.Login.Equals(userCredentials.Login));
 
                         return user is null;
                     })
@@ -68,24 +68,31 @@ namespace С4S.API.Features.User.Actions
                     .Must(developerPageUrl =>
                     {
                         var keyword = "developer";
-                        var index = developerPageUrl.IndexOf(keyword) + keyword.Length + 1;/*+1 учитывает слеш*/
+                        var index = developerPageUrl.IndexOf(keyword) + keyword.Length + 1; /*+1 учитывает слеш*/
 
                         var developerURL = developerPageUrl[..index];
 
-                        var developerIdString = developerPageUrl[index..];
+                        var redirDataIndex = developerPageUrl.IndexOf("#redir-data");
+                        string developerIdString;
+                        if (redirDataIndex < 0)
+                            developerIdString = developerPageUrl[index..];
+                        else
+                            developerIdString = developerPageUrl[index..redirDataIndex];
+
                         var parseResult = int.TryParse(developerIdString, out int developerId);
 
                         var isValid = developerURL
                             .StartsWith("https://yandex.ru/games/developer/") && parseResult;
-
                         if (!isValid)
-                            return isValid;
+                            return false;
 
-                        var errorPage = browsingContext
-                            .OpenAsync(developerPageUrl).Result
-                            .QuerySelector(".error-page__title");
-
-                        isValid = errorPage is null;
+                        var httpResponseMessage = HttpUtils
+                            .SendRequestAsync(
+                                 createRequest: () => new HttpRequestMessage(HttpMethod.Get, developerPageUrl),
+                                httpClientFactory: httpClientFactory,
+                                isEnsureSuccessStatusCode: false)
+                        .Result;
+                        isValid = httpResponseMessage.StatusCode != HttpStatusCode.NotFound;
 
                         return isValid;
                     })

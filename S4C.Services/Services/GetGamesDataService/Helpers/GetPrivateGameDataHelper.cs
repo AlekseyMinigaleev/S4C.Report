@@ -43,9 +43,9 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
 
             var httpResponseMessage = await HttpUtils
                 .SendRequestAsync(
-                    createRequest,
-                    _httpClientFactory,
-                    cancellationToken);
+                    createRequest: createRequest,
+                    httpClientFactory: _httpClientFactory,
+                    cancellationToken: cancellationToken);
 
             var jsonString = await httpResponseMessage.Content
                 .ReadAsStringAsync(cancellationToken);

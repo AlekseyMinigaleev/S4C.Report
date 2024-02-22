@@ -38,19 +38,8 @@
             </remarks>
             <returns><inheritdoc cref="M:Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build"/></returns>
         </member>
-        <member name="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.Credentionals">
-            <inheritdoc cref="T:С4S.API.Features.Authentication.ViewModels.UserCredentionals"/>
-        </member>
-        <member name="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.DeveloperPageUrl">
-            <summary>
-            ссылка на страницу разработчика
-            </summary>
-        </member>
-        <member name="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.RsyaAuthorizationToken">
-            <inheritdoc cref="P:С4S.API.Features.Authentication.Actions.CreateAccount.Query.RsyaAuthorizationToken"/>
-        </member>
         <member name="P:С4S.API.Features.Authentication.Actions.Login.Query.UserCreditionals">
-            <inheritdoc cref="T:С4S.API.Features.Authentication.ViewModels.UserCredentionals"/>
+            <inheritdoc cref="T:С4S.API.Features.Authentication.ViewModels.UserCredentials"/>
         </member>
         <member name="M:С4S.API.Features.Authentication.AuthenticationController.Login(С4S.API.Features.Authentication.Actions.Login.Query,FluentValidation.IValidator{С4S.API.Features.Authentication.Actions.Login.Query},System.Threading.CancellationToken)">
             <summary>
@@ -59,11 +48,6 @@
             <returns>
             Jwt-токен пользователя
             </returns>
-        </member>
-        <member name="M:С4S.API.Features.Authentication.AuthenticationController.CreateAccount(С4S.API.Features.Authentication.Actions.CreateAccount.Query,FluentValidation.IValidator{С4S.API.Features.Authentication.Actions.CreateAccount.Query},System.Threading.CancellationToken)">
-            <summary>
-            Создает новую учетную запись
-            </summary>
         </member>
         <member name="M:С4S.API.Features.Authentication.AuthenticationController.DeleteRefreshToken(System.Threading.CancellationToken)">
             <summary>
@@ -95,17 +79,17 @@
             Токен обновления
             </summary>
         </member>
-        <member name="T:С4S.API.Features.Authentication.ViewModels.UserCredentionals">
+        <member name="T:С4S.API.Features.Authentication.ViewModels.UserCredentials">
             <summary>
             Представляет учетные данные пользователя
             </summary>
         </member>
-        <member name="P:С4S.API.Features.Authentication.ViewModels.UserCredentionals.Login">
+        <member name="P:С4S.API.Features.Authentication.ViewModels.UserCredentials.Login">
             <summary>
             Логин пользователя
             </summary>
         </member>
-        <member name="P:С4S.API.Features.Authentication.ViewModels.UserCredentionals.Password">
+        <member name="P:С4S.API.Features.Authentication.ViewModels.UserCredentials.Password">
             <summary>
             Пароль пользователя
             </summary>
@@ -198,6 +182,17 @@
             Возвращает список всех игр
             </summary>
         </member>
+        <member name="P:С4S.API.Features.User.Actions.CreateAccount.Query.Credentionals">
+            <inheritdoc cref="T:С4S.API.Features.Authentication.ViewModels.UserCredentials"/>
+        </member>
+        <member name="P:С4S.API.Features.User.Actions.CreateAccount.Query.DeveloperPageUrl">
+            <summary>
+            ссылка на страницу разработчика
+            </summary>
+        </member>
+        <member name="P:С4S.API.Features.User.Actions.CreateAccount.Query.RsyaAuthorizationToken">
+            <inheritdoc cref="P:С4S.API.Features.User.Actions.CreateAccount.Query.RsyaAuthorizationToken"/>
+        </member>
         <member name="P:С4S.API.Features.User.Action.SetRsyaAuthorizationToken.Command.RsyaAythorizationToken">
             <inheritdoc cref="T:С4S.API.Features.User.Action.SetRsyaAuthorizationToken"/>
         </member>
@@ -215,6 +210,11 @@
             <summary>
             Устанавливает токен авторизации.
             https://yandex.ru/dev/partner-statistics/doc/ru/concepts/access
+            </summary>
+        </member>
+        <member name="M:С4S.API.Features.User.UserController.CreateAccount(С4S.API.Features.User.Actions.CreateAccount.Query,FluentValidation.IValidator{С4S.API.Features.User.Actions.CreateAccount.Query},System.Threading.CancellationToken)">
+            <summary>
+            Создает новую учетную запись
             </summary>
         </member>
         <member name="T:С4S.API.Helpers.ShemaClassesIdsRenamer">
