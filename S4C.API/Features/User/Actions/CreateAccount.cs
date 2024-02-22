@@ -1,25 +1,24 @@
-﻿using AngleSharp;
-using C4S.DB;
+﻿using C4S.DB;
 using C4S.DB.Models;
 using C4S.Services.Services.BackgroundJobService;
 using C4S.Services.Services.GameSyncService;
 using C4S.Shared.Logger;
+using C4S.Shared.Utils;
 using FluentValidation;
 using MediatR;
+using System.Net;
 using System.Text.Json.Serialization;
 using С4S.API.Features.Authentication.ViewModels;
 using С4S.API.Features.User.Requests;
 
-namespace С4S.API.Features.Authentication.Actions
+namespace С4S.API.Features.User.Actions
 {
-    /*TOOD: Перенести это на user а не Authorization*/
-
     public class CreateAccount
     {
         public class Query : IRequest
         {
-            /// <inheritdoc cref="UserCredentionals"/>
-            public UserCredentionals Credentionals { get; set; }
+            /// <inheritdoc cref="UserCredentials"/>
+            public UserCredentials Credentionals { get; set; }
 
             /// <summary>
             /// ссылка на страницу разработчика
@@ -46,20 +45,22 @@ namespace С4S.API.Features.Authentication.Actions
 
         public class QueryValidator : AbstractValidator<Query>
         {
+            private readonly IHttpClientFactory _httpClientFactory;
+
             public QueryValidator(
                 ReportDbContext dbContext,
-                IBrowsingContext browsingContext,
                 IHttpClientFactory httpClientFactory)
             {
+                _httpClientFactory = httpClientFactory;
                 RuleLevelCascadeMode = CascadeMode.Stop;
                 ClassLevelCascadeMode = CascadeMode.Stop;
 
                 RuleFor(x => x.Credentionals)
                     .SetValidator(new UserCredentionalsValidator())
-                    .Must(userCreditionals =>
+                    .Must(userCredentials =>
                     {
                         var user = dbContext.Users
-                            .SingleOrDefault(x => x.Login.Equals(userCreditionals.Login));
+                            .SingleOrDefault(x => x.Login.Equals(userCredentials.Login));
 
                         return user is null;
                     })
@@ -69,27 +70,17 @@ namespace С4S.API.Features.Authentication.Actions
                 RuleFor(x => x.DeveloperPageUrl)
                     .Must(developerPageUrl =>
                     {
-                        var keyword = "developer";
-                        var index = developerPageUrl.IndexOf(keyword) + keyword.Length + 1;/*+1 учитывает слеш*/
+                        var uri = CreateUri(developerPageUrl);
+                        if (uri is null)
+                            return false;
 
-                        var developerURL = developerPageUrl[..index];
+                        var isValidFormat = ValidateUrlFormat(uri);
+                        if (!isValidFormat)
+                            return false;
 
-                        var developerIdString = developerPageUrl[index..];
-                        var parseResult = int.TryParse(developerIdString, out int developerId);
+                        var isAvailability = ValidateUrlAvailability(uri).Result;
 
-                        var isValid = developerURL
-                            .StartsWith("https://yandex.ru/games/developer/") && parseResult;
-
-                        if (!isValid)
-                            return isValid;
-
-                        var errorPage = browsingContext
-                            .OpenAsync(developerPageUrl).Result
-                            .QuerySelector(".error-page__title");
-
-                        isValid = errorPage is null;
-
-                        return isValid;
+                        return isAvailability;
                     })
                     .WithMessage("Указана не корректная ссылка на страницу разработчика")
                     .WithErrorCode("developerPageUrl");
@@ -99,6 +90,44 @@ namespace С4S.API.Features.Authentication.Actions
                     RuleFor(x => x.RsyaAuthorizationToken)
                         .SetValidator(new RsyaAuthorizationTokenValidator(httpClientFactory)!);
                 });
+            }
+
+            private Uri? CreateUri(string developerPageUrl)
+            {
+                if (Uri.TryCreate(developerPageUrl, UriKind.Absolute, out var uri))
+                    return uri;
+
+                return null;
+            }
+
+            private bool ValidateUrlFormat(Uri uri)
+            {
+                var developerPath = "/games/developer/";
+                if (!uri.AbsolutePath.StartsWith(developerPath)
+                    || uri.Segments.Length < 4)
+                    return false;
+
+                var redirDataIndex = uri.Segments[3].IndexOf("#redir-data");
+
+                string developerIdString;
+                if (redirDataIndex < 0)
+                    developerIdString = uri.Segments[3];
+                else
+                    developerIdString = uri.Segments[3][..redirDataIndex];
+
+                var tryParseResult = int.TryParse(developerIdString, out _);
+
+                return tryParseResult;
+            }
+
+            private async Task<bool> ValidateUrlAvailability(Uri uri)
+            {
+                var response = await HttpUtils.SendRequestAsync(
+                    createRequest: () => new HttpRequestMessage(HttpMethod.Get, uri),
+                    httpClientFactory: _httpClientFactory,
+                    isEnsureSuccessStatusCode: false);
+
+                return response.StatusCode != HttpStatusCode.NotFound;
             }
         }
 
@@ -136,7 +165,8 @@ namespace С4S.API.Features.Authentication.Actions
                 await _hangfireBackgroundJobService
                     .AddMissingHangfirejobsAsync(user, _logger, cancellationToken);
 
-                await _gameSyncService.SyncGamesAsync(user.Id, _logger, cancellationToken);
+                await _gameSyncService
+                    .SyncGamesAsync(user.Id, _logger, cancellationToken);
             }
         }
     }

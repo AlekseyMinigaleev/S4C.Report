@@ -42,26 +42,6 @@ namespace С4S.API.Features.Authentication
         }
 
         /// <summary>
-        /// Создает новую учетную запись
-        /// </summary>
-        [AllowAnonymous]
-        [HttpPost("createAccount")]
-        public async Task<ActionResult> CreateAccount(
-            [FromBody] CreateAccount.Query query,
-            [FromServices] IValidator<CreateAccount.Query> validator,
-            CancellationToken cancellationToken)
-        {
-            await ValidateAndChangeModelStateAsync(validator, query, cancellationToken);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            await Mediator.Send(query, cancellationToken);
-
-            return Ok("Аккаунт успешно создан");
-        }
-
-        /// <summary>
         /// Выполняет удаление токена обновления.
         /// </summary>
         [Authorize]

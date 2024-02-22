@@ -15,8 +15,8 @@ namespace С4S.API.Features.Authentication.Actions
     {
         public class Query : IRequest<ResponseViewModel>
         {
-            /// <inheritdoc cref="UserCredentionals"/>
-            public UserCredentionals UserCreditionals { get; set; }
+            /// <inheritdoc cref="UserCredentials"/>
+            public UserCredentials UserCreditionals { get; set; }
         }
 
         public class ResponseViewModel

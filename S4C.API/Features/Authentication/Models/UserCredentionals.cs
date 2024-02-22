@@ -5,7 +5,7 @@ namespace С4S.API.Features.Authentication.ViewModels
     /// <summary>
     /// Представляет учетные данные пользователя
     /// </summary>
-    public class UserCredentionals
+    public class UserCredentials
     {
         /// <summary>
         /// Логин пользователя
@@ -18,7 +18,7 @@ namespace С4S.API.Features.Authentication.ViewModels
         public string Password { get; set; }
     }
 
-    public class UserCredentionalsValidator : AbstractValidator<UserCredentionals>
+    public class UserCredentionalsValidator : AbstractValidator<UserCredentials>
     {
         public UserCredentionalsValidator()
         {
@@ -35,8 +35,6 @@ namespace С4S.API.Features.Authentication.ViewModels
                     .WithMessage("Пароль должен содержать хотя бы одну строчную букву")
                 .Matches("[0-9]")
                     .WithMessage("Пароль должен содержать хотя бы одну цифру");
-                //.Matches("[!@#$%^&*]")
-                //    .WithMessage("Пароль должен содержать хотя бы один специальный символ: !@#$%^&*");
         }
     }
 }

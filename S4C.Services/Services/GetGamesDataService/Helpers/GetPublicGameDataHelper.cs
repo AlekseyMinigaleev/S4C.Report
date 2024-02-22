@@ -56,9 +56,9 @@ namespace C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries
                         RequestFormat.Long);
 
                 var httpResponseMessage = await HttpUtils.SendRequestAsync(
-                    createRequest,
-                    _httpClientFactory,
-                    cancellationToken);
+                    createRequest: createRequest,
+                    httpClientFactory: _httpClientFactory,
+                    cancellationToken: cancellationToken);
                 logger.LogSuccess($"{loggerPrefix} Ответ от Яндекса успешно получен");
 
                 logger.LogInformation($"{loggerPrefix} Начало обработки ответа");
@@ -106,7 +106,7 @@ namespace C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries
 
             ProcessNullableField(
                 field: previewURL,
-                key : "media, cover, prefix-url",
+                key: "media, cover, prefix-url",
                 log: () => logger.LogError($"{loggerPrefix} Не удалось получить превью"),
                 withException: true);
 

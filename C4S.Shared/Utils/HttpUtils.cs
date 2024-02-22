@@ -13,6 +13,7 @@
         public static async Task<HttpResponseMessage> SendRequestAsync(
             Func<HttpRequestMessage> createRequest,
             IHttpClientFactory httpClientFactory,
+            bool isEnsureSuccessStatusCode = true,
             CancellationToken cancellationToken = default)
         {
             var client = httpClientFactory.CreateClient();
@@ -20,7 +21,10 @@
             var request = createRequest();
             var response = await client
                 .SendAsync(request, cancellationToken);
-            response.EnsureSuccessStatusCode();
+
+            if (isEnsureSuccessStatusCode)
+                response.EnsureSuccessStatusCode();
+
             return response;
         }
     }
