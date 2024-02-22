@@ -10,16 +10,14 @@ using System.Text.Json.Serialization;
 using С4S.API.Features.Authentication.ViewModels;
 using С4S.API.Features.User.Requests;
 
-namespace С4S.API.Features.Authentication.Actions
+namespace С4S.API.Features.User.Actions
 {
-    /*TOOD: Перенести это на user а не Authorization*/
-
     public class CreateAccount
     {
         public class Query : IRequest
         {
-            /// <inheritdoc cref="UserCredentionals"/>
-            public UserCredentionals Credentionals { get; set; }
+            /// <inheritdoc cref="UserCredentials"/>
+            public UserCredentials Credentionals { get; set; }
 
             /// <summary>
             /// ссылка на страницу разработчика
@@ -136,7 +134,8 @@ namespace С4S.API.Features.Authentication.Actions
                 await _hangfireBackgroundJobService
                     .AddMissingHangfirejobsAsync(user, _logger, cancellationToken);
 
-                await _gameSyncService.SyncGamesAsync(user.Id, _logger, cancellationToken);
+                await _gameSyncService
+                    .SyncGamesAsync(user.Id, _logger, cancellationToken);
             }
         }
     }
