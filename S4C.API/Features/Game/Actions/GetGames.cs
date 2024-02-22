@@ -3,12 +3,12 @@ using AutoMapper.QueryableExtensions;
 using C4S.DB;
 using C4S.DB.Expressions;
 using C4S.DB.Models;
+using C4S.Shared.Extensions;
+using C4S.Shared.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Security.Principal;
-using C4S.Shared.Extensions;
-using C4S.Shared.Models;
 
 namespace С4S.API.Features.Game.Actions
 {
@@ -23,7 +23,6 @@ namespace С4S.API.Features.Game.Actions
 
             public TotalViewModel Total => new()
             {
-                PlayersCount = Games.Sum(x => x.PlayersCount.ValueWithProgress.ActualValue),
                 CashIncome = Games
                     .Any(x => x.CashIncome.ValueWithProgress is not null)
                         ? Games.Sum(x => x.CashIncome.ValueWithProgress?.ActualValue)
@@ -33,8 +32,6 @@ namespace С4S.API.Features.Game.Actions
 
         public class TotalViewModel
         {
-            public int PlayersCount { get; set; }
-
             public double? CashIncome { get; set; }
         }
 
@@ -42,12 +39,6 @@ namespace С4S.API.Features.Game.Actions
         {
             public ValueWithProgress<double?>? ValueWithProgress { get; set; }
             public double? Percentage { get; set; }
-        }
-
-        public class PlayersCountViewModel
-        {
-            public ValueWithProgress<int> ValueWithProgress { get; set; }
-            public double Percentage { get; set; }
         }
 
         public class GameViewModel
@@ -67,8 +58,6 @@ namespace С4S.API.Features.Game.Actions
             public string[] Categories { get; set; }
 
             public CashIncomeViewModel CashIncome { get; set; }
-
-            public PlayersCountViewModel PlayersCount { get; set; }
         }
 
         public class GameViewModelProfiler : Profile
@@ -78,13 +67,8 @@ namespace С4S.API.Features.Game.Actions
                 CreateMap<GameModel, GameViewModel>()
                     .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(GameExpressions.LastSynchronizedEvaluationExpression))
                     .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(src => src))
-                    .ForMember(dest => dest.PlayersCount, opt => opt.MapFrom(src => src))
                     .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.CategoryGameModels
                         .Select(x => x.Category.Title)));
-
-                CreateMap<GameModel, PlayersCountViewModel>()
-                      .ForMember(dest => dest.ValueWithProgress, opt => opt.MapFrom(GameExpressions.PlayersCountWithProgressExpression))
-                      .ForMember(dest => dest.Percentage, opt => opt.Ignore());
 
                 CreateMap<GameModel, CashIncomeViewModel>()
                   .ForMember(dest => dest.ValueWithProgress, opt => opt.MapFrom(GameExpressions.CashIncomeWithProgressExpression))
@@ -134,24 +118,18 @@ namespace С4S.API.Features.Game.Actions
             {
                 foreach (var game in response.Games)
                 {
-                    var playersCountActualValue = game.PlayersCount.ValueWithProgress.ActualValue;
-                    var totalPlayersCont = response.Total.PlayersCount;
-
-                    game.PlayersCount.Percentage = CaluculatePersentage(
-                        playersCountActualValue,
-                        totalPlayersCont);
-
+                    /*TODO: делать percentage по рейтингу?*/
                     if (game.CashIncome.ValueWithProgress is not null
                         && game.CashIncome.ValueWithProgress.ActualValue is not null)
                     {
-                        game.CashIncome.Percentage = CaluculatePersentage(
+                        game.CashIncome.Percentage = CalculatePercentage(
                             game.CashIncome.ValueWithProgress.ActualValue.Value,
                             response.Total.CashIncome!.Value);
                     }
                 }
             }
 
-            private static double CaluculatePersentage<T>(T value, T total)
+            private static double CalculatePercentage<T>(T value, T total)
                 where T : IConvertible
             {
                 var a = Convert.ToDouble(value);
@@ -159,9 +137,9 @@ namespace С4S.API.Features.Game.Actions
 
                 double percentage = (a / b) * 100;
 
-                var roundedPercetage = Math.Round(percentage, 3);
+                var roundedPercentage = Math.Round(percentage, 3);
 
-                return roundedPercetage;
+                return roundedPercentage;
             }
         }
     }

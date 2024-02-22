@@ -38,9 +38,6 @@ namespace C4S.Services.Services.GetGamesDataService.Models
         /// <inheritdoc cref="GameStatisticModel.Evaluation"/>
         public double Evaluation { get; set; }
 
-        /// <inheritdoc cref="GameStatisticModel.PlayersCount"/>
-        public int PlayersCount { get; set; }
-
         /// <inheritdoc cref="GameStatisticModel.Rating"/>
         public int? Rating { get; set; }
 
@@ -51,7 +48,6 @@ namespace C4S.Services.Services.GetGamesDataService.Models
             string title,
             int firstPublished,
             double evaluation,
-            int playersCount,
             string[] categoriesNames,
             string previewURL,
             int? rating = default)
@@ -60,7 +56,6 @@ namespace C4S.Services.Services.GetGamesDataService.Models
             Title = title;
             FirstPublished = firstPublished;
             Evaluation = evaluation;
-            PlayersCount = playersCount;
             CategoriesNames = categoriesNames;
             PreviewURL = previewURL;
             Rating = rating;

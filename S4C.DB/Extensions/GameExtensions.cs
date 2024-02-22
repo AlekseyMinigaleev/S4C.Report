@@ -8,23 +8,6 @@ namespace C4S.DB.Extensions
     public static class GameExtensions
     {
         /// <summary>
-        /// Получает актуальное значение количества игроков.
-        /// </summary>
-        /// <param name="source">Исходная модель игры.</param>
-        /// <returns>Актуальное значение количества игроков.</returns>
-        public static int GetPlayersCountActualValue(this GameModel source) =>
-              source.GameStatistics
-                .GetLastSynchronizationStatistic().PlayersCount;
-
-        /// <summary>
-        /// Получает последнее добавленное значение к актуальному количеству игроков.
-        /// </summary>
-        /// <param name="source">Исходная модель игры.</param>
-        /// <returns>Значение, представляющее изменение количества игроков с предпоследней синхронизации.</returns>
-        public static int GetPlayersCountLastProgressValue(this GameModel source) =>
-            source.GetPlayersCountActualValue() - source.GameStatistics.GetBeforeLastSynchronizationStatistic().PlayersCount;
-
-        /// <summary>
         /// Получает актуальное значение дохода.
         /// </summary>
         /// <param name="source">Исходная модель игры.</param>

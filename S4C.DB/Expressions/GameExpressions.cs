@@ -11,18 +11,10 @@ namespace C4S.DB.Expressions
     public static class GameExpressions
     {
         /// <summary>
-        /// Выражение для получения акутальной на данный момент оценки игры.
+        /// Выражение для получения актуальной на данный момент оценки игры.
         /// </summary>
         public static Expression<Func<GameModel, double>> LastSynchronizedEvaluationExpression => (GameModel game) =>
             game.GameStatistics.GetLastSynchronizationStatistic()!.Evaluation;
-
-        /// <summary>
-        /// Выражение для получения количества игроков с прогрессом.
-        /// </summary>
-        public static Expression<Func<GameModel, ValueWithProgress<int>>> PlayersCountWithProgressExpression => (GameModel game) =>
-            new ValueWithProgress<int>(
-                game.GetPlayersCountActualValue(),
-                game.GetPlayersCountLastProgressValue());
 
         /// <summary>
         /// Выражение для получения дохода с прогрессом.

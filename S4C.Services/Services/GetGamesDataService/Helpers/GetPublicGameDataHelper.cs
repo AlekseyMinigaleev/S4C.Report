@@ -91,7 +91,6 @@ namespace C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries
             var appId = gameJToken.GetValue<int>("appID");
             var firstPublished = gameJToken.GetValue<int>("firstPublished");
             var evaluation = gameJToken.GetValue<double>("rating");
-            var playersCount = gameJToken.GetValue<int>("playersCount");
             var categoriesNames = gameJToken.GetValue<string[]>("categoriesNames");
             var rating = gameJToken.GetValue<int?>("gqRating");
             var previewURL = gameJToken.GetValue<string>("media", "cover", "prefix-url");
@@ -127,7 +126,6 @@ namespace C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries
                 appId: appId,
                 firstPublished: firstPublished,
                 evaluation: evaluation,
-                playersCount: playersCount,
                 categoriesNames: categoriesNames!,
                 previewURL: $"{previewURL!}{PreviewFormat}",
                 rating: rating);

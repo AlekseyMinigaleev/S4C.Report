@@ -23,11 +23,6 @@ namespace C4S.DB.Models
         public int? Rating { get; set; }
 
         /// <summary>
-        /// Количество игроков
-        /// </summary>
-        public int PlayersCount { get; private set; }
-
-        /// <summary>
         /// Доход
         /// </summary>
         public double? CashIncome { get; private set; }
@@ -49,14 +44,12 @@ namespace C4S.DB.Models
 
         public GameStatisticModel(
             GameModel game,
-            int playersCount,
             DateTime lastSynchroDate,
             double evaluation)
         {
             Id = Guid.NewGuid();
             GameId = game.Id;
             Game = game;
-            PlayersCount = playersCount;
             LastSynchroDate = lastSynchroDate;
             Evaluation = evaluation;
         }
