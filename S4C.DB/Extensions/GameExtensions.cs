@@ -7,30 +7,32 @@ namespace C4S.DB.Extensions
     /// </summary>
     public static class GameExtensions
     {
-        /// <summary>
-        /// Получает актуальное значение дохода.
-        /// </summary>
-        /// <param name="source">Исходная модель игры.</param>
-        /// <remarks>
-        /// Возвращает <see langword="null"/> в случае если у <paramref name="source"/> не установлено поле <see cref="GameModel.PageId"/>
-        /// </remarks>
-        /// <returns>Актуальное значение дохода.</returns>
-        public static double? GetCashIncomeActualValue(this GameModel source) =>
-            source.GameStatistics
-                .Select(x => x.CashIncome)
-                .Sum();
+        /*TODO: ValueWithProgress fix*/
+        ///// <summary>
+        ///// Получает актуальное значение дохода.
+        ///// </summary>
+        ///// <param name="source">Исходная модель игры.</param>
+        ///// <remarks>
+        ///// Возвращает <see langword="null"/> в случае если у <paramref name="source"/> не установлено поле <see cref="GameModel.PageId"/>
+        ///// </remarks>
+        ///// <returns>Актуальное значение дохода.</returns>
+        //public static double? GetCashIncomeActualValue(this GameModel source) =>
+        //    source.GameStatistics
+        //        .Select(x => x.CashIncome)
+        //        .Sum();
 
-        /// <summary>
-        /// Получает последнее добавленное значение к актуальному доходу.
-        /// </summary>
-        /// <param name="source">Исходная модель игры.</param>
-        /// <remarks>
-        /// Возвращает <see langword="null"/> в случае если у <paramref name="source"/> не установлено поле <see cref="GameModel.PageId"/>
-        /// </remarks>
-        /// <returns>Значение, представляющее изменение дохода с предпоследней синхронизации.</returns>
-        public static double? GetCashIncomeLastProgressValue(this GameModel source) =>
-            source.GameStatistics
-                .GetLastSynchronizationStatistic()?.CashIncome;
+        /*TODO: ValueWithProgress fix*/
+        ///// <summary>
+        ///// Получает последнее добавленное значение к актуальному доходу.
+        ///// </summary>
+        ///// <param name="source">Исходная модель игры.</param>
+        ///// <remarks>
+        ///// Возвращает <see langword="null"/> в случае если у <paramref name="source"/> не установлено поле <see cref="GameModel.PageId"/>
+        ///// </remarks>
+        ///// <returns>Значение, представляющее изменение дохода с предпоследней синхронизации.</returns>
+        //public static double? GetCashIncomeLastProgressValue(this GameModel source) =>
+        //    source.GameStatistics
+        //        .GetLastSynchronizationStatistic()?.CashIncome;
 
         /// <summary>
         /// Получает последнюю статистику синхронизации игры.

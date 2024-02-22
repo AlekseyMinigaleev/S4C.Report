@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using C4S.DB;
 using C4S.DB.Models;
+using C4S.DB.ValueObjects;
 using C4S.Services.Services.GetGamesDataService;
 using C4S.Services.Services.GetGamesDataService.Models;
 using C4S.Shared.Extensions;
@@ -161,7 +162,13 @@ namespace C4S.Services.Services.GameSyncService
                         .OrderByDescending(x => x.LastSynchroDate)
                         .First();
 
-                    lastSynchroGameStatistic.SetCashIncome(cashIncome);
+
+                    /*TODO: ValueWithProgress fix*/
+                    var valueWithProgress = cashIncome.HasValue
+                        ? new ValueWithProgress<double>(cashIncome.Value, 0)
+                        : null;
+
+                    lastSynchroGameStatistic.SetCashIncome(valueWithProgress);
                 }
             }
         }

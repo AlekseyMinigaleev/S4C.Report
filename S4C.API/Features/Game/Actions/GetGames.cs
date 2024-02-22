@@ -3,8 +3,8 @@ using AutoMapper.QueryableExtensions;
 using C4S.DB;
 using C4S.DB.Expressions;
 using C4S.DB.Models;
+using C4S.DB.ValueObjects;
 using C4S.Shared.Extensions;
-using C4S.Shared.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
@@ -71,7 +71,8 @@ namespace С4S.API.Features.Game.Actions
                         .Select(x => x.Category.Title)));
 
                 CreateMap<GameModel, CashIncomeViewModel>()
-                  .ForMember(dest => dest.ValueWithProgress, opt => opt.MapFrom(GameExpressions.CashIncomeWithProgressExpression))
+                  /*TODO: ValueWithProgress fix*/
+                  //.ForMember(dest => dest.ValueWithProgress, opt => opt.MapFrom(GameExpressions.CashIncomeWithProgressExpression))
                   .ForMember(dest => dest.Percentage, opt => opt.Ignore());
             }
         }
