@@ -45,10 +45,13 @@ namespace С4S.API.Features.User.Actions
 
         public class QueryValidator : AbstractValidator<Query>
         {
+            private readonly IHttpClientFactory _httpClientFactory;
+
             public QueryValidator(
                 ReportDbContext dbContext,
                 IHttpClientFactory httpClientFactory)
             {
+                _httpClientFactory = httpClientFactory;
                 RuleLevelCascadeMode = CascadeMode.Stop;
                 ClassLevelCascadeMode = CascadeMode.Stop;
 
@@ -67,34 +70,17 @@ namespace С4S.API.Features.User.Actions
                 RuleFor(x => x.DeveloperPageUrl)
                     .Must(developerPageUrl =>
                     {
-                        var keyword = "developer";
-                        var index = developerPageUrl.IndexOf(keyword) + keyword.Length + 1; /*+1 учитывает слеш*/
-
-                        var developerURL = developerPageUrl[..index];
-
-                        var redirDataIndex = developerPageUrl.IndexOf("#redir-data");
-                        string developerIdString;
-                        if (redirDataIndex < 0)
-                            developerIdString = developerPageUrl[index..];
-                        else
-                            developerIdString = developerPageUrl[index..redirDataIndex];
-
-                        var parseResult = int.TryParse(developerIdString, out int developerId);
-
-                        var isValid = developerURL
-                            .StartsWith("https://yandex.ru/games/developer/") && parseResult;
-                        if (!isValid)
+                        var uri = CreateUri(developerPageUrl);
+                        if (uri is null)
                             return false;
 
-                        var httpResponseMessage = HttpUtils
-                            .SendRequestAsync(
-                                 createRequest: () => new HttpRequestMessage(HttpMethod.Get, developerPageUrl),
-                                httpClientFactory: httpClientFactory,
-                                isEnsureSuccessStatusCode: false)
-                        .Result;
-                        isValid = httpResponseMessage.StatusCode != HttpStatusCode.NotFound;
+                        var isValidFormat = ValidateUrlFormat(uri);
+                        if (!isValidFormat)
+                            return false;
 
-                        return isValid;
+                        var isAvailability = ValidateUrlAvailability(uri).Result;
+
+                        return isAvailability;
                     })
                     .WithMessage("Указана не корректная ссылка на страницу разработчика")
                     .WithErrorCode("developerPageUrl");
@@ -104,6 +90,44 @@ namespace С4S.API.Features.User.Actions
                     RuleFor(x => x.RsyaAuthorizationToken)
                         .SetValidator(new RsyaAuthorizationTokenValidator(httpClientFactory)!);
                 });
+            }
+
+            private Uri? CreateUri(string developerPageUrl)
+            {
+                if (Uri.TryCreate(developerPageUrl, UriKind.Absolute, out var uri))
+                    return uri;
+
+                return null;
+            }
+
+            private bool ValidateUrlFormat(Uri uri)
+            {
+                var developerPath = "/games/developer/";
+                if (!uri.AbsolutePath.StartsWith(developerPath)
+                    || uri.Segments.Length < 4)
+                    return false;
+
+                var redirDataIndex = uri.Segments[3].IndexOf("#redir-data");
+
+                string developerIdString;
+                if (redirDataIndex < 0)
+                    developerIdString = uri.Segments[3];
+                else
+                    developerIdString = uri.Segments[3][..redirDataIndex];
+
+                var tryParseResult = int.TryParse(developerIdString, out _);
+
+                return tryParseResult;
+            }
+
+            private async Task<bool> ValidateUrlAvailability(Uri uri)
+            {
+                var response = await HttpUtils.SendRequestAsync(
+                    createRequest: () => new HttpRequestMessage(HttpMethod.Get, uri),
+                    httpClientFactory: _httpClientFactory,
+                    isEnsureSuccessStatusCode: false);
+
+                return response.StatusCode != HttpStatusCode.NotFound;
             }
         }
 
