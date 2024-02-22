@@ -37,7 +37,7 @@
         public int AccessTokenExpiryInMinutes { get; set; }
 
         /// <summary>
-        /// Время жизи токена обновления
+        /// Время жизни токена обновления
         /// </summary>
         public int RefreshTokenExpiryInDays { get; set; }
     }
