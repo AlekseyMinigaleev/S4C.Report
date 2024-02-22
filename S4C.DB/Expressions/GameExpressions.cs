@@ -1,6 +1,6 @@
-﻿using C4S.Common.Models;
-using C4S.DB.Extensions;
+﻿using C4S.DB.Extensions;
 using C4S.DB.Models;
+using C4S.Shared.Models;
 using System.Linq.Expressions;
 
 namespace C4S.DB.Expressions

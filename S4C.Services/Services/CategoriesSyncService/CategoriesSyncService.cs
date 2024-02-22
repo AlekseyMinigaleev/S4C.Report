@@ -1,8 +1,9 @@
 ﻿using AngleSharp;
 using C4S.DB;
 using C4S.DB.Models;
-using C4S.Helpers.Extensions;
-using C4S.Helpers.Logger;
+using C4S.Services.Exceptions;
+using C4S.Shared.Extensions;
+using C4S.Shared.Logger;
 using Microsoft.EntityFrameworkCore;
 
 namespace C4S.Services.Services.CategoriesSyncService
@@ -51,25 +52,33 @@ namespace C4S.Services.Services.CategoriesSyncService
             var incomingCategoryModels = new List<CategoryModel>();
 
             var document = await _browsingContext
-                .OpenAsync(_categoriesURL, cancellationToken);
+                .OpenAsync(_categoriesURL, cancellationToken)
+                ?? throw new Exception(); /*TODO: сделать общую ошибку когда не удается получить доступ к ресурсу.*/
 
+            var categoriesColumnsSelector = ".categories-page__columns";
             var categoriesColumnListArray = document
-                .QuerySelector(".categories-page__columns")?.Children ?? throw new Exception();
+                .QuerySelector(categoriesColumnsSelector)
+                ?.Children 
+                ?? throw new HtmlParsingNullValueException(categoriesColumnsSelector, document);
 
             foreach (var categoryColumn in categoriesColumnListArray)
             {
-                var categoryList = categoryColumn.Children;
+                var categoryListElement = categoryColumn.Children;
 
-                foreach (var category in categoryList)
+                foreach (var categoryListItemElement in categoryListElement)
                 {
-                    /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
-                    var spanElement = category.QuerySelector("span.category-wrapper") ?? throw new Exception();
+                    var categoryElementSelector = "span.category-wrapper";
+                    var categoryElement = categoryListItemElement
+                        .QuerySelector(categoryElementSelector)
+                        ?? throw new HtmlParsingNullValueException(categoryElementSelector, categoryListItemElement);
 
-                    /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
-                    var dataName = spanElement.GetAttribute("data-name") ?? throw new Exception();
+                    var dataNameAttributeName = "data-name";
+                    var dataName = categoryElement.GetAttribute(dataNameAttributeName) 
+                        ?? throw new HtmlParsingNullValueException(dataNameAttributeName, categoryElement);
 
-                    /*TODO: сделать общую ошибку для случая когда с парсинга приходит null*/
-                    var title = spanElement.GetAttribute("title") ?? throw new Exception();
+                    var titleAttributeName = "title";
+                    var title = categoryElement.GetAttribute(titleAttributeName)
+                        ?? throw new HtmlParsingNullValueException(titleAttributeName, categoryElement);
 
                     var categoryModel = new CategoryModel(dataName, title);
                     incomingCategoryModels.Add(categoryModel);

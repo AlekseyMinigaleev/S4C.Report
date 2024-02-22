@@ -1,5 +1,5 @@
-﻿using C4S.Common.Models;
-using C4S.Helpers.ApiHeplers.Controllers;
+﻿using C4S.API.Features;
+using C4S.Shared.Models;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

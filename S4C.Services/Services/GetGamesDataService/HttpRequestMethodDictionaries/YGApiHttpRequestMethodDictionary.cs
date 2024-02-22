@@ -1,9 +1,8 @@
 ﻿using C4S.DB.Models;
-using C4S.Helpers.Extensions;
 using C4S.Services.Services.GetGamesDataService.Enums;
 using C4S.Services.Services.GetGamesDataService.Models;
+using C4S.Shared.Extensions;
 using Newtonsoft.Json;
-using System.Security.Policy;
 using System.Text;
 
 namespace C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries

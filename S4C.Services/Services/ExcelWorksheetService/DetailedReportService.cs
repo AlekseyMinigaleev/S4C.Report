@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using C4S.Common.Models;
 using C4S.DB;
 using C4S.DB.Models;
-using C4S.Helpers.Extensions;
-using C4S.Helpers.Models;
+using C4S.Shared.Models;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Drawing;

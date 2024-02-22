@@ -1,4 +1,4 @@
-﻿namespace C4S.Common.ConfigurationModels
+﻿namespace C4S.Shared.Models
 {
     /// <summary>
     /// Конфигурация JWT токена
@@ -16,7 +16,7 @@
         public string Issuer { get; set; }
 
         /// <summary>
-        /// Аудитория для коотрой предназначен токен
+        /// Аудитория для которой предназначен токен
         /// </summary>
         public string Audience { get; set; }
 
@@ -37,7 +37,7 @@
         public int AccessTokenExpiryInMinutes { get; set; }
 
         /// <summary>
-        /// Время жизи токена обновления
+        /// Время жизни токена обновления
         /// </summary>
         public int RefreshTokenExpiryInDays { get; set; }
     }

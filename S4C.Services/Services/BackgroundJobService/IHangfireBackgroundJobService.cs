@@ -1,6 +1,6 @@
 ﻿using C4S.DB.Models;
 using C4S.DB.Models.Hangfire;
-using C4S.Helpers.Logger;
+using C4S.Shared.Logger;
 
 namespace C4S.Services.Services.BackgroundJobService
 {

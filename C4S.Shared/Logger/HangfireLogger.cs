@@ -1,7 +1,7 @@
 ﻿using Hangfire.Console;
 using Hangfire.Server;
 
-namespace C4S.Helpers.Logger
+namespace C4S.Shared.Logger
 {
     /// <summary>
     /// Логгер в консоль Hangfire
@@ -33,27 +33,15 @@ namespace C4S.Helpers.Logger
         }
 
         ///<inheritdoc/>
-        public override void LogError(string message)
-        {
-            Log(message, LogLevel.Error);
-        }
+        public override void LogError(string message) => Log(message, LogLevel.Error);
 
         ///<inheritdoc/>
-        public override void LogInformation(string message)
-        {
-            Log(message, LogLevel.Information);
-        }
+        public override void LogInformation(string message) => Log(message, LogLevel.Information);
 
         ///<inheritdoc/>
-        public override void LogSuccess(string message)
-        {
-            Log(message, LogLevel.Success);
-        }
+        public override void LogSuccess(string message) => Log(message, LogLevel.Success);
 
         ///<inheritdoc/>
-        public override void LogWarning(string message)
-        {
-            Log(message, LogLevel.Warning);
-        }
+        public override void LogWarning(string message) => Log(message, LogLevel.Warning);
     }
 }

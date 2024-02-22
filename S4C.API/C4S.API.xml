@@ -217,6 +217,18 @@
             https://yandex.ru/dev/partner-statistics/doc/ru/concepts/access
             </summary>
         </member>
+        <member name="T:С4S.API.Helpers.ShemaClassesIdsRenamer">
+            <summary>
+            Переименовыватель id схемык класса
+            </summary>
+        </member>
+        <member name="M:С4S.API.Helpers.ShemaClassesIdsRenamer.Selector(System.Type)">
+            <summary>
+            хз че это
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
         <member name="T:С4S.API.Models.Paginate">
             <summary>
             Параметры для пагинации
@@ -272,6 +284,21 @@
             <summary>
             Добавляет все необходимые сервисы для хранилищ
             </summary>
+        </member>
+        <member name="T:C4S.API.Features.BaseApiController">
+            <summary>
+            Базовый класс для всех контроллеров
+            </summary>
+        </member>
+        <member name="M:C4S.API.Features.BaseApiController.ValidateAndChangeModelStateAsync``1(FluentValidation.IValidator{``0},``0,System.Threading.CancellationToken)">
+            <summary>
+            Выполняет валидацию <paramref name="instance"/>
+            </summary>
+            <remarks>
+            Если объект <paramref name="instance"/> не валидным, метод изменяет состояние модели
+            </remarks>
+            <param name="instance">объект, над которым будет происходит валидация</param>
+            <returns></returns>
         </member>
         <member name="P:C4S.API.Features.Jobs.Actions.GetJobs.ResponseViewModel.Name">
             <summary>

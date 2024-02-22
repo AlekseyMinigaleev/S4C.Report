@@ -1,4 +1,4 @@
-﻿using C4S.Helpers.Logger;
+﻿using C4S.Shared.Logger;
 using Hangfire.Server;
 
 namespace C4S.Services.Services.GameSyncService

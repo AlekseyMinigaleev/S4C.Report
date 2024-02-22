@@ -1,5 +1,4 @@
 ﻿using AngleSharp;
-using C4S.Common.ConfigurationModels;
 using C4S.Services.Services.BackgroundJobService;
 using C4S.Services.Services.CategoriesSyncService;
 using C4S.Services.Services.ExcelWorksheetService;
@@ -8,6 +7,7 @@ using C4S.Services.Services.GetGamesDataService;
 using C4S.Services.Services.GetGamesDataService.Helpers;
 using C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries;
 using C4S.Services.Services.JWTService;
+using C4S.Shared.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;

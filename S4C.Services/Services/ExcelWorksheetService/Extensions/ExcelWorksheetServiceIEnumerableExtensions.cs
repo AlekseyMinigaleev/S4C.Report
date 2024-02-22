@@ -1,6 +1,4 @@
-﻿using C4S.Services.Services.ExcelWorksheetService;
-
-namespace C4S.Services.Extensions
+﻿namespace C4S.Services.Services.ExcelWorksheetService.Extensions
 {
     public static class ExcelWorksheetServiceIEnumerableExtensions
     {

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace C4S.Helpers.Extensions
+namespace C4S.Shared.Extensions
 {
     public static class JTokenExtensions
     {

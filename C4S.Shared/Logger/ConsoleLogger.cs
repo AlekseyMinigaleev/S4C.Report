@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace C4S.Helpers.Logger
+namespace C4S.Shared.Logger
 {
     /// <summary>
     /// Логгер в консоль
@@ -29,31 +29,19 @@ namespace C4S.Helpers.Logger
         }
 
         /// <inheritdoc/>
-        public override void LogError(string message)
-        {
-            _logger.LogError(message);
-        }
+        public override void LogError(string message) => _logger.LogError(message);
 
         /*TODO: проверить*/
 
         /// <inheritdoc/>
-        public override void LogInformation(string message)
-        {
-            _logger.LogInformation(message);
-        }
+        public override void LogInformation(string message) => _logger.LogInformation(message);
 
         /*TODO: проверить*/
 
         /// <inheritdoc/>
-        public override void LogSuccess(string message)
-        {
-            _logger.LogInformation(message);
-        }
+        public override void LogSuccess(string message) => _logger.LogInformation(message);
 
         /// <inheritdoc/>
-        public override void LogWarning(string message)
-        {
-            _logger.LogWarning(message);
-        }
+        public override void LogWarning(string message) => _logger.LogWarning(message);
     }
 }

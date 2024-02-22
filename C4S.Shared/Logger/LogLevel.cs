@@ -1,4 +1,4 @@
-﻿namespace C4S.Helpers.Logger
+﻿namespace C4S.Shared.Logger
 {
     /// <summary>
     /// Перечисление всех возможных уровней логирования, логгера <see cref="BaseLogger"/>

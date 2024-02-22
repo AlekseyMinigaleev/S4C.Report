@@ -1,5 +1,4 @@
 ﻿using C4S.API.Features.Jobs.Actions;
-using C4S.Helpers.ApiHeplers.Controllers;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

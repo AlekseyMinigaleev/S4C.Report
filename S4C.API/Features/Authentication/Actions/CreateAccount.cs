@@ -1,9 +1,9 @@
 ﻿using AngleSharp;
 using C4S.DB;
 using C4S.DB.Models;
-using C4S.Helpers.Logger;
 using C4S.Services.Services.BackgroundJobService;
 using C4S.Services.Services.GameSyncService;
+using C4S.Shared.Logger;
 using FluentValidation;
 using MediatR;
 using System.Text.Json.Serialization;
@@ -83,7 +83,6 @@ namespace С4S.API.Features.Authentication.Actions
                         if (!isValid)
                             return isValid;
 
-                        /*TODO: хранить валидные ссылки в отдельной таблице, и сначала пытаться найти в этой таблице, только потом делать запрос, не парсить а запрос*/
                         var errorPage = browsingContext
                             .OpenAsync(developerPageUrl).Result
                             .QuerySelector(".error-page__title");

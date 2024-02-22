@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace C4S.Helpers.Extensions
+namespace C4S.Shared.Extensions
 {
     public static class EnumExtensions
     {
@@ -20,7 +20,8 @@ namespace C4S.Helpers.Extensions
             if (name != null)
             {
                 var fieldInfo = type.GetField(name);
-                var result = (DisplayAttribute?)Attribute.GetCustomAttribute(fieldInfo!, typeof(DisplayAttribute));
+                var result = (DisplayAttribute?)Attribute
+                    .GetCustomAttribute(fieldInfo!, typeof(DisplayAttribute));
 
                 if (result is not null)
                     name = result.Name;

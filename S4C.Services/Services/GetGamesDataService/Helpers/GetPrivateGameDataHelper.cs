@@ -1,11 +1,11 @@
-﻿using C4S.Common.Models;
-using C4S.DB.Models;
-using C4S.Helpers.Extensions;
+﻿using C4S.Services.Exceptions;
 using C4S.Services.Services.GetGamesDataService.HttpRequestMethodDictionaries;
 using C4S.Services.Services.GetGamesDataService.Models;
+using C4S.Shared.Extensions;
+using C4S.Shared.Models;
+using C4S.Shared.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using S4C.Helpers;
 
 namespace C4S.Services.Services.GetGamesDataService.Helpers
 {
@@ -52,14 +52,15 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
 
             var jObject = JObject.Parse(jsonString);
 
-            var cashIncome = jObject
-                .GetValue<JToken>("data")
-                .GetValue<JToken>("totals")
-                .GetValue<JArray>("2")
+            var cashIncomeJToken = jObject
+                .GetValue<JToken>("data", "totals", "2")
+                ?? throw new JsonPropertyNullValueException(
+                    "data, totals, 2",
+                    jObject);
+
+            var cashIncome = cashIncomeJToken
                 .ToObject<CashIncome[]>()!
                 .Single();
-            /*TODO: сделать общую ошибку для случая когда с ответа от стороннего апи приходит null*/
-
 
             var result = new PrivateGameData { CashIncome = cashIncome?.Value };
 

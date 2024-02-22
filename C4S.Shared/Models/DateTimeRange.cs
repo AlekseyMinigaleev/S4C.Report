@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 
-namespace C4S.Common.Models
+namespace C4S.Shared.Models
 {
     /// <summary>
     /// Временной интервал
