@@ -18,9 +18,15 @@ namespace C4S.DB.Models
         /// </summary>
         public double Evaluation { get; private set; }
 
-        public ValueWithProgress<int>? Rating { get; private set; }
+        /// <summary>
+        /// Рейтинг игры
+        /// </summary>
+        public ValueWithProgress<int>? Rating { get; set; }
 
-        public ValueWithProgress<double>? CashIncome { get; private set; }
+        /// <summary>
+        /// Доход игры
+        /// </summary>
+        public ValueWithProgress<double>? CashIncome { get; set; }
 
         /// <summary>
         /// Дата последней синхронизации с Яндексом
@@ -48,12 +54,6 @@ namespace C4S.DB.Models
             LastSynchroDate = lastSynchroDate;
             Evaluation = evaluation;
         }
-
-        /// <summary>
-        /// Устанавливает указанный <paramref name="cashIncome"/>
-        /// </summary>
-        /// <param name="cashIncome">Доход игры</param>
-        public void SetCashIncome(ValueWithProgress<double>? cashIncome) => CashIncome = cashIncome;
 
         private GameStatisticModel()
         { }

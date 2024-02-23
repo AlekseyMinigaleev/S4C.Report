@@ -101,76 +101,146 @@ namespace C4S.Services.Services.GameSyncService
 
         private async Task EnrichGameModelsAsync(
             GameModel newGameModel,
-            PublicGameData gameInfoModel,
+            PublicGameData publicGameData,
             CancellationToken cancellationToken)
         {
             var authorizationToken = _user.RsyaAuthorizationToken;
 
-            await EnrichCategories(gameInfoModel, newGameModel, cancellationToken);
+            var existGameModel = _existingGameModelsQuery
+                .Include(x => x.GameStatistics)
+                .SingleOrDefault(x => x.AppId == newGameModel.AppId);
+
+            await EnrichCategories(newGameModel, publicGameData, cancellationToken);
+
+            EnrichRating(newGameModel, existGameModel, publicGameData);
 
             if (authorizationToken is not null)
-                await EnrichCashIncomeAsync(newGameModel, cancellationToken);
+                await EnrichCashIncomeAsync(newGameModel, existGameModel, cancellationToken);
+        }
 
-            async Task EnrichCategories(
-                PublicGameData gameInfoModel,
-                GameModel newGameModel,
-                CancellationToken cancellationToken)
-            {
-                var categories = await GetCategoriesAsync(gameInfoModel, cancellationToken);
-                newGameModel.AddCategories(categories);
-
-                async Task<IEnumerable<CategoryModel>> GetCategoriesAsync(
-                PublicGameData incomingGameInfo,
-                CancellationToken cancellationToken)
-                {
-                    var existCategories = _dbContext.Categories;
-
-                    var incomingCategories = incomingGameInfo.CategoriesNames;
-
-                    var categories = await existCategories
-                        .Where(x => incomingCategories
-                            .Contains(x.Name))
-                        .ToListAsync(cancellationToken);
-
-                    return categories;
-                }
-            }
-
-            async Task EnrichCashIncomeAsync(
+        private async Task EnrichCategories(
             GameModel newGameModel,
+            PublicGameData publicGameData,
+            CancellationToken cancellationToken)
+        {
+            var categories = await GetCategoriesAsync(publicGameData, cancellationToken);
+            newGameModel.AddCategories(categories);
+
+            async Task<IEnumerable<CategoryModel>> GetCategoriesAsync(
+            PublicGameData incomingGameInfo,
             CancellationToken cancellationToken)
             {
-                var existGameModel = _existingGameModelsQuery
-                    .Include(x => x.GameStatistics)
-                    .SingleOrDefault(x => x.AppId == newGameModel.AppId);
+                var existCategories = _dbContext.Categories;
 
-                if (existGameModel is not null && existGameModel.PageId.HasValue)
+                var incomingCategories = incomingGameInfo.CategoriesNames;
+
+                var categories = await existCategories
+                    .Where(x => incomingCategories
+                        .Contains(x.Name))
+                    .ToListAsync(cancellationToken);
+
+                return categories;
+            }
+        }
+
+        private async Task EnrichCashIncomeAsync(
+            GameModel newGameModel,
+            GameModel? existGameModel,
+            CancellationToken cancellationToken)
+        {
+            if (existGameModel is null || !existGameModel.PageId.HasValue)
+                return;
+
+            var startDate = newGameModel.PublicationDate;
+            var endDate = DateTime.Now;
+            var period = new DateTimeRange(startDate, endDate);
+
+            var actualCashIncome = (await _getGameDataService
+                .GetPrivateGameDataAsync(
+                    pageId: existGameModel.PageId.Value,
+                    authorization: _user.RsyaAuthorizationToken!,
+                    period: period,
+                    cancellationToken: cancellationToken))
+                .CashIncome;
+
+            var lastSynchroGameStatisticWithCashIncome = existGameModel.GameStatistics
+                .Where(x => x.CashIncome is not null)
+                .OrderByDescending(x => x.LastSynchroDate)
+                .FirstOrDefault();
+
+            ValueWithProgress<double>? cashIncome;
+
+            if (lastSynchroGameStatisticWithCashIncome is null)
+            {
+                if (actualCashIncome.HasValue)
+                    cashIncome = new ValueWithProgress<double>(
+                        actualCashIncome.Value,
+                        actualCashIncome.Value);
+                else
+                    cashIncome = null;
+            }
+            else
+            {
+                if (actualCashIncome.HasValue)
                 {
-                    var startDate = newGameModel.PublicationDate;
-                    var endDate = DateTime.Now;
-                    var period = new DateTimeRange(startDate, endDate);
+                    var progressValue =
+                        actualCashIncome.Value - lastSynchroGameStatisticWithCashIncome.CashIncome!.ActualValue;
 
-                    var cashIncome = (await _getGameDataService
-                        .GetPrivateGameDataAsync(
-                            pageId: existGameModel.PageId.Value,
-                            authorization: _user.RsyaAuthorizationToken!,
-                            period: period,
-                            cancellationToken: cancellationToken))
-                        .CashIncome;
-
-                    var lastSynchroGameStatistic = existGameModel.GameStatistics
-                        .OrderByDescending(x => x.LastSynchroDate)
-                        .First();
-
-
-                    /*TODO: ValueWithProgress fix*/
-                    var valueWithProgress = cashIncome.HasValue
-                        ? new ValueWithProgress<double>(cashIncome.Value, 0)
-                        : null;
-
-                    lastSynchroGameStatistic.SetCashIncome(valueWithProgress);
+                    cashIncome = new ValueWithProgress<double>(
+                        actualCashIncome.Value,
+                        progressValue);
+                }
+                else
+                {
+                    cashIncome = new ValueWithProgress<double>(
+                            0,
+                            0 - lastSynchroGameStatisticWithCashIncome.CashIncome!.ActualValue);
                 }
             }
+
+            newGameModel.GameStatistics
+                .First()
+                .CashIncome = cashIncome;
+        }
+
+        private void EnrichRating(
+            GameModel newGameModel,
+            GameModel? existGameModel,
+            PublicGameData publicGameData)
+        {
+            if (!publicGameData.Rating.HasValue)
+                return;
+
+            ValueWithProgress<int>? rating;
+
+            if (existGameModel is not null)
+            {
+                var lastSynchroGameStatisticWithRating = existGameModel.GameStatistics
+                    .Where(x => x.Rating is not null)
+                    .OrderByDescending(x => x.LastSynchroDate)
+                    .FirstOrDefault();
+
+                if (lastSynchroGameStatisticWithRating is not null)
+                {
+                    rating = new ValueWithProgress<int>(
+                        publicGameData.Rating.Value,
+                        publicGameData.Rating.Value - lastSynchroGameStatisticWithRating.Rating!.ActualValue);
+                }
+                else
+                {
+                    rating = new ValueWithProgress<int>(
+                       publicGameData.Rating.Value,
+                       publicGameData.Rating.Value);
+                }
+            }
+            else
+            {
+                rating = new ValueWithProgress<int>(
+                    publicGameData.Rating.Value,
+                    publicGameData.Rating.Value);
+            }
+
+            newGameModel.GameStatistics.First().Rating = rating;
         }
 
         private async Task UpdateDatabaseAsync(IEnumerable<GameModel> newGameModels, CancellationToken cancellationToken)
