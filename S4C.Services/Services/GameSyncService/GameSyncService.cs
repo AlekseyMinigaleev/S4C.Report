@@ -87,11 +87,7 @@ namespace C4S.Services.Services.GameSyncService
                 newGameModel.GameStatistics = new HashSet<GameStatisticModel>() { newGameStatistic };
                 newGameModel.SetUser(_user);
 
-                var privateGameData = await _getGameDataService
-                    .GetPrivateGameDataAsync(newGameModel, cancellationToken);
-
                 await EnrichByHardCalculatedDataAsync(
-                    privateGameData: privateGameData,
                     publicGameData: publicGameData,
                     gameModelToEnrich: newGameModel,
                     cancellationToken: cancellationToken);
@@ -104,7 +100,6 @@ namespace C4S.Services.Services.GameSyncService
         }
 
         private async Task EnrichByHardCalculatedDataAsync(
-            PrivateGameData privateGameData,
             PublicGameData publicGameData,
             GameModel gameModelToEnrich,
             CancellationToken cancellationToken)
@@ -113,6 +108,9 @@ namespace C4S.Services.Services.GameSyncService
                 .Include(x => x.GameStatistics)
                 .Include(x => x.User)
                 .SingleOrDefault(x => x.AppId == gameModelToEnrich.AppId);
+
+            var privateGameData = await _getGameDataService
+                .GetPrivateGameDataAsync(existGameModel, cancellationToken);
 
             var categories = await _gameModelHardCalculatedDataMapper
                 .ConvertCategories(publicGameData.CategoriesNames, cancellationToken);

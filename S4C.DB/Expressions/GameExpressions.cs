@@ -1,6 +1,6 @@
 ﻿using C4S.DB.Extensions;
 using C4S.DB.Models;
-using C4S.Shared.Models;
+using C4S.DB.ValueObjects;
 using System.Linq.Expressions;
 
 namespace C4S.DB.Expressions
@@ -13,18 +13,17 @@ namespace C4S.DB.Expressions
         /// <summary>
         /// Выражение для получения актуальной на данный момент оценки игры.
         /// </summary>
-        public static Expression<Func<GameModel, double>> LastSynchronizedEvaluationExpression => (GameModel game) =>
+        public static Expression<Func<GameModel, double>> ActualEvaluationExpression => (GameModel game) =>
             game.GameStatistics.GetLastSynchronizationStatistic()!.Evaluation;
 
-        /*TODO: ValueWithProgress fix*/
-        ///// <summary>
-        ///// Выражение для получения дохода с прогрессом.
-        ///// </summary>
-        //public static Expression<Func<GameModel, ValueWithProgress<double?>?>> CashIncomeWithProgressExpression => (GameModel game) =>
-        //   game.User.RsyaAuthorizationToken != null
-        //    ? new ValueWithProgress<double?>(
-        //        game.GetCashIncomeActualValue(),
-        //        game.GetCashIncomeLastProgressValue())
-        //    : null;
+        /// <summary>
+        /// </summary>
+        public static Expression<Func<GameModel, ValueWithProgress<int>?>> ActualRatingExpression => (GameModel game) =>
+            game.GameStatistics.GetLastSynchronizationStatistic().Rating;
+
+        /// <summary>
+        /// </summary>
+        public static Expression<Func<GameModel, ValueWithProgress<double>?>> ActualCashIncomeExpression => (GameModel game) =>
+            game.GameStatistics.GetLastSynchronizationStatistic()!.CashIncome;
     }
 }

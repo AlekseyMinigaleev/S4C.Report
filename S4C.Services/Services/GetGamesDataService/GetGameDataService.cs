@@ -26,10 +26,10 @@ namespace C4S.Services.Services.GetGamesDataService
 
         /// <inheritdoc/>
         public async Task<PrivateGameData> GetPrivateGameDataAsync(
-            GameModel gameModel,
+            GameModel? gameModel,
             CancellationToken cancellationToken)
         {
-            if (gameModel.User.RsyaAuthorizationToken is null || !gameModel.PageId.HasValue)
+            if (gameModel?.User.RsyaAuthorizationToken is null || !gameModel.PageId.HasValue)
                 return new PrivateGameData();
 
             var startDate = gameModel.PublicationDate;

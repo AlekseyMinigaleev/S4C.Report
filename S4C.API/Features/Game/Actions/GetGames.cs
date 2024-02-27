@@ -24,8 +24,8 @@ namespace С4S.API.Features.Game.Actions
             public TotalViewModel Total => new()
             {
                 CashIncome = Games
-                    .Any(x => x.CashIncome.ValueWithProgress is not null)
-                        ? Games.Sum(x => x.CashIncome.ValueWithProgress?.ActualValue)
+                    .Any(x => x.CashIncome?.ValueWithProgress is not null)
+                        ? Games.Sum(x => x.CashIncome?.ValueWithProgress?.ActualValue)
                         : null
             };
         }
@@ -37,7 +37,7 @@ namespace С4S.API.Features.Game.Actions
 
         public class CashIncomeViewModel
         {
-            public ValueWithProgress<double?>? ValueWithProgress { get; set; }
+            public ValueWithProgress<double>? ValueWithProgress { get; set; }
             public double? Percentage { get; set; }
         }
 
@@ -57,7 +57,9 @@ namespace С4S.API.Features.Game.Actions
 
             public string[] Categories { get; set; }
 
-            public CashIncomeViewModel CashIncome { get; set; }
+            public ValueWithProgress<int>? Rating { get; set; }
+
+            public CashIncomeViewModel? CashIncome { get; set; }
         }
 
         public class GameViewModelProfiler : Profile
@@ -65,15 +67,15 @@ namespace С4S.API.Features.Game.Actions
             public GameViewModelProfiler()
             {
                 CreateMap<GameModel, GameViewModel>()
-                    .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(GameExpressions.LastSynchronizedEvaluationExpression))
+                    .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(GameExpressions.ActualEvaluationExpression))
                     .ForMember(dest => dest.CashIncome, opt => opt.MapFrom(src => src))
+                    .ForMember(dest => dest.Rating, opt => opt.MapFrom(GameExpressions.ActualRatingExpression))
                     .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.CategoryGameModels
                         .Select(x => x.Category.Title)));
 
                 CreateMap<GameModel, CashIncomeViewModel>()
-                  /*TODO: ValueWithProgress fix*/
-                  //.ForMember(dest => dest.ValueWithProgress, opt => opt.MapFrom(GameExpressions.CashIncomeWithProgressExpression))
-                  .ForMember(dest => dest.Percentage, opt => opt.Ignore());
+                    .ForMember(dest => dest.ValueWithProgress, opt => opt.MapFrom(GameExpressions.ActualCashIncomeExpression))
+                    .ForMember(dest => dest.Percentage, opt => opt.Ignore());
             }
         }
 
@@ -100,7 +102,7 @@ namespace С4S.API.Features.Game.Actions
                 var userId = _principal.GetUserId();
 
                 var games = await _dbContext.Games
-                    .Include(x => x.User) /*Почему то не подргужает автоматически для получения URL*/
+                    .Include(x => x.User) /*Почему то не подгружает автоматически для получения URL*/
                     .Where(x => x.UserId == userId)
                     .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider)
                     .ToArrayAsync(cancellationToken);
@@ -118,16 +120,10 @@ namespace С4S.API.Features.Game.Actions
             private static void EnrichResponseWithPercentage(ResponseViewModel response)
             {
                 foreach (var game in response.Games)
-                {
-                    /*TODO: делать percentage по рейтингу?*/
-                    if (game.CashIncome.ValueWithProgress is not null
-                        && game.CashIncome.ValueWithProgress.ActualValue is not null)
-                    {
+                    if (game.CashIncome?.ValueWithProgress is not null)
                         game.CashIncome.Percentage = CalculatePercentage(
-                            game.CashIncome.ValueWithProgress.ActualValue.Value,
-                            response.Total.CashIncome!.Value);
-                    }
-                }
+                            game.CashIncome.ValueWithProgress.ActualValue,
+                            response.Total.CashIncome!.Value); /*game.CashIncome?.ValueWithProgress is not null если хоть 1 game имеет значение cashIncome, то total точно not null*/
             }
 
             private static double CalculatePercentage<T>(T value, T total)
