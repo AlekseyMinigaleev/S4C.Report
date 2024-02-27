@@ -3,6 +3,7 @@ using C4S.Services.Services.BackgroundJobService;
 using C4S.Services.Services.CategoriesSyncService;
 using C4S.Services.Services.ExcelWorksheetService;
 using C4S.Services.Services.GameSyncService;
+using C4S.Services.Services.GameSyncService.Helpers;
 using C4S.Services.Services.GetGamesDataService;
 using C4S.Services.Services.GetGamesDataService.Helpers;
 using C4S.Services.Services.GetGamesDataService.RequestMethodDictionaries;
@@ -25,6 +26,7 @@ namespace C4S.Services.Extensions
             services.AddScoped<IGetGameDataService, GetGameDataService>();
             services.AddScoped<GetPrivateGameDataHelper>();
             services.AddScoped<GetAppIdHelper>();
+            services.AddScoped<GameModelHardCalculatedDataConverter>();
             services.AddScoped<GetPublicGameDataHelper>();
             services.AddScoped((provider) =>
             {

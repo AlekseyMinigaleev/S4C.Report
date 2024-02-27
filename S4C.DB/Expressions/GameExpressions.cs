@@ -16,14 +16,15 @@ namespace C4S.DB.Expressions
         public static Expression<Func<GameModel, double>> LastSynchronizedEvaluationExpression => (GameModel game) =>
             game.GameStatistics.GetLastSynchronizationStatistic()!.Evaluation;
 
-        /// <summary>
-        /// Выражение для получения дохода с прогрессом.
-        /// </summary>
-        public static Expression<Func<GameModel, ValueWithProgress<double?>?>> CashIncomeWithProgressExpression => (GameModel game) =>
-           game.User.RsyaAuthorizationToken != null
-            ? new ValueWithProgress<double?>(
-                game.GetCashIncomeActualValue(),
-                game.GetCashIncomeLastProgressValue())
-            : null;
+        /*TODO: ValueWithProgress fix*/
+        ///// <summary>
+        ///// Выражение для получения дохода с прогрессом.
+        ///// </summary>
+        //public static Expression<Func<GameModel, ValueWithProgress<double?>?>> CashIncomeWithProgressExpression => (GameModel game) =>
+        //   game.User.RsyaAuthorizationToken != null
+        //    ? new ValueWithProgress<double?>(
+        //        game.GetCashIncomeActualValue(),
+        //        game.GetCashIncomeLastProgressValue())
+        //    : null;
     }
 }

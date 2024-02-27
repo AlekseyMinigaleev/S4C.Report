@@ -1,6 +1,6 @@
-﻿using C4S.Services.Services.GetGamesDataService.Models;
+﻿using C4S.DB.Models;
+using C4S.Services.Services.GetGamesDataService.Models;
 using C4S.Shared.Logger;
-using C4S.Shared.Models;
 
 namespace C4S.Services.Services.GetGamesDataService
 {
@@ -12,15 +12,11 @@ namespace C4S.Services.Services.GetGamesDataService
         /// <summary>
         /// Получает конфиденциальные данные игры.
         /// </summary>
-        /// <param name="pageId">Идентификатор страницы (pageId) игры.</param>
-        /// <param name="authorization">Токен авторизации для доступа к конфиденциальным данным.</param>
-        /// <param name="period">Период, за который запрашиваются данные.</param>
+        /// <param name="gameModel">игра, содержащая необходимые поля для получения приватных данных</param>
         /// <param name="cancellationToken">Токен отмены задачи.</param>
         /// <returns>Объект <see cref="PrivateGameData"/>, содержащий конфиденциальные данные игры.</returns>
         public Task<PrivateGameData> GetPrivateGameDataAsync(
-            int pageId,
-            string authorization,
-            DateTimeRange period,
+            GameModel gameModel,
             CancellationToken cancellationToken);
 
         /// <summary>

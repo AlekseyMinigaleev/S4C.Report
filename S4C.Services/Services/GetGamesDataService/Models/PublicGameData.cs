@@ -106,6 +106,7 @@ namespace C4S.Services.Services.GetGamesDataService.Models
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
                 .ForMember(dest => dest.LastSynchroDate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.Game, opt => opt.Ignore())
+                .ForMember(dest => dest.Rating, opt => opt.Ignore())
                 .ForMember(dest => dest.GameId, opt => opt.Ignore())
                 .ForMember(dest => dest.CashIncome, opt => opt.Ignore());
         }

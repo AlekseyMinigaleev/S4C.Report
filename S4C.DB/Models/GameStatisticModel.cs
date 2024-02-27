@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using C4S.DB.ValueObjects;
+using System.Linq.Expressions;
 
 namespace C4S.DB.Models
 {
@@ -20,12 +21,12 @@ namespace C4S.DB.Models
         /// <summary>
         /// Рейтинг игры
         /// </summary>
-        public int? Rating { get; set; }
+        public ValueWithProgress<int>? Rating { get; set; }
 
         /// <summary>
-        /// Доход
+        /// Доход игры
         /// </summary>
-        public double? CashIncome { get; private set; }
+        public ValueWithProgress<double>? CashIncome { get; set; }
 
         /// <summary>
         /// Дата последней синхронизации с Яндексом
@@ -53,12 +54,6 @@ namespace C4S.DB.Models
             LastSynchroDate = lastSynchroDate;
             Evaluation = evaluation;
         }
-
-        /// <summary>
-        /// Устанавливает указанный <paramref name="cashIncome"/>
-        /// </summary>
-        /// <param name="cashIncome">Доход игры</param>
-        public void SetCashIncome(double? cashIncome) => CashIncome = cashIncome;
 
         private GameStatisticModel()
         { }

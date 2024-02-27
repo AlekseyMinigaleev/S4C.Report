@@ -10,6 +10,24 @@ namespace C4S.DB.ModelConfigurations
         {
             builder.ToTable("GameStatistic")
                 .HasKey(x => x.Id);
+
+            builder.OwnsOne(e => e.CashIncome, progress =>
+            {
+                progress.Property(p => p.ActualValue)
+                    .HasColumnName("CashIncomeActual");
+
+                progress.Property(p => p.ProgressValue)
+                    .HasColumnName("CashIncomeProgress");
+            });
+
+            builder.OwnsOne(e => e.Rating, progress =>
+            {
+                progress.Property(p => p.ActualValue)
+                    .HasColumnName("RatingActual");
+
+                progress.Property(p => p.ProgressValue)
+                    .HasColumnName("RatingProgress");
+            });
         }
     }
 }
