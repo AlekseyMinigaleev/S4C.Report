@@ -22,14 +22,13 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
         }
 
         /// <summary>
-        /// Получает <see cref="PrivateGameData"/> игры.
+        /// Получает доход игры.
         /// </summary>
         /// <param name="pageId">Идентификатор страницы игры.</param>
         /// <param name="authorization">Токен авторизации для доступа к конфиденциальным данным.</param>
         /// <param name="period">Период, за который запрашиваются данные.</param>
         /// <param name="cancellationToken">Токен отмены задачи.</param>
-        /// <returns>Объект <see cref="PrivateGameData"/>, содержащий конфиденциальные данные игры.</returns>
-        public async Task<PrivateGameData> GetPrivateGameDataAsync(
+        public async Task<double?> GetCashIncomeAsync(
             int pageId,
             string authorization,
             DateTimeRange period,
@@ -62,9 +61,7 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
                 .ToObject<CashIncome[]>()!
                 .Single();
 
-            var result = new PrivateGameData { CashIncome = cashIncome?.Value };
-
-            return result;
+            return cashIncome.Value;
         }
 
         private class CashIncome

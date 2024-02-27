@@ -1,5 +1,5 @@
 ﻿using C4S.DB;
-using C4S.Services.Services.GetGamesDataService;
+using C4S.Services.Services.GetGamesDataService.Helpers;
 using C4S.Shared.Models;
 using FluentValidation;
 using MediatR;
@@ -114,16 +114,16 @@ namespace С4S.API.Features.Game.Actions
         public class Handler : IRequestHandler<Command, ViewModel[]>
         {
             private readonly ReportDbContext _dbContext;
-            private readonly IGetGameDataService _getGameDataService;
+            private readonly GetPrivateGameDataHelper _getPrivateGameDataHelper;
             private readonly IPrincipal _principal;
 
             public Handler(
                 ReportDbContext dbContext,
-                IGetGameDataService getGameDataService,
+                GetPrivateGameDataHelper getPrivateGameDataHelper,
                 IPrincipal principal)
             {
                 _dbContext = dbContext;
-                _getGameDataService = getGameDataService;
+                _getPrivateGameDataHelper = getPrivateGameDataHelper;
                 _principal = principal;
             }
 
@@ -142,14 +142,14 @@ namespace С4S.API.Features.Game.Actions
                     if (body.PageId.HasValue)
                     {
                         /*TODO: возможно нужно при наличии result, записывать его в бд*/
-                        var result = await _getGameDataService
-                            .GetPrivateGameDataAsync(
+                        var result = await _getPrivateGameDataHelper
+                            .GetCashIncomeAsync(
                                 pageId: body.PageId.Value,
                                 authorization: rsyaAuthorizationToken!,
                                 period: period,
                                 cancellationToken: cancellationToken);
 
-                        isSuccessfullySet = result.CashIncome.HasValue;
+                        isSuccessfullySet = result.HasValue;
 
                         if (isSuccessfullySet)
                             (await _dbContext.Games

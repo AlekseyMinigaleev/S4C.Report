@@ -15,7 +15,7 @@ namespace C4S.Services.Services.GameSyncService
     public class GameSyncService : IGameSyncService
     {
         private readonly ReportDbContext _dbContext;
-        private readonly GameModelEnricher _gameModelEnricher;
+        private readonly GameModelHardCalculatedDataConverter _gameModelHardCalculatedDataMapper;
         private readonly IGetGameDataService _getGameDataService;
         private readonly IMapper _mapper;
 
@@ -25,13 +25,13 @@ namespace C4S.Services.Services.GameSyncService
 
         public GameSyncService(
             ReportDbContext dbContext,
-            GameModelEnricher gameModelEnricher,
+            GameModelHardCalculatedDataConverter gameModelHardCalculatedDataMapper,
             IGetGameDataService getGameDataService,
             IMapper mapper)
         {
             _dbContext = dbContext;
+            _gameModelHardCalculatedDataMapper = gameModelHardCalculatedDataMapper;
             _getGameDataService = getGameDataService;
-            _gameModelEnricher = gameModelEnricher;
             _mapper = mapper;
         }
 
@@ -61,10 +61,21 @@ namespace C4S.Services.Services.GameSyncService
                 .Where(x => x.UserId == _user.Id);
 
             _logger.LogInformation("Начат процесс получения данных по всем играм");
+            var newGameModels = await GetGameModelToSynchroAsync(cancellationToken);
+            _logger.LogSuccess("процесс получения данных по всем играм завершен");
+
+            _logger.LogInformation("Сохранение данных в бд");
+            await UpdateDatabaseAsync(newGameModels, cancellationToken);
+            _logger.LogSuccess("Данные успешно сохранены");
+        }
+
+        private async Task<IEnumerable<GameModel>> GetGameModelToSynchroAsync(CancellationToken cancellationToken)
+        {
             var publicGamesData = await _getGameDataService.GetPublicGameDataAsync(
-                _user.DeveloperPageUrl,
+               _user.DeveloperPageUrl,
                 _logger,
-                cancellationToken);
+               cancellationToken);
+
             _logger.LogInformation("Обработка полученных данных");
 
             var newGameModels = new List<GameModel>();
@@ -72,24 +83,49 @@ namespace C4S.Services.Services.GameSyncService
             {
                 var newGameModel = _mapper.Map<PublicGameData, GameModel>(publicGameData);
                 var newGameStatistic = _mapper.Map<PublicGameData, GameStatisticModel>(publicGameData);
-                newGameModel.SetUser(_user);
 
                 newGameModel.GameStatistics = new HashSet<GameStatisticModel>() { newGameStatistic };
+                newGameModel.SetUser(_user);
 
-                await _gameModelEnricher.EnrichGameModelsAsync(
-                    gameModelToEnrich: newGameModel,
+                var privateGameData = await _getGameDataService
+                    .GetPrivateGameDataAsync(newGameModel, cancellationToken);
+
+                await EnrichByHardCalculatedDataAsync(
+                    privateGameData: privateGameData,
                     publicGameData: publicGameData,
+                    gameModelToEnrich: newGameModel,
                     cancellationToken: cancellationToken);
 
                 newGameModels.Add(newGameModel);
             }
             _logger.LogSuccess("Данные успешно обработаны");
 
-            _logger.LogInformation("Сохранение данных в бд");
-            await UpdateDatabaseAsync(newGameModels, cancellationToken);
-            _logger.LogSuccess("Данные успешно сохранены");
+            return newGameModels;
+        }
 
-            _logger.LogInformation("Процесс получения данных по всем играм, успешно завершен");
+        private async Task EnrichByHardCalculatedDataAsync(
+            PrivateGameData privateGameData,
+            PublicGameData publicGameData,
+            GameModel gameModelToEnrich,
+            CancellationToken cancellationToken)
+        {
+            var existGameModel = _existingGameModelsQuery
+                .Include(x => x.GameStatistics)
+                .Include(x => x.User)
+                .SingleOrDefault(x => x.AppId == gameModelToEnrich.AppId);
+
+            var categories = await _gameModelHardCalculatedDataMapper
+                .ConvertCategories(publicGameData.CategoriesNames, cancellationToken);
+
+            var rating = _gameModelHardCalculatedDataMapper
+                .ConvertRating(existGameModel, publicGameData.Rating);
+
+            var cashIncome = _gameModelHardCalculatedDataMapper
+                    .ConvertCashIncome(privateGameData.CashIncome, existGameModel?.GameStatistics);
+
+            gameModelToEnrich.AddCategories(categories);
+            gameModelToEnrich.GameStatistics.First().Rating = rating;
+            gameModelToEnrich.GameStatistics.First().CashIncome = cashIncome;
         }
 
         private UserModel GetUser(Guid userId)

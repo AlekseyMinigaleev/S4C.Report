@@ -26,7 +26,7 @@ namespace C4S.Services.Extensions
             services.AddScoped<IGetGameDataService, GetGameDataService>();
             services.AddScoped<GetPrivateGameDataHelper>();
             services.AddScoped<GetAppIdHelper>();
-            services.AddScoped<GameModelEnricher>();
+            services.AddScoped<GameModelHardCalculatedDataConverter>();
             services.AddScoped<GetPublicGameDataHelper>();
             services.AddScoped((provider) =>
             {
