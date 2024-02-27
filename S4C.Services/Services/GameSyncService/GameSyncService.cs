@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using C4S.DB;
 using C4S.DB.Models;
-using C4S.DB.ValueObjects;
+using C4S.Services.Services.GameSyncService.Helpers;
 using C4S.Services.Services.GetGamesDataService;
 using C4S.Services.Services.GetGamesDataService.Models;
 using C4S.Shared.Extensions;
 using C4S.Shared.Logger;
-using C4S.Shared.Models;
 using Hangfire.Server;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,19 +15,23 @@ namespace C4S.Services.Services.GameSyncService
     public class GameSyncService : IGameSyncService
     {
         private readonly ReportDbContext _dbContext;
+        private readonly GameModelEnricher _gameModelEnricher;
         private readonly IGetGameDataService _getGameDataService;
         private readonly IMapper _mapper;
+
         private BaseLogger _logger;
         private UserModel _user;
         private IQueryable<GameModel> _existingGameModelsQuery;
 
         public GameSyncService(
             ReportDbContext dbContext,
+            GameModelEnricher gameModelEnricher,
             IGetGameDataService getGameDataService,
             IMapper mapper)
         {
             _dbContext = dbContext;
             _getGameDataService = getGameDataService;
+            _gameModelEnricher = gameModelEnricher;
             _mapper = mapper;
         }
 
@@ -69,13 +72,14 @@ namespace C4S.Services.Services.GameSyncService
             {
                 var newGameModel = _mapper.Map<PublicGameData, GameModel>(publicGameData);
                 var newGameStatistic = _mapper.Map<PublicGameData, GameStatisticModel>(publicGameData);
+                newGameModel.SetUser(_user);
 
                 newGameModel.GameStatistics = new HashSet<GameStatisticModel>() { newGameStatistic };
 
-                await EnrichGameModelsAsync(
-                    newGameModel,
-                    publicGameData,
-                    cancellationToken);
+                await _gameModelEnricher.EnrichGameModelsAsync(
+                    gameModelToEnrich: newGameModel,
+                    publicGameData: publicGameData,
+                    cancellationToken: cancellationToken);
 
                 newGameModels.Add(newGameModel);
             }
@@ -97,150 +101,6 @@ namespace C4S.Services.Services.GameSyncService
                 throw new ArgumentNullException($"{nameof(user)} Пользователь с указанным Id не был найден.");
 
             return user;
-        }
-
-        private async Task EnrichGameModelsAsync(
-            GameModel newGameModel,
-            PublicGameData publicGameData,
-            CancellationToken cancellationToken)
-        {
-            var authorizationToken = _user.RsyaAuthorizationToken;
-
-            var existGameModel = _existingGameModelsQuery
-                .Include(x => x.GameStatistics)
-                .SingleOrDefault(x => x.AppId == newGameModel.AppId);
-
-            await EnrichCategories(newGameModel, publicGameData, cancellationToken);
-
-            EnrichRating(newGameModel, existGameModel, publicGameData);
-
-            if (authorizationToken is not null)
-                await EnrichCashIncomeAsync(newGameModel, existGameModel, cancellationToken);
-        }
-
-        private async Task EnrichCategories(
-            GameModel newGameModel,
-            PublicGameData publicGameData,
-            CancellationToken cancellationToken)
-        {
-            var categories = await GetCategoriesAsync(publicGameData, cancellationToken);
-            newGameModel.AddCategories(categories);
-
-            async Task<IEnumerable<CategoryModel>> GetCategoriesAsync(
-            PublicGameData incomingGameInfo,
-            CancellationToken cancellationToken)
-            {
-                var existCategories = _dbContext.Categories;
-
-                var incomingCategories = incomingGameInfo.CategoriesNames;
-
-                var categories = await existCategories
-                    .Where(x => incomingCategories
-                        .Contains(x.Name))
-                    .ToListAsync(cancellationToken);
-
-                return categories;
-            }
-        }
-
-        private async Task EnrichCashIncomeAsync(
-            GameModel newGameModel,
-            GameModel? existGameModel,
-            CancellationToken cancellationToken)
-        {
-            if (existGameModel is null || !existGameModel.PageId.HasValue)
-                return;
-
-            var startDate = newGameModel.PublicationDate;
-            var endDate = DateTime.Now;
-            var period = new DateTimeRange(startDate, endDate);
-
-            var actualCashIncome = (await _getGameDataService
-                .GetPrivateGameDataAsync(
-                    pageId: existGameModel.PageId.Value,
-                    authorization: _user.RsyaAuthorizationToken!,
-                    period: period,
-                    cancellationToken: cancellationToken))
-                .CashIncome;
-
-            var lastSynchroGameStatisticWithCashIncome = existGameModel.GameStatistics
-                .Where(x => x.CashIncome is not null)
-                .OrderByDescending(x => x.LastSynchroDate)
-                .FirstOrDefault();
-
-            ValueWithProgress<double>? cashIncome;
-
-            if (lastSynchroGameStatisticWithCashIncome is null)
-            {
-                if (actualCashIncome.HasValue)
-                    cashIncome = new ValueWithProgress<double>(
-                        actualCashIncome.Value,
-                        actualCashIncome.Value);
-                else
-                    cashIncome = null;
-            }
-            else
-            {
-                if (actualCashIncome.HasValue)
-                {
-                    var progressValue =
-                        actualCashIncome.Value - lastSynchroGameStatisticWithCashIncome.CashIncome!.ActualValue;
-
-                    cashIncome = new ValueWithProgress<double>(
-                        actualCashIncome.Value,
-                        progressValue);
-                }
-                else
-                {
-                    cashIncome = new ValueWithProgress<double>(
-                            0,
-                            0 - lastSynchroGameStatisticWithCashIncome.CashIncome!.ActualValue);
-                }
-            }
-
-            newGameModel.GameStatistics
-                .First()
-                .CashIncome = cashIncome;
-        }
-
-        private void EnrichRating(
-            GameModel newGameModel,
-            GameModel? existGameModel,
-            PublicGameData publicGameData)
-        {
-            if (!publicGameData.Rating.HasValue)
-                return;
-
-            ValueWithProgress<int>? rating;
-
-            if (existGameModel is not null)
-            {
-                var lastSynchroGameStatisticWithRating = existGameModel.GameStatistics
-                    .Where(x => x.Rating is not null)
-                    .OrderByDescending(x => x.LastSynchroDate)
-                    .FirstOrDefault();
-
-                if (lastSynchroGameStatisticWithRating is not null)
-                {
-                    rating = new ValueWithProgress<int>(
-                        publicGameData.Rating.Value,
-                        publicGameData.Rating.Value - lastSynchroGameStatisticWithRating.Rating!.ActualValue);
-                }
-                else
-                {
-                    rating = new ValueWithProgress<int>(
-                       publicGameData.Rating.Value,
-                       publicGameData.Rating.Value);
-                }
-            }
-            else
-            {
-                rating = new ValueWithProgress<int>(
-                    publicGameData.Rating.Value,
-                    publicGameData.Rating.Value);
-            }
-
-            newGameModel.GameStatistics.First().Rating = rating;
         }
 
         private async Task UpdateDatabaseAsync(IEnumerable<GameModel> newGameModels, CancellationToken cancellationToken)
@@ -280,8 +140,6 @@ namespace C4S.Services.Services.GameSyncService
             {
                 var gameModelsToAdd = newGameModels
                    .GetItemsNotInSecondCollection(existingGameModels);
-
-                gameModelsToAdd.ToList().ForEach(x => x.UserId = _user.Id);
 
                 _dbContext.Games.AddRange(gameModelsToAdd);
                 _logger.LogInformation($"На добавление помечено {gameModelsToAdd.Count()} игр");

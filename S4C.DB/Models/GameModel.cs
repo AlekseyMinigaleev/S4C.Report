@@ -58,7 +58,7 @@ namespace C4S.DB.Models
         /// <summary>
         /// FK <see cref="UserModel"/>
         /// </summary>
-        public Guid UserId { get; set; }
+        public Guid UserId { get; private set; }
 
         /// <summary>
         /// Список записей статистики
@@ -165,7 +165,15 @@ namespace C4S.DB.Models
         /// <param name="isArchived">Флаг указывающий, архивирована ли игра</param>
         public void SetIsArchived(bool isArchived) => IsArchived = isArchived;
 
-        
+        /// <summary>
+        /// Устанавливает поля пользователя, которому принадлежит игра
+        /// </summary>
+        /// <param name="user">пользователь, которому принадлежит игра</param>
+        public void SetUser(UserModel user)
+        {
+            User = user;
+            UserId = user.Id;
+        }
 
         /// <inheritdoc/>
         public override bool Equals(object obj)
