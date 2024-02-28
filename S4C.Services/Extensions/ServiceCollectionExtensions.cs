@@ -54,8 +54,11 @@ namespace C4S.Services.Extensions
             {
                 var chromeOptions = new ChromeOptions();
 
-                chromeOptions.AddArgument("--disable-infobars");
-                chromeOptions.AddArgument("--headless");
+                chromeOptions.AddArgument("disable-infobars");
+                chromeOptions.AddArgument("disable-extensions");
+                chromeOptions.AddArgument("disable-notifications");
+                chromeOptions.AddArgument("headless");
+                chromeOptions.AddArgument("log-level=3");
                 chromeOptions.AddArgument("--lang=ru");
 
                 var driver = new ChromeDriver(chromeOptions);
