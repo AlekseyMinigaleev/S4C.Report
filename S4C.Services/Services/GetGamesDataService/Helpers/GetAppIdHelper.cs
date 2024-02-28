@@ -1,24 +1,32 @@
-﻿using AngleSharp;
-using AngleSharp.Dom;
-using AngleSharp.Html.Dom;
-using C4S.Services.Services.GetGamesDataService.Models;
+﻿using C4S.Services.Services.GetGamesDataService.Models;
 using C4S.Shared.Logger;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 
 namespace C4S.Services.Services.GetGamesDataService.Helpers
-{   
-    /*TODO: fix excepetion*/
+{
     /// <summary>
     /// Вспомогательный класс для получения идентификаторов приложений (<see cref="PublicGameData.AppId"/>) игр из веб-страницы разработчика.
     /// </summary>
     public class GetAppIdHelper
     {
-        private readonly IBrowsingContext _browsingContext;
+        private readonly IWebDriver _driver;
         private string _developerPageUrl;
 
-        public GetAppIdHelper(
-            IBrowsingContext browsingContext)
+        private const string DOCUMENT_STATE_CHECK_READY_SCRIPT = "return document.readyState";
+        private const string DOCUMENT_READY_STATE = "complete";
+        private const string PAGE_HEIGHT_FETCH_SCRIPT = 
+            "return Math.max(" +
+            " document.body.scrollHeight," +
+            " document.body.offsetHeight," +
+            " document.documentElement.clientHeight," +
+            " document.documentElement.scrollHeight," +
+            " document.documentElement.offsetHeight);";
+        private const string PAGE_SCROLL_SCRIPT = "window.scrollTo(0, document.body.scrollHeight);";
+
+        public GetAppIdHelper(IWebDriver driver)
         {
-            _browsingContext = browsingContext;
+            _driver = driver;
         }
 
         /// <summary>
@@ -26,68 +34,87 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
         /// </summary>
         /// <param name="developerPageUrl">URL веб-страницы разработчика.</param>
         /// <param name="logger">Экземпляр логгера для записи информационных сообщений.</param>
-        /// <param name="cancellationToken">Токен отмены задачи.</param>
         /// <returns>Массив целочисленных значений, представляющих <see cref="PublicGameData.AppId"/> игр.</returns>
-        public async Task<int[]> GetAppIdsAsync(
+        public int[] GetAppIdsAsync(
             string developerPageUrl,
-            BaseLogger logger,
-            CancellationToken cancellationToken = default)
+            BaseLogger logger)
         {
             _developerPageUrl = developerPageUrl;
 
             logger.LogInformation("Начат процесс получения AppId игр");
 
-            logger.LogInformation("Получение игр как html элементов");
-            var gamesHtmlCollection = await GetGamesAsHtmlElementsAsync(
-                cancellationToken);
-            logger.LogSuccess($"Успешно получено {gamesHtmlCollection.Count()} элементов");
+            logger.LogInformation("Получение url всех игр со страницы разработчика");
+            var gameURLs = GetGamesURLs();
+            logger.LogSuccess($"Успешно получено {gameURLs.Count()} url игр");
 
-            logger.LogInformation("Получения id из html элементов");
-            var gameIds = new int[gamesHtmlCollection.Length];
-            for (int i = 0; i < gamesHtmlCollection.Length; i++)
+            logger.LogInformation("Получения id из url ир");
+            var gameIds = new List<int>();
+            foreach (var gameURL in gameURLs)
             {
-                var id = GetGameId(gamesHtmlCollection[i]);
-                gameIds[i] = id;
+                var id = GetGameIdFromUrl(gameURL);
+                gameIds.Add(id);
             }
-            logger.LogSuccess($"Успешно получено {gameIds.Length} id");
+            logger.LogSuccess($"Успешно получено {gameIds.Count} id");
 
             logger.LogSuccess("Процесс получения AppId игр успешно завершен");
-            return gameIds;
+            return gameIds.ToArray();
         }
 
-        private int GetGameId(IElement element)
+        private IEnumerable<string> GetGamesURLs()
         {
-            var gameUlrSelector = ".game-url";
-            var gameUrlElement = element
-                .QuerySelector(gameUlrSelector) as IHtmlAnchorElement
-                ?? throw new Exception($"На странице {_developerPageUrl} нет игры");
-            /*TODO: Exception*/
+            _driver
+                .Navigate()
+                .GoToUrl(_developerPageUrl);
 
-            var path = gameUrlElement!.PathName;
+            WaitForPageLoad(_driver);
 
-            var gameIdString = GetIdAsString(path);
+            ScrollToBottom(_driver);
 
-            var tryParseResult = int.TryParse(gameIdString, out var gameId);
+            var gameURLs = _driver
+                .FindElements(By.CssSelector(".grid-list"))
+                .SelectMany(x => x
+                    .FindElements(By.CssSelector(".game-url"))
+                    .Where(x => x.TagName == "a")
+                    .Select(x => x.GetAttribute("href")))
+                .Distinct();
 
-            if (!tryParseResult)
+            return gameURLs;
+        }
+
+        private static void WaitForPageLoad(IWebDriver driver) => 
+            new WebDriverWait(driver, TimeSpan.FromSeconds(10))
+                .Until(driver => ((IJavaScriptExecutor)driver)
+                    .ExecuteScript(DOCUMENT_STATE_CHECK_READY_SCRIPT).Equals(DOCUMENT_READY_STATE));
+
+        private static void ScrollToBottom(IWebDriver driver)
+        {
+            var jsDriver = (IJavaScriptExecutor)driver;
+            long lastHeight = 0;
+            while (true)
+            {
+                jsDriver.ExecuteScript(PAGE_SCROLL_SCRIPT);
+
+                var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                try
+                {
+                    wait.Until(driver => (long)jsDriver.ExecuteScript(PAGE_HEIGHT_FETCH_SCRIPT) != lastHeight);
+                    lastHeight = (long)jsDriver.ExecuteScript(PAGE_HEIGHT_FETCH_SCRIPT);
+                }
+                catch (WebDriverTimeoutException)
+                {
+                    break;
+                }
+            }
+        }
+
+        private static int GetGameIdFromUrl(string url)
+        {
+            var gameIdString = GetIdAsString(url);
+
+            if (!int.TryParse(gameIdString, out var gameId))
                 throw new FormatException($"не удалось преобразовать id - {gameIdString} в int");
+
             return gameId;
-        }
-
-        private async Task<IHtmlCollection<IElement>> GetGamesAsHtmlElementsAsync(
-            CancellationToken cancellationToken = default)
-        {
-            var document = await _browsingContext
-                .OpenAsync(_developerPageUrl, cancellationToken);
-
-            var gridList = document
-                .QuerySelector(".grid-list")
-                ?? throw new Exception($"На странице {_developerPageUrl} нет игр"); /*TODO: Exception*/
-            
-
-            var children = gridList.Children;
-
-            return children;
         }
 
         private static string GetIdAsString(string path)

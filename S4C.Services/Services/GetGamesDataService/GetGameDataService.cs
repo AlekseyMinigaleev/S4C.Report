@@ -54,10 +54,9 @@ namespace C4S.Services.Services.GetGamesDataService
             BaseLogger logger,
             CancellationToken cancellationToken)
         {
-            var appIds = await _getAppIdHelper.GetAppIdsAsync(
+            var appIds = _getAppIdHelper.GetAppIdsAsync(
                 developerPageUrl,
-                logger,
-                cancellationToken);
+                logger);
 
             var publicGameData = await _getPublicGameDataHelper
                 .GetGamesInfoAsync(

@@ -11,6 +11,8 @@ using C4S.Services.Services.JWTService;
 using C4S.Shared.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace C4S.Services.Extensions
@@ -46,6 +48,19 @@ namespace C4S.Services.Extensions
                 var service = new JwtServise(jwtConfig.Value);
 
                 return service;
+            });
+
+            services.AddSingleton<IWebDriver>(provider =>
+            {
+                var chromeOptions = new ChromeOptions();
+
+                chromeOptions.AddArgument("--disable-infobars");
+                chromeOptions.AddArgument("--headless");
+                chromeOptions.AddArgument("--lang=ru");
+
+                var driver = new ChromeDriver(chromeOptions);
+
+                return driver;
             });
         }
     }
