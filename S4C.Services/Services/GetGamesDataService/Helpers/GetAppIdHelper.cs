@@ -15,13 +15,15 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
 
         private const string DOCUMENT_STATE_CHECK_READY_SCRIPT = "return document.readyState";
         private const string DOCUMENT_READY_STATE = "complete";
-        private const string PAGE_HEIGHT_FETCH_SCRIPT = 
+
+        private const string PAGE_HEIGHT_FETCH_SCRIPT =
             "return Math.max(" +
             " document.body.scrollHeight," +
             " document.body.offsetHeight," +
             " document.documentElement.clientHeight," +
             " document.documentElement.scrollHeight," +
             " document.documentElement.offsetHeight);";
+
         private const string PAGE_SCROLL_SCRIPT = "window.scrollTo(0, document.body.scrollHeight);";
 
         public GetAppIdHelper(IWebDriver driver)
@@ -57,14 +59,15 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
             logger.LogSuccess($"Успешно получено {gameIds.Count} id");
 
             logger.LogSuccess("Процесс получения AppId игр успешно завершен");
+
             return gameIds.ToArray();
         }
 
         private IEnumerable<string> GetGamesURLs()
         {
             _driver
-                .Navigate()
-                .GoToUrl(_developerPageUrl);
+               .Navigate()
+               .GoToUrl(_developerPageUrl);
 
             WaitForPageLoad(_driver);
 
@@ -81,7 +84,7 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
             return gameURLs;
         }
 
-        private static void WaitForPageLoad(IWebDriver driver) => 
+        private static void WaitForPageLoad(IWebDriver driver) =>
             new WebDriverWait(driver, TimeSpan.FromSeconds(10))
                 .Until(driver => ((IJavaScriptExecutor)driver)
                     .ExecuteScript(DOCUMENT_STATE_CHECK_READY_SCRIPT).Equals(DOCUMENT_READY_STATE));

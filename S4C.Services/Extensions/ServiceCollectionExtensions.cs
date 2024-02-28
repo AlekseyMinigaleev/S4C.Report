@@ -14,6 +14,8 @@ using Microsoft.Extensions.Options;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using WebDriverManager;
+using WebDriverManager.DriverConfigs.Impl;
 
 namespace C4S.Services.Extensions
 {
@@ -52,6 +54,7 @@ namespace C4S.Services.Extensions
 
             services.AddSingleton<IWebDriver>(provider =>
             {
+                new DriverManager().SetUpDriver(new ChromeConfig());
                 var chromeOptions = new ChromeOptions();
 
                 chromeOptions.AddArgument("disable-infobars");
