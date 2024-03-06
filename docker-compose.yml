@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  4s.api:
+    image: ${DOCKER_REGISTRY-}4sapi
+    build:
+      context: .
+      dockerfile: S4C.API/Dockerfile
