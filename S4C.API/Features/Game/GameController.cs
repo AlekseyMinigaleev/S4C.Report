@@ -52,9 +52,9 @@ namespace С4S.API.Features.Game
         [Authorize]
         [HttpGet("get-games")]
         public async Task<ActionResult> GetGamesAsync(
+            [FromQuery] GetGames.Query query,
             CancellationToken cancellationToken)
         {
-            var query = new GetGames.Query();
             var result = await Mediator.Send(query, cancellationToken);
             return Ok(result);
         }

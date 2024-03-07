@@ -9,36 +9,46 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Security.Principal;
+using С4S.API.Extensions;
+using С4S.API.Models;
 
 namespace С4S.API.Features.Game.Actions
 {
     public class GetGames
     {
         public class Query : IRequest<ResponseViewModel>
-        { }
+        {
+            public Paginate Paginate { get; set; }
+
+            public Sort Sort { get; set; }
+        }
 
         public class ResponseViewModel
         {
             public GameViewModel[] Games { get; set; }
 
-            public TotalViewModel Total => new()
-            {
-                CashIncome = Games
-                    .Any(x => x.CashIncome?.ValueWithProgress is not null)
-                        ? Games.Sum(x => x.CashIncome?.ValueWithProgress?.ActualValue)
-                        : null
-            };
+            public TotalViewModel Total { get; set; }
         }
 
         public class TotalViewModel
         {
             public double? CashIncome { get; set; }
+            public int Count { get; set; }
         }
 
-        public class CashIncomeViewModel
+        public class CashIncomeViewModel : IComparable<CashIncomeViewModel>
         {
             public ValueWithProgress<double>? ValueWithProgress { get; set; }
             public double? Percentage { get; set; }
+
+            public int CompareTo(CashIncomeViewModel? obj)
+            {
+                if (obj is null)
+                    return 1;
+
+                return Comparer<ValueWithProgress<double>>.Default
+                    .Compare(ValueWithProgress, obj.ValueWithProgress);
+            }
         }
 
         public class GameViewModel
@@ -101,29 +111,45 @@ namespace С4S.API.Features.Game.Actions
             {
                 var userId = _principal.GetUserId();
 
-                var games = await _dbContext.Games
+                /*TODO: оптимизировать запрос*/
+                var allGames = await _dbContext.Games
                     .Include(x => x.User) /*Почему то не подгружает автоматически для получения URL*/
                     .Where(x => x.UserId == userId)
                     .ProjectTo<GameViewModel>(_mapper.ConfigurationProvider)
                     .ToArrayAsync(cancellationToken);
 
+                var paginatedGames = allGames
+                    .AsQueryable()
+                    .OrderBy(request.Sort.GetSortExpression())
+                    .Paginate(request.Paginate)
+                    .ToArray();
+
                 var response = new ResponseViewModel
                 {
-                    Games = games,
+                    Games = paginatedGames,
+                    Total = new()
+                    {
+                        CashIncome = allGames.Any(x => x.CashIncome?.ValueWithProgress is not null)
+                                ? allGames.Sum(x => x.CashIncome?.ValueWithProgress?.ActualValue)
+                                : null,
+                        Count = allGames.Length
+                    }
                 };
 
-                EnrichResponseWithPercentage(response);
+                EnrichResponse(response);
 
                 return response;
             }
 
-            private static void EnrichResponseWithPercentage(ResponseViewModel response)
+            private static void EnrichResponse(ResponseViewModel response)
             {
                 foreach (var game in response.Games)
-                    if (game.CashIncome?.ValueWithProgress is not null)
+                    if (game.CashIncome?.ValueWithProgress is not null) /*game.CashIncome?.ValueWithProgress is not null если хоть 1 game имеет значение cashIncome, то total точно not null*/
                         game.CashIncome.Percentage = CalculatePercentage(
                             game.CashIncome.ValueWithProgress.ActualValue,
-                            response.Total.CashIncome!.Value); /*game.CashIncome?.ValueWithProgress is not null если хоть 1 game имеет значение cashIncome, то total точно not null*/
+                            response.Total.CashIncome!.Value);
+                    else
+                        game.CashIncome = null;
             }
 
             private static double CalculatePercentage<T>(T value, T total)
