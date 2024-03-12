@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using C4S.DB;
 using C4S.DB.Models;
+using C4S.DB.ValueObjects;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -44,13 +45,11 @@ namespace С4S.API.Features.GameStatistic.Actions
         {
             public double Evaluation { get; set; }
 
-            public int PlayersCount { get; set; }
+            public ValueWithProgress<int>? Rating { get; set; }
 
-            public double? CashIncome { get; set; }
+            public ValueWithProgress<double>? CashIncome { get; set; }
 
             public DateTime LastSynchroDate { get; set; }
-
-            public int? Rating { get; set; }
         }
 
         public class GameStatisticViewModelProfiler : Profile
@@ -86,6 +85,7 @@ namespace С4S.API.Features.GameStatistic.Actions
                     .CountAsync(cancellationToken);
 
                 var gameStatistics = await gameStatisticsQuery
+                    .AsNoTracking()
                     .OrderBy(request.Sort.GetSortExpression())
                     .Paginate(request.Paginate)
                     .ProjectTo<GameStatisticViewModel>(_mapper.ConfigurationProvider)

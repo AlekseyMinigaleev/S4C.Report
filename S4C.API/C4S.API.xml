@@ -113,11 +113,6 @@
             Возвращает список записей статистики по игре
             </summary>
         </member>
-        <member name="M:С4S.API.Features.Game.Actions.GetGames.CashIncomeViewModel.CompareTo(С4S.API.Features.Game.Actions.GetGames.CashIncomeViewModel)">
-            <summary>
-            <inheritdoc/>
-            </summary>
-        </member>
         <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.GameId">
             <summary>
             Id игры
