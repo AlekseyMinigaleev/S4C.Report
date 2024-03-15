@@ -182,6 +182,11 @@
             Возвращает список всех игр
             </summary>
         </member>
+        <member name="M:С4S.API.Features.Game.GameController.GetGameByIdAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Возвращает информацию о игре по указанному id
+            </summary>
+        </member>
         <member name="P:С4S.API.Features.User.Actions.CreateAccount.Query.Credentionals">
             <inheritdoc cref="T:С4S.API.Features.Authentication.ViewModels.UserCredentials"/>
         </member>
