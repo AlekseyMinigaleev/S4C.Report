@@ -58,5 +58,23 @@ namespace С4S.API.Features.Game
             var result = await Mediator.Send(query, cancellationToken);
             return Ok(result);
         }
+
+        /// <summary>
+        /// Возвращает информацию о игре по указанному id
+        /// </summary>
+        [Authorize] 
+        [HttpGet("get-game/{id}")]
+        public async Task<ActionResult> GetGameByIdAsync(
+            [FromRoute] Guid id,
+            CancellationToken cancellationToken)
+        {
+            var query = new GetGameById.Query()
+            {
+                Id = id
+            };
+
+            var result = await Mediator.Send(query, cancellationToken);
+            return Ok(result);
+        }
     }
 }
