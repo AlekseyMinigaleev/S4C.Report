@@ -121,30 +121,14 @@ namespace С4S.API.Features.Game.Actions
                 Command request,
                 CancellationToken cancellationToken)
             {
-                var rsyaAuthorizationToken = _principal.GetUserRsyaAuthorizationToken();
-
-                var period = new DateTimeRange(DateTime.Now, DateTime.Now);
+                var rsyaAuthorizationToken =
+                    _principal.GetUserRsyaAuthorizationToken();
 
                 var response = new List<ViewModel>();
                 foreach (var body in request.Body)
                 {
-                    bool isSuccessfullySet = false;
-                    if (body.PageId.HasValue)
-                    {
-                        var result = await _getPrivateGameDataHelper
-                            .GetCashIncomeAsync(
-                                pageId: body.PageId.Value,
-                                authorization: rsyaAuthorizationToken!,
-                                period: period,
-                                cancellationToken: cancellationToken);
-
-                        isSuccessfullySet = result.HasValue;
-
-                        if (isSuccessfullySet)
-                            (await _dbContext.Games
-                                .SingleAsync(x => x.Id == body.GameId, cancellationToken))
-                                .SetPageId(body.PageId.Value);
-                    }
+                    var isSuccessfullySet =
+                        await TrySetPageId(body, rsyaAuthorizationToken!, cancellationToken);
 
                     var viewModel = new ViewModel
                     {
@@ -159,6 +143,33 @@ namespace С4S.API.Features.Game.Actions
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 return [.. response];
+            }
+
+            private async Task<bool> TrySetPageId(
+                Body body,
+                string rsyaAuthorizationToken,
+                CancellationToken cancellationToken)
+            {
+                bool isSuccessfullySet = false;
+
+                if (body.PageId.HasValue)
+                {
+                    var period = new DateTimeRange(DateTime.Now, DateTime.Now);
+                    var result = await _getPrivateGameDataHelper
+                    .GetCashIncomeAsync(
+                               pageId: body.PageId.Value,
+                               authorization: rsyaAuthorizationToken,
+                               period: period,
+                               cancellationToken: cancellationToken);
+                    isSuccessfullySet = result.HasValue;
+
+                    if (isSuccessfullySet)
+                        (await _dbContext.Games
+                            .SingleAsync(x => x.Id == body.GameId, cancellationToken))
+                            .SetPageId(body.PageId.Value);
+                }
+
+                return isSuccessfullySet;
             }
         }
     }
