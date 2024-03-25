@@ -21,6 +21,8 @@ namespace С4S.API.Features.Game.Actions
 
             public string PreviewURL { get; set; }
 
+            public int? PageId { get; set; }
+
             public string[] Categories { get; set; }
         }
 
