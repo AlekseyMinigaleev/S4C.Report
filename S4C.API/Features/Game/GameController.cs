@@ -33,19 +33,6 @@ namespace С4S.API.Features.Game
             return Ok(response);
         }
 
-        /*TODO: ПОКА НЕ ИСПОЛЬЗУЕТСЯ ДАЛЬШЕ БУДЕТ ИЗМЕНЕНО*/
-
-        [Authorize]
-        [HttpGet("get-games-page")]
-        public async Task<ActionResult> GetGamesPageIdAsync(CancellationToken cancellationToken)
-        {
-            var request = new GetGamesPage.Query();
-
-            var result = await Mediator.Send(request, cancellationToken);
-
-            return Ok(result);
-        }
-
         /// <summary>
         /// Возвращает список всех игр
         /// </summary>
