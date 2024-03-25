@@ -1,5 +1,4 @@
-﻿using C4S.Services.Exceptions;
-using C4S.Services.Services.GetGamesDataService.HttpRequestMethodDictionaries;
+﻿using C4S.Services.Services.GetGamesDataService.HttpRequestMethodDictionaries;
 using C4S.Services.Services.GetGamesDataService.Models;
 using C4S.Shared.Extensions;
 using C4S.Shared.Models;
@@ -52,16 +51,18 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
             var jObject = JObject.Parse(jsonString);
 
             var cashIncomeJToken = jObject
-                .GetValue<JToken>("data", "totals", "2")
-                ?? throw new JsonPropertyNullValueException(
-                    "data, totals, 2",
-                    jObject);
+                .GetValue<JToken>("data", "totals", "2");
 
             var cashIncome = cashIncomeJToken
                 .ToObject<CashIncome[]>()!
                 .Single();
 
-            return cashIncome.Value;
+            /*TODO: не помню зачем нужно было вызывать exception, насколько я помню даже при валидных данных в результате можно получить null, убрал вызов exception`a, т.к. в endpoint`е set-page-id идет проверка правильно ли был указан pageId*/
+            //?? throw new JsonPropertyNullValueException(
+            //    "data, totals, 2",
+            //    jObject);
+
+            return cashIncome?.Value;
         }
 
         private class CashIncome

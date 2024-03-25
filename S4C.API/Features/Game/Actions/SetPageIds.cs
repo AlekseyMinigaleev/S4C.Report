@@ -1,5 +1,6 @@
 ﻿using C4S.DB;
 using C4S.Services.Services.GetGamesDataService.Helpers;
+using C4S.Shared.Extensions;
 using C4S.Shared.Models;
 using FluentValidation;
 using MediatR;
@@ -17,19 +18,12 @@ namespace С4S.API.Features.Game.Actions
             public Body[] Body { get; set; }
         }
 
-        /*TODO: исправить после добавления фронта*/
-
         public class Body
         {
             /// <summary>
             /// Id игры
             /// </summary>
-            public int GameId { get; set; }
-
-            /// <summary>
-            /// Навзание игры
-            /// </summary>
-            public string GameName { get; set; }
+            public Guid GameId { get; set; }
 
             /// <summary>
             /// Id страницы
@@ -56,46 +50,42 @@ namespace С4S.API.Features.Game.Actions
                    })
                    .WithErrorCode(HttpStatusCode.Unauthorized.ToString())
                    .WithMessage("Для использования возможности сбора статистики по прибыли игр, " +
-                    "необходимо укзаать токен авторизации РСЯ");
+                    "необходимо указать токен авторизации РСЯ");
 
                 RuleForEach(x => x.Body)
-                    .SetValidator(new BodyValidator(dbContext));
+                    .SetValidator(new BodyValidator(principal, dbContext));
             }
         }
 
         public class BodyValidator : AbstractValidator<Body>
         {
             public BodyValidator(
+                IPrincipal principal,
                 ReportDbContext dbContext)
             {
                 RuleFor(x => x.GameId)
                     .MustAsync(async (gameId, cancellationToken) =>
                     {
+                        var userId = principal.GetUserId();
+
                         var result = await dbContext.Games
-                            .Select(x => x.AppId)
+                            .Where(x => x.UserId == userId)
+                            .Select(x => x.Id)
                             .ContainsAsync(gameId, cancellationToken);
 
                         return result;
                     })
-                    .WithMessage(x => $"GameId: {x.GameId} не содержится в базе данных." +
-                    $"Если вы уверены, что указанное id корректное" +
-                    $"То проблема может быть решена принудительным запуском джобы 'Парсинг id игр со страницы разработчика'.");
+                    .WithMessage(x => $"{x.GameId} was not found")
+                    .WithErrorCode("404");
             }
         }
-
-        /*TODO: исправить после добавления фронта*/
 
         public class ViewModel
         {
             /// <summary>
             /// Id игры
             /// </summary>
-            public int GameId { get; set; }
-
-            /// <summary>
-            /// Навзание игры
-            /// </summary>
-            public string GameName { get; set; }
+            public Guid GameId { get; set; }
 
             /// <summary>
             /// Id страницы
@@ -141,7 +131,6 @@ namespace С4S.API.Features.Game.Actions
                     bool isSuccessfullySet = false;
                     if (body.PageId.HasValue)
                     {
-                        /*TODO: возможно нужно при наличии result, записывать его в бд*/
                         var result = await _getPrivateGameDataHelper
                             .GetCashIncomeAsync(
                                 pageId: body.PageId.Value,
@@ -153,7 +142,7 @@ namespace С4S.API.Features.Game.Actions
 
                         if (isSuccessfullySet)
                             (await _dbContext.Games
-                                .SingleAsync(x => x.AppId == body.GameId, cancellationToken))
+                                .SingleAsync(x => x.Id == body.GameId, cancellationToken))
                                 .SetPageId(body.PageId.Value);
                     }
 
@@ -161,7 +150,6 @@ namespace С4S.API.Features.Game.Actions
                     {
                         GameId = body.GameId,
                         PageId = body.PageId,
-                        GameName = body.GameName,
                         IsSuccessfullySet = isSuccessfullySet
                     };
 
@@ -170,7 +158,7 @@ namespace С4S.API.Features.Game.Actions
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return response.ToArray();
+                return [.. response];
             }
         }
     }
