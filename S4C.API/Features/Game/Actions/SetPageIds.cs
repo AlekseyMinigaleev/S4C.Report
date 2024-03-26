@@ -23,7 +23,7 @@ namespace С4S.API.Features.Game.Actions
             /// <summary>
             /// Id игры
             /// </summary>
-            public Guid GameId { get; set; }
+            public Guid GameId { get; set; }    
 
             /// <summary>
             /// Id страницы
@@ -156,7 +156,7 @@ namespace С4S.API.Features.Game.Actions
                 {
                     var period = new DateTimeRange(DateTime.Now, DateTime.Now);
                     var result = await _getPrivateGameDataHelper
-                    .GetCashIncomeAsync(
+                        .GetCashIncomeAsync(
                                pageId: body.PageId.Value,
                                authorization: rsyaAuthorizationToken,
                                period: period,
