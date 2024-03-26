@@ -113,32 +113,9 @@
             Возвращает список записей статистики по игре
             </summary>
         </member>
-        <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.GameId">
-            <summary>
-            Id игры
-            </summary>
-        </member>
-        <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.GameName">
-            <summary>
-            Навзание игры
-            </summary>
-        </member>
-        <member name="P:С4S.API.Features.Game.Actions.GetGamesPage.ViewModel.PageId">
-            <summary>
-            Id страницы
-            </summary>
-            <remarks>
-            Поле для взаимодействия с РСЯ
-            </remarks>
-        </member>
         <member name="P:С4S.API.Features.Game.Actions.SetPageIds.Body.GameId">
             <summary>
             Id игры
-            </summary>
-        </member>
-        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.Body.GameName">
-            <summary>
-            Навзание игры
             </summary>
         </member>
         <member name="P:С4S.API.Features.Game.Actions.SetPageIds.Body.PageId">
@@ -152,11 +129,6 @@
         <member name="P:С4S.API.Features.Game.Actions.SetPageIds.ViewModel.GameId">
             <summary>
             Id игры
-            </summary>
-        </member>
-        <member name="P:С4S.API.Features.Game.Actions.SetPageIds.ViewModel.GameName">
-            <summary>
-            Навзание игры
             </summary>
         </member>
         <member name="P:С4S.API.Features.Game.Actions.SetPageIds.ViewModel.PageId">
