@@ -77,6 +77,10 @@ namespace С4S.API.Features.Game.Actions
                     })
                     .WithMessage(x => $"{x.GameId} was not found")
                     .WithErrorCode("404");
+
+                RuleFor(x => x.PageId)
+                    .GreaterThan(0)
+                    .WithMessage(x => $"{x.GameId} pageId cannot have a value less than 0 ");
             }
         }
 
