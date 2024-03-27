@@ -23,7 +23,7 @@ namespace С4S.API.Features.Game.Actions
             /// <summary>
             /// Id игры
             /// </summary>
-            public Guid GameId { get; set; }    
+            public Guid GameId { get; set; }
 
             /// <summary>
             /// Id страницы
@@ -31,7 +31,7 @@ namespace С4S.API.Features.Game.Actions
             /// <remarks>
             /// Поле для взаимодействия с РСЯ
             /// </remarks>
-            public int? PageId { get; set; }
+            public long? PageId { get; set; }
         }
 
         public class CommandValidator : AbstractValidator<Command>
@@ -93,7 +93,7 @@ namespace С4S.API.Features.Game.Actions
             /// <remarks>
             /// Поле для взаимодействия с РСЯ
             /// </remarks>
-            public int? PageId { get; set; }
+            public long? PageId { get; set; }
 
             /// <summary>
             /// Флаг показывающий было ли установлено значение

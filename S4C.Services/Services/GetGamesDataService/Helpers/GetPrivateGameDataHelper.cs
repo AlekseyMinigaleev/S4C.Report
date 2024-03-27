@@ -28,7 +28,7 @@ namespace C4S.Services.Services.GetGamesDataService.Helpers
         /// <param name="period">Период, за который запрашиваются данные.</param>
         /// <param name="cancellationToken">Токен отмены задачи.</param>
         public async Task<double?> GetCashIncomeAsync(
-            int pageId,
+            long pageId,
             string authorization,
             DateTimeRange period,
             CancellationToken cancellationToken = default)
