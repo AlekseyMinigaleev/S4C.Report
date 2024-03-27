@@ -157,7 +157,7 @@ namespace C4S.DB.Models
         /// Устанавливает указанный <paramref name="pageId"/>
         /// </summary>
         /// <param name="pageId">Id страницы, необходимо для РСЯ</param>
-        public void SetPageId(long pageId) => PageId = pageId;
+        public void SetPageId(long? pageId) => PageId = pageId;
 
         /// <summary>
         /// Устанавливает указанный флаг <paramref name="isArchived"/>

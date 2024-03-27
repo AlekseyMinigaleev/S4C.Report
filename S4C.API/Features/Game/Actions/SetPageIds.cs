@@ -162,12 +162,16 @@ namespace С4S.API.Features.Game.Actions
                                period: period,
                                cancellationToken: cancellationToken);
                     isSuccessfullySet = result.HasValue;
-
-                    if (isSuccessfullySet)
-                        (await _dbContext.Games
-                            .SingleAsync(x => x.Id == body.GameId, cancellationToken))
-                            .SetPageId(body.PageId.Value);
                 }
+                else
+                {
+                    isSuccessfullySet = true;
+                }
+
+                if (isSuccessfullySet)
+                    (await _dbContext.Games
+                        .SingleAsync(x => x.Id == body.GameId, cancellationToken))
+                        .SetPageId(body.PageId.HasValue ? body.PageId.Value : null);
 
                 return isSuccessfullySet;
             }
