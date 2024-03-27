@@ -23,7 +23,7 @@ namespace C4S.DB.Models
         /// <remarks>
         /// Поле необходимое для  получения данных с РСЯ
         /// </remarks>
-        public int? PageId { get; private set; }
+        public long? PageId { get; private set; }
 
         /// <summary>
         /// Название игры
@@ -157,7 +157,7 @@ namespace C4S.DB.Models
         /// Устанавливает указанный <paramref name="pageId"/>
         /// </summary>
         /// <param name="pageId">Id страницы, необходимо для РСЯ</param>
-        public void SetPageId(int pageId) => PageId = pageId;
+        public void SetPageId(long? pageId) => PageId = pageId;
 
         /// <summary>
         /// Устанавливает указанный флаг <paramref name="isArchived"/>

@@ -23,7 +23,7 @@ namespace С4S.API.Features.Game.Actions
             /// <summary>
             /// Id игры
             /// </summary>
-            public Guid GameId { get; set; }    
+            public Guid GameId { get; set; }
 
             /// <summary>
             /// Id страницы
@@ -31,7 +31,7 @@ namespace С4S.API.Features.Game.Actions
             /// <remarks>
             /// Поле для взаимодействия с РСЯ
             /// </remarks>
-            public int? PageId { get; set; }
+            public long? PageId { get; set; }
         }
 
         public class CommandValidator : AbstractValidator<Command>
@@ -77,6 +77,10 @@ namespace С4S.API.Features.Game.Actions
                     })
                     .WithMessage(x => $"{x.GameId} was not found")
                     .WithErrorCode("404");
+
+                RuleFor(x => x.PageId)
+                    .GreaterThanOrEqualTo(0)
+                    .WithMessage(x => $"{x.GameId} pageId cannot have a value less than 0 ");
             }
         }
 
@@ -93,7 +97,7 @@ namespace С4S.API.Features.Game.Actions
             /// <remarks>
             /// Поле для взаимодействия с РСЯ
             /// </remarks>
-            public int? PageId { get; set; }
+            public long? PageId { get; set; }
 
             /// <summary>
             /// Флаг показывающий было ли установлено значение
@@ -162,12 +166,16 @@ namespace С4S.API.Features.Game.Actions
                                period: period,
                                cancellationToken: cancellationToken);
                     isSuccessfullySet = result.HasValue;
-
-                    if (isSuccessfullySet)
-                        (await _dbContext.Games
-                            .SingleAsync(x => x.Id == body.GameId, cancellationToken))
-                            .SetPageId(body.PageId.Value);
                 }
+                else
+                {
+                    isSuccessfullySet = true;
+                }
+
+                if (isSuccessfullySet)
+                    (await _dbContext.Games
+                        .SingleAsync(x => x.Id == body.GameId, cancellationToken))
+                        .SetPageId(body.PageId.HasValue ? body.PageId.Value : null);
 
                 return isSuccessfullySet;
             }

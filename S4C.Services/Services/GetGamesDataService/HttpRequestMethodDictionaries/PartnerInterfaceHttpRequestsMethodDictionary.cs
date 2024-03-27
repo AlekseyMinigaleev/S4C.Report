@@ -18,7 +18,7 @@ namespace C4S.Services.Services.GetGamesDataService.HttpRequestMethodDictionarie
         /// </returns>
         public static HttpRequestMessage GetAppReport(
             string authorizationToken,
-            int pageId,
+            long pageId,
             DateTimeRange period)
         {
             var dateTimeFormat = "yyyy-MM-dd";
